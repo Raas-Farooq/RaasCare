@@ -1,6 +1,7 @@
 
 import express from 'express';
-import {AddNewPatient} from '../Controller/controller.jsx'
+import AddNewPatient from '../Controller/controller.js';
+
 
 const router = express.Router();
 

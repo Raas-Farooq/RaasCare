@@ -1,12 +1,10 @@
-import patientModel from "../model/model";
+import patientModel from "../model/model.js";
 
-const AddNewPatient= async(req,res) =>{
-    console.log("req body NeW Neural Network: ", req.body);
-   
-
+const AddNewPatient= async(req,res) =>
+    {
+    console.log("req body NeW Neural Network: ", req.body);  
     try{
         const {id, name, city, diagnosis, age} = req.body;
-
         const newPatient= patientModel({patientId:id, name, city, age, diagnosis});
         await newPatient.save();
         if(!newPatient){
@@ -27,7 +25,6 @@ const AddNewPatient= async(req,res) =>{
             error:err.message
         })
     }
-    
 }
 
-export default {AddNewPatient}
+export default AddNewPatient

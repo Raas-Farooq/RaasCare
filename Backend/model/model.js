@@ -1,7 +1,13 @@
 import mongoose from "mongoose";
+// import {AddNewPatient} from '../Controller/controller.js';
 
+// console.log("Add New Ptient:  model ", AddNewPatient)
 
 const patientScehma = new mongoose.Schema({
+    patientId:{
+        type:Number,
+        required:[true, "Id is Required"]
+    },
     patientName:{
         type:String,
         length:{min:3},
