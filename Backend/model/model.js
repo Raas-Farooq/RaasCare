@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 
 const patientScehma = new mongoose.Schema({
     patientId:{
-        type:Number,
+        type:String,
         required:[true, "Id is Required"]
     },
     patientName:{
