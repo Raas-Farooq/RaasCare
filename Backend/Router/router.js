@@ -10,4 +10,5 @@ router.post('/addPatientProfile', newPatientValidation, patientDataController.Ad
 router.put('/updatePatientProfile/:id', patientDataController.updatePatientProfile)
 router.get('/getAllPatientsProfiles', patientDataController.getAllPatients);
 router.delete('/deletePatientProfile/:id', patientDataController.deletePatientProfile);
+router.get('/searchPatient', patientDataController.getSearchPatient);
 export default router;

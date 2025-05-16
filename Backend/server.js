@@ -18,6 +18,5 @@ app.get('/', (req, res) => {
 app.use('/pms', router);
 
 const Port = 2500;
-console.log("process.env.MONGO ", process.env.MONGO_URI);
 ConnectingToDatabase()
 app.listen(Port,() => console.log("port ", Port));

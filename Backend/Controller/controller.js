@@ -58,7 +58,7 @@ const getAllPatients= async(req,res) =>
     {
         try{
         const patients = await patientModel.find({});
-        console.log("all Patients: ", patients);
+        console.log("get all Patients: runs ");
         if(!patients){
             return res.status(404).json({
                 success:false,
@@ -79,7 +79,31 @@ const getAllPatients= async(req,res) =>
     }
 }
 
+const getSearchPatient = async(req,res) =>{
+    try{
+        const patients = await patientModel.find({});
 
+        const searching = req.query.search;
+        const searchedPatients = patients.filter(patient => patient.patientName.includes(searching));
+        if(!searchedPatients){
+            return res.status(404).json({
+                    success:false,
+                    message:"Patient NOt found"
+                })
+        }
+        return res.status(200).json({
+                success:true,
+                message:"Successfully created new Patient",
+                searchedPatients
+            })
+    }catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while finding Patient",
+            error:err.message
+        })
+    }
+}
 async function deletePatientProfile(req,res)
     {
         try{
@@ -146,5 +170,5 @@ async function deletePatientProfile(req,res)
     }
  }
 
-export default {AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile}
+export default {AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient}
 
