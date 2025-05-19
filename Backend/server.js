@@ -3,6 +3,7 @@ import express from 'express';
 import ConnectingToDatabase from './config/db.js';
 import patientModel from './model/model.js';
 import router from './Router/router.js';
+import cors from 'cors';
 config()
 
 
@@ -10,7 +11,7 @@ config()
 const app = express();
 
 app.use(express.json());
-
+app.use(cors());
 app.get('/', (req, res) => {
         res.send("Welcome the The Arena of Last BALL. Alhamdulila")
     })

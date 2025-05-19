@@ -81,11 +81,30 @@ const getAllPatients= async(req,res) =>
 
 const getSearchPatient = async(req,res) =>{
     try{
-        const patients = await patientModel.find({});
+        // const patients = await patientModel.find({});
 
-        const searching = req.query.search;
-        const searchedPatients = patients.filter(patient => patient.patientName.includes(searching));
-        if(!searchedPatients){
+        const searchTerm = req.query.search?.trim() || "";
+        console.log("searchTerm: ", searchTerm);
+        if(!searchTerm){    
+            return res.status(400).json({
+                success:false,
+                message:"search Something"
+            })
+        }
+        
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit
+        
+        // const searchedPatients = patients.filter(patient => patient.patientName.toLowerCase().includes(searchTerm.toLowerCase()));
+        const searchedPatients = await patientModel.find({
+                $or:[
+                    {patientName:{$regex:searchTerm, $options:'i'}},
+                    {patientId:{$regex:searchTerm, $options:'i'}}
+                ]     
+        });
+
+        if(searchedPatients.length === 0){
             return res.status(404).json({
                     success:false,
                     message:"Patient NOt found"
@@ -94,7 +113,7 @@ const getSearchPatient = async(req,res) =>{
         return res.status(200).json({
                 success:true,
                 message:"Successfully created new Patient",
-                searchedPatients
+                patients: searchedPatients
             })
     }catch(err){
         return res.status(500).json({
@@ -172,3 +191,10 @@ async function deletePatientProfile(req,res)
 
 export default {AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient}
 
+// if(searchedPatients.length === 0){
+//             return res.status(404).json({
+//                     success:false,
+//                     message:"Patient NOt found"
+//                 })
+//         }
+//         why are you using 'patients.length' instead of !patients

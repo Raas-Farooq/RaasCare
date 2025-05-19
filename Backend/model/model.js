@@ -10,8 +10,8 @@ const patientScehma = new mongoose.Schema({
     },
     patientName:{
         type:String,
-        length:{min:3},
-        requried:[true, 'Patient Name is required']
+        minlength:{min:3},
+        required:[true, 'Patient Name is required']
     },
     age:{
         type:String
@@ -27,6 +27,8 @@ const patientScehma = new mongoose.Schema({
     collection:'patients'
 })
 
+patientScehma.index('patientId', 1);
+// patientScehma.index('patientName', 'text');
 const patientModel = mongoose.model('patient', patientScehma);
 
 export default patientModel
