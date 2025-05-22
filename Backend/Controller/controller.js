@@ -1,20 +1,6 @@
 import { validationResult } from "express-validator";
 import patientModel from "../model/model.js";
 
-// const array = [3, 8,33, 9, 73];
-
-// const topSorting = (arr) => {
-//     if(arr.length < 2){
-//         return 0;
-//     }
-//     const mid = Math.floor(arr.length / 2);
-//     let firstHalf= arr.slice(0, mid); 
-//     let secondHalf =arr.slice(mid);
-//     console.log("firstHalf: ", firstHalf);
-//     console.log("second Half: ", secondHalf);
-//     return topSorting(firstHalf), topSorting(secondHalf);
-// }
-
 
 const AddNewPatient= async(req,res) =>
     {
@@ -54,10 +40,45 @@ const AddNewPatient= async(req,res) =>
     }
 }
 
+const getPatient= async(req,res) =>
+    {
+        try{
+            const id = req.params.id;
+            console.log("id received: ", id);
+            const patient = await patientModel.findOne({patientId:id});
+        
+            console.log("get all Patients: runs ");
+            if(!patient){
+                return res.status(404).json({
+                    success:false,
+                    message:"No Patient Data found"
+                })
+        }
+        return res.status(201).json({
+            success:true,
+            message:"Successfully created new Patient",
+            patient
+        })
+    }catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while creating new Patient",
+            error:err.message
+        })
+    }
+}
+
 const getAllPatients= async(req,res) =>
     {
         try{
         const patients = await patientModel.find({});
+        // await patientModel.insertMany([{
+        //     patientId:'235',
+        //     patientName:"Rehmat Ali",
+        //     age:'54',
+        //     city:'Lahore',
+        //     diagnosis:'Typhoid'
+        // }])
         console.log("get all Patients: runs ");
         if(!patients){
             return res.status(404).json({
@@ -84,27 +105,28 @@ const getSearchPatient = async(req,res) =>{
         // const patients = await patientModel.find({});
 
         const searchTerm = req.query.search?.trim() || "";
-        console.log("searchTerm: ", searchTerm);
-        if(!searchTerm){    
-            return res.status(400).json({
-                success:false,
-                message:"search Something"
-            })
-        }
-        
+        console.log(": Type", typeof(searchTerm), "length of searchTerm: ", searchTerm.length, "searchTerm ", searchTerm);
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit
-        
+        let searchedPatients;
         // const searchedPatients = patients.filter(patient => patient.patientName.toLowerCase().includes(searchTerm.toLowerCase()));
-        const searchedPatients = await patientModel.find({
+        if(!searchTerm || searchTerm.trim() === ""){
+             return res.status(400).json({
+                success:false,
+                message:"Please Enter Patient Name"
+            })
+        }
+        searchedPatients = await patientModel.find({
                 $or:[
+                    {patientId:searchTerm},
                     {patientName:{$regex:searchTerm, $options:'i'}},
-                    {patientId:{$regex:searchTerm, $options:'i'}}
+                    {patientId:{$regex:searchTerm, $options:'i'}},
                 ]     
-        });
-
+        }).skip(skip).limit(limit);
+        console.log("searchPatiens length: ", searchedPatients.length)
         if(searchedPatients.length === 0){
+            console.log("length === 0 sent success fasle")
             return res.status(404).json({
                     success:false,
                     message:"Patient NOt found"
@@ -189,7 +211,7 @@ async function deletePatientProfile(req,res)
     }
  }
 
-export default {AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient}
+export default {getPatient,AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient}
 
 // if(searchedPatients.length === 0){
 //             return res.status(404).json({

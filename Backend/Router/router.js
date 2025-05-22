@@ -7,7 +7,8 @@ const router = express.Router();
 
 
 router.post('/addPatientProfile', newPatientValidation, patientDataController.AddNewPatient);
-router.put('/updatePatientProfile/:id', patientDataController.updatePatientProfile)
+router.put('/updatePatientProfile/:id', patientDataController.updatePatientProfile);
+router.get('/getPatient/:id', patientDataController.getAllPatients);
 router.get('/getAllPatientsProfiles', patientDataController.getAllPatients);
 router.delete('/deletePatientProfile/:id', patientDataController.deletePatientProfile);
 router.get('/searchPatient', patientDataController.getSearchPatient);

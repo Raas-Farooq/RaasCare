@@ -10,17 +10,19 @@ const patientScehma = new mongoose.Schema({
     },
     patientName:{
         type:String,
-        minlength:{min:3},
+        minLength:3,
         required:[true, 'Patient Name is required']
     },
     age:{
         type:String
     },
     city:{
-        type:String
+        type:String,
+        required:[true, "city Should be mentioned"]
     },
     diagnosis:{
-        type:String
+        type:String,
+        required:[true, "Should mention Diagnosis"]
     }
 }, {
     timestamps:true,
