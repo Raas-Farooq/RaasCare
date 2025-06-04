@@ -17,8 +17,7 @@ const patientScehma = new mongoose.Schema({
         type:String
     },
     city:{
-        type:String,
-        required:[true, "city Should be mentioned"]
+        type:String
     },
     diagnosis:{
         type:String,

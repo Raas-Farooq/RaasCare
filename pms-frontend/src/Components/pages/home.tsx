@@ -2,10 +2,10 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {debounce} from 'lodash';
-import { FaSpinner } from "react-icons/fa";
+import { FaSpinner, FaEdit, FaPlus, FaPlusCircle, FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-interface Patient{
+ interface Patient{
   _id:string,
   patientName:string,
   patientId:string,
@@ -13,6 +13,7 @@ interface Patient{
   diagnosis:string,
   city:string
 }
+
 
 
 function Home(){
@@ -23,8 +24,8 @@ function Home(){
      const [doesUserSearch, setDoesUserSearch] = useState(false);
 
    const navigate = useNavigate();
-    const handleButton = () => {
-    
+    const handleAddPatientClick = () => {
+    navigate('/addPatient')
   }
 
   const debounceSearchPatient = useMemo( 
@@ -58,7 +59,7 @@ function Home(){
     []);
 
     const handleUserSearch = async(e:React.ChangeEvent<HTMLInputElement>) => {
-    const searchValue=e.target.value.trim();
+    const searchValue=e.target.value;
     setUserSearchValue(searchValue);
     setDoesUserSearch(true);
     if(!searchValue || searchValue.trim() === ""){
@@ -68,6 +69,23 @@ function Home(){
    }
     
    useEffect(() => {
+    // function processedArray(arr,val){
+       
+    //   let writeInd=0;
+    //   arr.forEach(num => {
+    //     if(num!==val){
+    //       arr[writeInd] = num;
+    //       writeInd++;
+    //     }
+    //   })
+    //   arr.length = writeInd;
+    //   console.log("final Array: ", arr);
+
+    // }
+    // const superArray=[3,2,8,3,9,3,7,9,4,1];
+    // const val=3;
+    // processedArray(superArray, val);
+
     return () => {
       debounceSearchPatient.cancel();
     }
@@ -83,7 +101,7 @@ function Home(){
   //  },[])
 
    function handlePatientClick(id:string, name:string){
-
+    
     console.log("patient clicked ", id, "patient Name: ",name);
     navigate(`/profile/${id}`);
 
@@ -96,16 +114,20 @@ function Home(){
               </header>
             </nav>  
             <article>
-              <div className='max-w-4/5 flex justify-center'>
+              <div className='max-w-4/5 flex justify-center sm:space-x-16 relative gap-8'>
                 <section>
-                  <label>Search Patient: </label>
+                  {/* <label>Search Patient: </label> */}
                     <input type="search" 
-                    className="p-2 border border-gray-800"
+                    className="p-3 border border-gray-800"
+                    placeholder="Search Patient.."
                     value={userSearchValue}
                     onChange={handleUserSearch}
                     name="search" />
                 </section>
-                <button onClick={handleButton} className="border border-gray-800 bg-purple-600 text-white"> Allah Akbar</button>
+                <div className="flex">
+                   <button onClick={handleAddPatientClick} className="flex gap-2 border border-gray-800 bg-purple-600 text-white text-[12px] sm:p-2 sm:text-lg sm:w-40"> New Patient <FaUserPlus /> </button>
+                </div>
+               
               </div>
            </article>
            {loadingSearchedPatients && <div><FaSpinner className="animate-spin " />   </div>}
@@ -134,26 +156,5 @@ function Home(){
 }
 
 export default Home
-
-// function mergeArrays(first_array:number[], second_array:number[]){
-//         let i = first_array.length - 1;
-//         let j = second_array.length - 1;
-//         let total_length = i + j + 1;
-//         while(i >= 0 && j >= 0){
-//           if(first_array[i] > second_array[j]){
-//             first_array[total_length] = first_array[i];
-//             i--;
-//           }else{
-//             first_array[total_length] = second_array[j];
-//             j--
-//           }
-//           total_length--;
-//         }
-//         while (j >= 0 && total_length>= 0){
-//         first_array[total_length] = second_array[j];
-//         j--;
-//         total_length--;
-//         }
-//       }
 
       

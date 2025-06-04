@@ -43,6 +43,7 @@ const AddNewPatient= async(req,res) =>
 const getPatient= async(req,res) =>
     {
         try{
+            console.log("Single Patient Runs")
             const id = req.params.id;
             console.log("id received: ", id);
             const patient = await patientModel.findOne({patientId:id});
