@@ -14,7 +14,9 @@ const patientScehma = new mongoose.Schema({
         required:[true, 'Patient Name is required']
     },
     age:{
-        type:String
+        type:Number,
+        min:0,
+        max:120
     },
     city:{
         type:String

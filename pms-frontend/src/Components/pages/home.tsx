@@ -2,8 +2,9 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {debounce} from 'lodash';
-import { FaSpinner, FaEdit, FaPlus, FaPlusCircle, FaUserPlus } from "react-icons/fa";
+import { FaSpinner, FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+
 
  interface Patient{
   _id:string,
@@ -57,7 +58,6 @@ function Home(){
         }
       }, 300),
     []);
-
     const handleUserSearch = async(e:React.ChangeEvent<HTMLInputElement>) => {
     const searchValue=e.target.value;
     setUserSearchValue(searchValue);

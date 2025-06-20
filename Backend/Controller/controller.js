@@ -15,16 +15,18 @@ const AddNewPatient= async(req,res) =>
                 message:"Got Validation Errors",
                 error: errors.array()
             })
-        }
-        const {id, patientName, city, diagnosis, age} = req.body;
-        const patientExist = await patientModel.find({patientId: id});
+        }  
+        const {patientId, patientName, city, diagnosis, age} = req.body;
+        const patientExist = await patientModel.findOne({patientId});
+        
         if(patientExist){
             return res.status(400).json({
                 success:false,
                 message:"Patient with the same id already Exist"
             })
         }
-        const newPatient= patientModel({patientId:id, patientName, city, age, diagnosis});
+        const newPatient= patientModel({patientId, patientName, city, diagnosis,age});
+        console.log("newPatient: ", newPatient)
         await newPatient.save();
         return res.status(201).json({
             success:true,

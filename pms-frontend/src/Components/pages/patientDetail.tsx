@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FaSpinner } from "react-icons/fa";
-import { useParams } from "react-router-dom"
+import { FaEdit, FaSpinner } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom"
 
 
 interface Patient{
@@ -18,6 +18,7 @@ const PatientProfile = () => {
     const {patientId} = useParams();
     const [loadingPatient, setLoadingPatient] = useState<boolean>(false);
     const [currentPatient, setCurrentPatient] = useState<Patient[]>([]);
+    const navigate = useNavigate();
     useEffect(() => {
         console.log("check if patientId is ther: ", patientId);
 
@@ -41,6 +42,13 @@ const PatientProfile = () => {
 
         fetchPatient();
     },[patientId])
+
+    function handleEditClick(e:React.MouseEvent<HTMLButtonElement>){
+        e.preventDefault();
+        navigate('/updatePatientProfile', {state:currentPatient})
+    }
+
+
     return(
         <div className="h-screen bg-gray-200 flex justify-center items-center flex-col text-center gap-10">  
             {loadingPatient &&
@@ -50,7 +58,12 @@ const PatientProfile = () => {
                         <span className="text-xl text-blue-800"> Loading Patient</span>
                     </div>
             </div>}
-            {currentPatient && <h1 className="underline decoration-blue-500 text-3xl lg:text-5xl font-bold"> {currentPatient[0]?.patientName} </h1>}
+            {currentPatient && <div className="flex gap-3">
+                 <h1 className="underline decoration-blue-500 text-3xl lg:text-5xl font-bold"> {currentPatient[0]?.patientName} </h1>
+                 <button onClick={handleEditClick}><FaEdit /></button>
+                </div>
+                }
+
             <div className="w-screen h-[80vh] bg-white shadow-2xl sm:max-w-xl md:max-w-xl lg:max-w-4xl flex justify-center">
                 {currentPatient && currentPatient.map(patient => {
                 return (

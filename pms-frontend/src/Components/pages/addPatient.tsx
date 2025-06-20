@@ -1,99 +1,61 @@
-// import {zodResolver} from '@hookform/resolvers/zod';
-// import axios from 'axios';
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from '@hookform/resolvers/zod';
 import axios from "axios";
+import { useState } from "react";
+import { FaSpinner } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import FormComponent from "./formComponent";
 
-const patientSchema = z.object({
-        patientId:z.string().optional(),
-        patientName:z.string().min(2, "Name is too short"),
-        diagnosis:z.string().min(3),
-        city:z.string().min(2),
-        age:z.number().min(0).max(120)
-    });
-type PatientFormData = z.infer<typeof patientSchema>
+interface PatientData{
+    patientName:string,
+    patientId?:string,
+    age:number,
+    diagnosis:string,
+    city:string 
+}
+
+// Patient Form Component
 const PatientForm = () => {
-
-    const {register, handleSubmit, formState:{errors}} = useForm({
-        resolver: zodResolver(patientSchema)
-    })
-
-    async function formSubmit(data:PatientFormData){
-
-        const patientId = `${Date.now()}`;
-        const updatedFormData = { patientId,...data}
-        
+    const [addingNewPatient, setAddingNewPatient] = useState(false);
+    const navigate = useNavigate();
+// Form submit function 
+    async function formSubmit(data:PatientData){
+        console.log("data: ", data);
         try{
-            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, updatedFormData);
+            setAddingNewPatient(true);
+            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, data);
             console.log("response: ",response);
+            if(response.data.success){
+                console.log("SUCCESS WINNER")
+            }
         }
         catch(err){
             console.log('error :', err);
         }
+        finally{
+            setAddingNewPatient(false);
+        }
     }
 
     return (
-        <section className="flex justify-center items-center min-h-screen p-4">
-            <article className="w-full max-w-2xl rounded-lg shadow-lg p-6">
-                <h1 className="text-center text-2xl text-green-600 font-semibold mb-6">Enter The Details of New Patient</h1>
-                <form onSubmit={handleSubmit(formSubmit)} className="space-y-4">
-                    <div>
-                        <label htmlFor="patientName" className="block text-sm font-medium text-gray-700 mb-1">
-                            Patient Name *
-                        </label>
-                        <input 
-                        id="patientName"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        // placeholder="Enter Patient Name here"
-                        {...register('patientName')}
-                        />
-                        {errors.patientName && <p className='text-red-500'> {errors.patientName.message}</p> }
+
+        <div>
+            <section className="flex justify-center items-center min-h-screen p-4">
+                <article className="w-full max-w-2xl rounded-lg shadow-lg p-6">
+                    <h1 className="text-center text-2xl text-green-600 font-semibold mb-6">Enter The Details of New Patient</h1>
+                    <FormComponent receiveSubmitData={formSubmit} />
+                    {addingNewPatient && 
+                        <div className="fixed inset-0 bg-black opacity-50 flex justify-center items-center">
+                            <div className="bg-white text-black shadow-lg rounded-md flex justify-center items-center p-4 ">
+                                <FaSpinner className="animate-spin text-2xl" /> Adding Patient..
+                            </div>
+                        </div>
+                    }
+                    <div className="text-center space-y-3">
+                        <button className="text-gray-500 hover:text-gray-800" onClick={() => navigate(-1)}>Back</button>
                     </div>
-                  
-                    <div>
-                        <label htmlFor="diagnosis" className="block text-gray-700 mb-1 font-medium text-sm">
-                            Diagnosis *
-                        </label>
-                        <input
-                            className="w-full border border-gray-400 rounded-md focus:outline-none px-3 py-2 focus:ring-2 focus:ring-green-500"
-                            // placeholder="Enter Patient Disease or Diagnosis"
-                            id="diagnosis"
-                            {...register("diagnosis")}
-                        />
-                        {errors.diagnosis && <p className="text-red-500">{errors.diagnosis.message}</p>}
-                    </div>
-                    <div>
-                        
-                        <label htmlFor="age" className="block text-gray-700 mb-1 font-medium text-sm">
-                            Age
-                        </label>
-                        <input
-                        type="number"
-                        id="age"
-                        className="w-full border border-gray-400 rounded-md focus:outline-none px-3 py-2 focus:ring-2 focus:ring-green-500"
-                        {...register('age', {valueAsNumber:true})}
-                        />
-                        {errors.age && <p>{errors.age.message}</p>}
-                    </div>
-                    <div>
-                        <label htmlFor="city" className="block text-gray-700 mb-1 font-medium text-sm">
-                            City
-                        </label>
-                        <input 
-                            id="city"
-                            {...register('city')}
-                            className="w-full border border-gray-400 rounded-md focus:outline-none px-3 py-2 focus:ring-2 focus:ring-green-500"
-                            placeholder="Enter the City name of Patient"
-                        />
-                    </div>
-                    <button type="submit" className="border border-gray-800 p-2 bg-red-500 rounded-lg">
-                        Submit
-                    </button>
-                
-                </form>
-            </article>
-        </section>
+                </article>
+            </section> 
+        </div> 
+        
     )
 }
 

@@ -6,7 +6,7 @@ const newPatientValidation = [
     body('city').notEmpty().withMessage("city Name should be provided"),
     body('diagnosis').notEmpty().withMessage('Diagnosis must be Mentioned'),
 
-    body('age').isString().withMessage("age will be in string format")
+    body('age').isNumeric().withMessage("age will be in string format")
 ]
 
 
