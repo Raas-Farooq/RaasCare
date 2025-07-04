@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import patientModel from "../model/model.js";
+import {patientModel, userModel} from "../model/model.js";
 
 
 const AddNewPatient= async(req,res) =>
@@ -153,18 +153,19 @@ async function deletePatientProfile(req,res)
         try{
             console.log("delte PATIENT PROFILE IS BEING RUN")
             const {id} = req.params;
-            const patientProfile = await patientModel.findById({patientId:id});
+            console.log("id: ", typeof(id));
+            const patientProfile = await patientModel.findOneAndDelete({patientId:id});
             if(!patientProfile){
                 return res.status(404).json({
                     success:false,
                     message:"Patient NOt found"
                 })
             }
-            await patientModel.findByIdAndDelete({patientId:id});
+        
             return res.status(200).json({
                 success:true,
-                message:"Successfully created new Patient",
-                allPatients: patients
+                message:"Successfully Deleted Patient",
+                deletedPatient: patientProfile
             })
     }catch(err){
         return res.status(500).json({
@@ -179,7 +180,8 @@ async function deletePatientProfile(req,res)
  async function updatePatientProfile(req, res){
     const {id} = req.params;
     console.log("new info inside update backend ", req.body, "And Id ", id);
-    
+    const updatedDetail = JSON.parse(req.body.updatedDetail);
+
     try{
         const patient = await patientModel.findOne({patientId:id});
         if(!patient){
@@ -188,12 +190,18 @@ async function deletePatientProfile(req,res)
                 message:"Patient Not found"
             })
         }
-        const update= await patientModel.findOneAndUpdate(
-            {patientId:id}, 
-            {$set:{...req.body}},
+        const updateProfile = await patientModel.updateOne(
+            {patientId:id },
+            {$set:updatedDetail},
             {new:true}
-        );
-        if(!update){
+        )
+        console.log("patient: found", patient)
+        // const update= await patientModel.findOneAndUpdate(
+        //     {patientId:id}, 
+        //     {$set:{...req.body}},
+        //     {new:true}
+        // );
+        if(updateProfile.modifiedCount !== 1){
             return res.status(403).json({
                 success:false,
                 message:"Failed to Update",
@@ -203,7 +211,7 @@ async function deletePatientProfile(req,res)
         return res.status(200).json({
             success:true,
             message:"Success.Updated!",
-            patient:update
+            // patient:update
         })
     }catch(err){
         return res.status(500).json({

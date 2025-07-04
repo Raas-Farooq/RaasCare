@@ -39,7 +39,7 @@ const PatientForm = () => {
 
         <div>
             <section className="flex justify-center items-center min-h-screen p-4">
-                <article className="w-full max-w-2xl rounded-lg shadow-lg p-6">
+                <article className="w-full max-w-2xl rounded-lg shadow-xl p-6">
                     <h1 className="text-center text-2xl text-green-600 font-semibold mb-6">Enter The Details of New Patient</h1>
                     <FormComponent receiveSubmitData={formSubmit} />
                     {addingNewPatient && 

@@ -4,7 +4,7 @@ import axios from "axios";
 import {debounce} from 'lodash';
 import { FaSpinner, FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import Navbar from '../Navbar/navbar.tsx'
 
  interface Patient{
   _id:string,
@@ -67,25 +67,7 @@ function Home(){
     }
      debounceSearchPatient(searchValue);
    }
-    
    useEffect(() => {
-    // function processedArray(arr,val){
-       
-    //   let writeInd=0;
-    //   arr.forEach(num => {
-    //     if(num!==val){
-    //       arr[writeInd] = num;
-    //       writeInd++;
-    //     }
-    //   })
-    //   arr.length = writeInd;
-    //   console.log("final Array: ", arr);
-
-    // }
-    // const superArray=[3,2,8,3,9,3,7,9,4,1];
-    // const val=3;
-    // processedArray(superArray, val);
-
     return () => {
       debounceSearchPatient.cancel();
     }
@@ -107,8 +89,10 @@ function Home(){
 
    }
     return (
-         <div className="bg-gray-200 flex justify-center min-h-screen">
-          <div className="bg-white shadow-md rounded-lg px-3 py-3 w-full max-w-[480px] sm:max-w-3xl md:max-w-3xl lg:max-w-5xl h-[80vh] mt-20">
+      <>
+        <Navbar />
+        <div className="bg-gray-200 flex justify-center min-h-screen">
+          <div className="bg-white shadow-md rounded-lg px-3 py-3 w-full max-w-[480px] sm:max-w-3xl md:max-w-3xl lg:max-w-5xl h-[80vh] mt-12">
             <nav> 
               <header>
               </header>
@@ -152,6 +136,8 @@ function Home(){
            </article>
           </div>
        </div>
+      </>
+         
     )
 }
 

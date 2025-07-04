@@ -1,6 +1,6 @@
 
 import express from 'express';
-import patientDataController from '../Controller/controller.js';
+import patientDataController from '../Controller/patientController.js';
 import { newPatientValidation } from '../middleware/validators.js';
 
 const router = express.Router();

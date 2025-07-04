@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { FaEdit, FaSpinner } from "react-icons/fa";
+import { FaEdit, FaSpinner, FaTimes } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom"
 
 
@@ -48,6 +48,25 @@ const PatientProfile = () => {
         navigate('/updatePatientProfile', {state:currentPatient})
     }
 
+    const handleDeleteClick = async() => {
+
+        
+        try{
+            const response = await axios.delete(`http://localhost:2500/pms/deletePatientProfile/${patientId}`);
+            console.log("resposne of delete: ", response);
+            if(response.data.success){
+                setCurrentPatient([]);
+                alert("Successfully Deleted the Patient")
+                navigate(-1)
+            }
+        }
+        catch(err){
+            console.log("err: ", err);
+        }
+        finally{
+
+        }
+    }
 
     return(
         <div className="h-screen bg-gray-200 flex justify-center items-center flex-col text-center gap-10">  
@@ -58,13 +77,14 @@ const PatientProfile = () => {
                         <span className="text-xl text-blue-800"> Loading Patient</span>
                     </div>
             </div>}
-            {currentPatient && <div className="flex gap-3">
+            {currentPatient && !loadingPatient &&  <div className="flex gap-3">
                  <h1 className="underline decoration-blue-500 text-3xl lg:text-5xl font-bold"> {currentPatient[0]?.patientName} </h1>
                  <button onClick={handleEditClick}><FaEdit /></button>
+                 <button onClick={handleDeleteClick}><FaTimes /></button>
                 </div>
                 }
 
-            <div className="w-screen h-[80vh] bg-white shadow-2xl sm:max-w-xl md:max-w-xl lg:max-w-4xl flex justify-center">
+            <div className="w-screen h-[70vh] bg-white p-6 shadow-xl sm:max-w-xl md:max-w-xl lg:max-w-4xl flex justify-center">
                 {currentPatient && currentPatient.map(patient => {
                 return (
                     <div key={patient._id} className="space-y-4">
@@ -80,9 +100,12 @@ const PatientProfile = () => {
                         <div className="grid grid-cols-3 sm:grid-cols-2 w-[100%]">
                             <span className="text-2xl">City </span> <h1 className="text-green-500 text-2xl"> {patient.city}</h1>
                         </div>
+
+                        <button onClick={() => navigate(-1)} className="pt-10 text-gray-600 hover:text-black hover:shadow-xl">Back</button>
                     </div>
                 )
                 })}
+                
             </div>
             
         </div>
