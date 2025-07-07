@@ -1,13 +1,4 @@
-import {body} from 'express-validator';
-
-const newPatientValidation = [
-    body('patientId').notEmpty().withMessage("Patient Id should be provided"),
-    body('patientName').notEmpty().isLength({min:2}).withMessage("PatientName atleast contains 3 digits"),
-    body('city').notEmpty().withMessage("city Name should be provided"),
-    body('diagnosis').notEmpty().withMessage('Diagnosis must be Mentioned'),
-
-    body('age').isNumeric().withMessage("age will be in string format")
-]
+import { body } from "express-validator";
 
 const registerUserValidation=[
     body('username').notEmpty().isLength({min:2}).withMessage("Username atleat contains 2 characters"),
@@ -25,5 +16,8 @@ const registerUserValidation=[
     //     .withMessage('Password must contain at least one special character')   
 ]
 
-export {newPatientValidation, registerUserValidation}
-
+const loginValidation=[
+    body('email').isEmail().withMessage("You should enter valid Email address"),
+    body('password').isLength({min:3}).withMessage("Password length should be atleast 8 characters long")
+]
+export {registerUserValidation, loginValidation};

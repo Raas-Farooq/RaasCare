@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import FormComponent from "./formComponent";
+import FormComponent from "../pages/formComponent.js";
 
 interface PatientData{
     patientName:string,

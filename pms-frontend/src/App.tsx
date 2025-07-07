@@ -1,18 +1,24 @@
 
 import './index.css';
 import './App.css'
-import RouteLinks from './Components/AppRoutes/routeLinks';
+import patientRoutes from './Components/AppRoutes/patientRoutes';
+import userRoutes from './Components/AppRoutes/userRoutes';
+import { Route, Routes } from 'react-router-dom';
   
     function App() {
-
-     
-      // function privilegeOfStrongNow(){
-      //   }
-   
- 
       return (
         <div>
-          <RouteLinks />
+          <Routes>
+
+            {userRoutes.map((route,index) => (
+              <Route key={`user-${index}`} {...route} />
+            ))}
+            {patientRoutes.map((route, index) => {
+              return (
+                <Route key={`patient-${index}`} {...route} />
+              )
+            })}
+          </Routes>
         </div>
       )
 }

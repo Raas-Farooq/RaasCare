@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import {patientModel, userModel} from "../model/model.js";
+import Patient from '../models/patient.js'
 
 
 const AddNewPatient= async(req,res) =>
@@ -17,7 +17,7 @@ const AddNewPatient= async(req,res) =>
             })
         }  
         const {patientId, patientName, city, diagnosis, age} = req.body;
-        const patientExist = await patientModel.findOne({patientId});
+        const patientExist = await Patient.findOne({patientId});
         
         if(patientExist){
             return res.status(400).json({
@@ -25,7 +25,7 @@ const AddNewPatient= async(req,res) =>
                 message:"Patient with the same id already Exist"
             })
         }
-        const newPatient= patientModel({patientId, patientName, city, diagnosis,age});
+        const newPatient= Patient({patientId, patientName, city, diagnosis,age});
         console.log("newPatient: ", newPatient)
         await newPatient.save();
         return res.status(201).json({
@@ -48,7 +48,7 @@ const getPatient= async(req,res) =>
             console.log("Single Patient Runs")
             const id = req.params.id;
             console.log("id received: ", id);
-            const patient = await patientModel.findOne({patientId:id});
+            const patient = await Patient.findOne({patientId:id});
         
             console.log("get all Patients: runs ");
             if(!patient){
@@ -74,8 +74,8 @@ const getPatient= async(req,res) =>
 const getAllPatients= async(req,res) =>
     {
         try{
-        const patients = await patientModel.find({});
-        // await patientModel.insertMany([{
+        const patients = await Patient.find({});
+        // await Patient.insertMany([{
         //     patientId:'235',
         //     patientName:"Rehmat Ali",
         //     age:'54',
@@ -105,7 +105,7 @@ const getAllPatients= async(req,res) =>
 
 const getSearchPatient = async(req,res) =>{
     try{
-        // const patients = await patientModel.find({});
+        // const patients = await Patient.find({});
 
         const searchTerm = req.query.search?.trim() || "";
         console.log(": Type", typeof(searchTerm), "length of searchTerm: ", searchTerm.length, "searchTerm ", searchTerm);
@@ -120,7 +120,7 @@ const getSearchPatient = async(req,res) =>{
                 message:"Please Enter Patient Name"
             })
         }
-        searchedPatients = await patientModel.find({
+        searchedPatients = await Patient.find({
                 $or:[
                     {patientId:searchTerm},
                     {patientName:{$regex:searchTerm, $options:'i'}},
@@ -154,7 +154,7 @@ async function deletePatientProfile(req,res)
             console.log("delte PATIENT PROFILE IS BEING RUN")
             const {id} = req.params;
             console.log("id: ", typeof(id));
-            const patientProfile = await patientModel.findOneAndDelete({patientId:id});
+            const patientProfile = await Patient.findOneAndDelete({patientId:id});
             if(!patientProfile){
                 return res.status(404).json({
                     success:false,
@@ -183,20 +183,20 @@ async function deletePatientProfile(req,res)
     const updatedDetail = JSON.parse(req.body.updatedDetail);
 
     try{
-        const patient = await patientModel.findOne({patientId:id});
+        const patient = await Patient.findOne({patientId:id});
         if(!patient){
             return res.status(401).json({
                 success:false,
                 message:"Patient Not found"
             })
         }
-        const updateProfile = await patientModel.updateOne(
+        const updateProfile = await Patient.updateOne(
             {patientId:id },
             {$set:updatedDetail},
             {new:true}
         )
         console.log("patient: found", patient)
-        // const update= await patientModel.findOneAndUpdate(
+        // const update= await Patient.findOneAndUpdate(
         //     {patientId:id}, 
         //     {$set:{...req.body}},
         //     {new:true}

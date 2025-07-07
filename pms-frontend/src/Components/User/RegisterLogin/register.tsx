@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod"
+import axios from "axios"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 
@@ -6,7 +7,8 @@ import { z } from "zod"
 interface SubmitProps{
     username:string,
     email:string,
-    password:string
+    password:string,
+    isPatient:boolean
 }
 function Register(){
 
@@ -33,7 +35,20 @@ function Register(){
     const submitResult = async (data:SubmitProps) => {
         
         try{
-            console.log("data: ", data);
+            const userData = {
+                username:data.username,
+                email:data.email,
+                password:data.password,
+                isPatient:data.isPatient
+            }
+            const response = await axios.post('http://localhost:2500/pms/createNewUser', {
+                username:data.username,
+                email:data.email,
+                password:data.password,
+                isPatient:data.isPatient
+            })
+
+            console.log("response: ", response);
         }catch(err){
             console.error("error while sending formData ", err)
         }
@@ -55,7 +70,7 @@ function Register(){
                         <input 
                         type="text" 
                         id="username" 
-                       className={`w-full p-2 border-b border-gray-500 focus:outline-none ${
+                       className={`w-full p-2 border-b border-gray-500 p-2 my-2 focus:outline-none ${
                         errors.username ? "border-red-500" : "border-gray-300"
                         }`}
                         {...register('username')} 
@@ -73,7 +88,7 @@ function Register(){
                         <input
                         type="password"
                         id="password"
-                        className={`border-b border-gray-500 rounded-none w-full p-2 my-2 focus:outline-none ${errors.password ? 'border-red-500' : 'border-gray-500'}`}
+                        className={`border-b border-gray-500 rounded-none w-full p-2 my-2 focus:outline-none ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                         {...register('password')}
                         />
                         {errors.password && <p className="text-red-500 mt-1 text-sm"> {errors.password.message?.toString()} </p>}

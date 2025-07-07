@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { FaBars, FaTimes } from "react-icons/fa"
 import useWindowSize from "./windowSize";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 
 
@@ -12,22 +13,137 @@ const Navbar = () => {
     function handleMenuClick(){
             setIsShowMenu(!isShowMenu);
     }
-    // useEffect (() => {
-    //     function thirdMax(arr: number[]): number {
-    //     const yourArr = [2, 12,0,-3,10, -1];
-    //     yourArr.forEach((num,i) => {
-    //         yourArr[i]= num * num;
-    //     })
-    //     yourArr.sort((a,b) => a-b);
-    //     console.log("yourArray has been Sorted ", yourArr);
-    //     }
-    //     const arr = [3, 1,3];
-    //     thirdMax(arr)
-    // })
-    
 
+    // useEffect(() => {
+    //     async function fetchUsers(){
+    //        try{
+    //              const allUsers= await axios.get('http://localhost:2500/pms/getAllUsers');
+    //             console.log("allUsers: ", allUsers);
+    //        }catch(err){
+    //             console.error('err while making request to fetch All users ', err);
+    //        }
+    //     }
+    //     fetchUsers();
+    // },[])
+    // class Node{
+    //     next: Node | null;
+    //     data:number
+
+    //     constructor(data:number){
+    //         this.data = data,
+    //         this.next = null
+    //     }
+    // }
+
+    // class LinkedList{
+    //     head:Node | null;
+    //     length:number
+    //     constructor(){
+    //         this.head=null,
+    //         this.length=0
+    //     }
+
+
+    //     appendBeginning(data:number){
+    //         const newNode = new Node(data);
+    //         const curr = this.head;
+    //         newNode.next= curr;
+    //         this.head=newNode;
+    //         this.length++
+            
+    //     }
+    //     appendAtEnd(data:number){
+    //         const newNode =new Node(data);
+    //         let curr = this.head;
+    //         if(!curr){
+    //             this.head=newNode;
+    //         }else{
+    //             while(curr.next){
+    //                 curr = curr.next;
+    //             }
+    //             curr.next=newNode; 
+    //         }
+    //         this.length++;
+    //     }
+    //     print():void{
+    //         let result = "";
+    //         let current = this.head;
+    //         while(current){
+    //              result+= current.data + " -> "
+    //             current = current.next;
+                
+                
+    //         }
+    //         // result+= 'Null';
+    //         console.log("result: ", result);
+    //     }
+    //     appendAtIndex(data:number, index:number){
+
+    //         if(index < 0 || index > this.length){
+    //             return "invalid Index"
+    //         }
+
+    //         if(index === 0){
+    //             this.appendBeginning(data)
+    //         }
+    //         if(index === this.length){
+    //             this.appendAtEnd(data);
+    //         }
+
+    //         let count = 0;
+    //         const newNode=new Node(data);
+    //         let current = this.head;
+
+    //         while(count <= index-1 && current){
+    //             count++;
+    //             current = current?.next;
+    //         }
+    //         if(current){
+    //             newNode.next= current.next;
+    //             current.next = newNode;
+    //             this.length++;
+    //         }
+    //     }
+
+    //     deleteAtIndex(index:number){
+    //         if(index < 0 || index >= this.length){
+    //             throw new Error("invalid Index..no node at this index")
+    //         }
+    //         if(index === 0){
+    //             if(this.head){
+    //                 this.head = this.head.next;
+    //                 // this.head.next = this.head;
+    //                 this.length--;
+    //                 return;
+    //             }
+    //         }
+            
+    //         let current = this.head;
+    //         if(!current){
+    //             throw new Error("no node is available")
+    //         }
+    //         let count =0;
+    //         while(count <= index-1 && current){
+    //             current=current.next;
+    //             count++
+    //         }
+    //         if(current && current.next){
+    //             current.next = current.next?.next;
+    //             this.length--
+    //         }
+    //     }
+    // }
+
+    // useEffect(() => {
+    //     const list= new LinkedList();
+    //     list.appendBeginning(99);
+    //     list.appendAtEnd(39);
+    //     list.appendAtIndex(540, 1);
+    //     list.print();
+    // },[])
+    
     useEffect(() => {
-        console.log("width: ", width);
+        
         if(width>1024){
             setIsShowMenu(false);
         }
@@ -38,6 +154,9 @@ const Navbar = () => {
     navigate('/register')
    }
 
+   function handleLogin(){
+    navigate('/login');
+   }
 
     return (
         <div className={`flex items-center flex-wrap justify-between relative ${isShowMenu ? 'lg:h-auto': ''}`}>
@@ -63,7 +182,9 @@ const Navbar = () => {
                 </ul>
             </nav>
             <div className={`w-full lg:w-auto ${isShowMenu ? 'block bg-white pb-4 px-4' : 'hidden lg:flex'} gap-4`}>
-                <button className="text-lg hover:scale-110 transition-transform block w-full lg:w-auto text-left lg:text-center px-4 py-2 hover:text-purple-600">
+                <button 
+                onClick={handleLogin} 
+                className="text-lg hover:scale-110 transition-transform block w-full lg:w-auto text-left lg:text-center px-4 py-2 hover:text-purple-600">
             LogIn
         </button>
         <button 
