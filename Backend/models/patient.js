@@ -5,6 +5,11 @@ import { useRef } from "react";
 // console.log("Add New Ptient:  model ", AddNewPatient)
 
 const patientScehma = new mongoose.Schema({
+    user:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User',
+        required:true,
+    },
     patientId:{
         type:String,
         required:[true, "Id is Required"]

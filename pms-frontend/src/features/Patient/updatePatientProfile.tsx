@@ -1,11 +1,12 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+// import { zodResolver } from "@hookform/resolvers/zod"
+// import { useEffect, useState } from "react";
+// import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { z } from "zod"
-import FormComponent from "../pages/formComponent";
+import FormComponent from "../../Components/pages/formComponent";
 import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
+import { useState } from "react";
 
  const patientSchema=z.object({
         patientId:z.string().optional(),

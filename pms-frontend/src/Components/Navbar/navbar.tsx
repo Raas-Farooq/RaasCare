@@ -77,7 +77,7 @@ const Navbar = () => {
     //         // result+= 'Null';
     //         console.log("result: ", result);
     //     }
-    //     appendAtIndex(data:number, index:number){
+    //     appendAtIndex(index:number, data:number){
 
     //         if(index < 0 || index > this.length){
     //             return "invalid Index"
@@ -93,7 +93,7 @@ const Navbar = () => {
     //         let count = 0;
     //         const newNode=new Node(data);
     //         let current = this.head;
-
+            
     //         while(count <= index-1 && current){
     //             count++;
     //             current = current?.next;
@@ -132,13 +132,46 @@ const Navbar = () => {
     //             this.length--
     //         }
     //     }
+
+    //      get(index: number): number {
+    //     if(index< 0 || index > this.length){
+    //         return -1;
+    //     }
+    //     let result = '';
+    //     if(index === 0){
+    //         if(this.head){
+    //             return this.head?.data
+    //         }
+            
+    //     }
+        
+    //     let current = this.head;
+    //     let count = 0;
+    //     while(current && count < index){
+    //         result= result + current.data + " ->"
+    //         current=current.next;
+    //         count++
+    //     }
+    //     if(current){
+    //         return current.data
+    //     }
+    // }
     // }
 
     // useEffect(() => {
     //     const list= new LinkedList();
-    //     list.appendBeginning(99);
-    //     list.appendAtEnd(39);
-    //     list.appendAtIndex(540, 1);
+    //     list.appendBeginning(7);
+    //     list.appendBeginning(2);
+    //     list.appendBeginning(1);
+    //     list.appendAtIndex(3, 0);
+    //     list.deleteAtIndex(2);
+    //     list.appendBeginning(6);
+    //     list.appendAtEnd(4);
+    //     list.get(4);
+    //     list.appendBeginning(4);
+    //     list.appendAtIndex(5,0);
+    //     list.appendBeginning(6);
+
     //     list.print();
     // },[])
     

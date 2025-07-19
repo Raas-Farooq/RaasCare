@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import FormComponent from "../pages/formComponent.js";
+import FormComponent from "../../Components/pages/formComponent";
 
 interface PatientData{
     patientName:string,
@@ -13,7 +13,7 @@ interface PatientData{
 }
 
 // Patient Form Component
-const PatientForm = () => {
+const PatientAddForm = () => {
     const [addingNewPatient, setAddingNewPatient] = useState(false);
     const navigate = useNavigate();
 // Form submit function 
@@ -59,5 +59,5 @@ const PatientForm = () => {
     )
 }
 
-export default PatientForm
+export default PatientAddForm
 

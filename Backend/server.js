@@ -11,7 +11,22 @@ config()
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174'];
+
+app.use(cors({
+    origin:function(requestOrigin , callback){
+        if(!requestOrigin) callback(null, true)
+
+        if(allowedOrigins.includes(requestOrigin)){
+            callback(null, true)
+        }else{
+            callback (new Error(null, "No origin defined"))
+        }
+    },
+    credentials:true
+}),
+
+);
 app.get('/', (req, res) => {
         res.send("Welcome the The Arena of Last BALL. Alhamdulila")
     })

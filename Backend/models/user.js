@@ -15,9 +15,12 @@ const userSchema = new mongoose.Schema({
         minLength:[8, "password should contain atleast 8 characters"],
         required:[true, "Password is empty"]
     },
-    isPatient:{
-        type:Boolean
+    role:{
+        type:String,
+        enum:['patient', 'doctor', 'admin'],
+        default:'patient'
     }
+
 },
 {
     timestamps:true,

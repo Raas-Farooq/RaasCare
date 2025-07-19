@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import { z } from "zod"
 
 
@@ -11,7 +12,7 @@ interface SubmitProps{
     isPatient:boolean
 }
 function Register(){
-
+    const navigate = useNavigate();
     const registerSchema = z.object({
         username:z.string()
         .min(2, 'Username must not be less than 2 characters')
@@ -35,12 +36,7 @@ function Register(){
     const submitResult = async (data:SubmitProps) => {
         
         try{
-            const userData = {
-                username:data.username,
-                email:data.email,
-                password:data.password,
-                isPatient:data.isPatient
-            }
+
             const response = await axios.post('http://localhost:2500/pms/createNewUser', {
                 username:data.username,
                 email:data.email,
@@ -48,9 +44,12 @@ function Register(){
                 isPatient:data.isPatient
             })
 
-            console.log("response: ", response);
+            if(response.data.success){
+                navigate('/')
+            }
+                    
         }catch(err){
-            console.error("error while sending formData ", err)
+            console.error("error while registering user and sending Post request ", err)
         }
     }
 

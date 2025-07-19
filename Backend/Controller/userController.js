@@ -1,3 +1,4 @@
+import { strict } from 'assert';
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from "dotenv";
@@ -19,7 +20,7 @@ const registerUser = async(req,res) => {
     }
 
     try{
-        const {username, email, password} = req.body;
+        const {username, email, password, role} = req.body;
         console.log(`username ${username} email ${email} pass ${password} after deconstructing`);
         const userExist = await User.findOne({email});
         if(userExist){
@@ -37,7 +38,8 @@ const registerUser = async(req,res) => {
         const newUser = new User({
             username,
             email,
-            password:securedPassword
+            password:securedPassword,
+            role:role || 'patient'
         })
         const savedUser = await newUser.save();
         console.log("secret code: ", process.env.JWT_SECRET);
@@ -76,7 +78,8 @@ const registerUser = async(req,res) => {
             user:{
                 id:savedUser._id,
                 email:savedUser.email,
-                username:savedUser.username
+                username:savedUser.username,
+                role:savedUser.role
             }
         })
         
@@ -90,27 +93,41 @@ const registerUser = async(req,res) => {
 }
 
 const userLogin = async(req,res) => {
-
+   
     const {email, password} = req.body;
-
+    const errors = validationResult(req);
+    if(!errors.isEmpty()){
+        return res.status(400).json({
+            success:false,
+            message:"Got validation Errors",
+            errors: errors.array()
+        })
+    }
     try{
+         
         const userExist = await User.findOne({email});
-        if(userExist){
+        if(!userExist){
             return res.status(404).json({
                 success:false,
-                message:"User didn't exist"
+                message:"User didn't exist, Email id not found"
             })
         }
-
-        const matchPassword= await bcrypt.compare(password, userExist.password);
-
+        console.log("userExist value: ", userExist);
+        const matchPassword= await bcrypt.compare(password,userExist.password);
+        console.log("is password matched: ", matchPassword);
         if(!matchPassword){
-            return res.status(400).message({
+            return res.status(400).json({
                 success:false,
                 message:"Password didn't match. Try Again Later"
             })
         }
+        const token = jwt.sign({id:userExist._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
 
+        req.cookie('token', token, {
+            httpOnly:true,
+            sameSite:'sameSite',
+            maxAge:3600000
+        })
         return res.status(201).json({
             success:true,
             message:"Successfully Loged In the User", 
@@ -121,7 +138,7 @@ const userLogin = async(req,res) => {
         return res.status(500).json({
             success:false,
             message:"Server error while logging the User",
-            err:err.messasge
+            error:err.messasge
         })
     }
 }
@@ -156,5 +173,3 @@ export {registerUser, userLogin, getAllUsers}
 // ammi medison
 // top room cleenliness
 
-// the err was related to jwt not defined. now i got the success of creating the user but i'm confused how would i know that cookie has been created and where i can find it further the other thing is that what if i only create token and don't make cookie then is it useful ? 
-// and the third thing is that what is the role of cookie while loggin in
