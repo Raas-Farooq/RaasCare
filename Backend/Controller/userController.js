@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt';
 import { config } from "dotenv";
 import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
+import { env } from 'process';
 
 
 config()
@@ -121,13 +122,32 @@ const userLogin = async(req,res) => {
                 message:"Password didn't match. Try Again Later"
             })
         }
-        const token = jwt.sign({id:userExist._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
+        let token;
+        try{
+            token = jwt.sign({id:userExist._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
+        }
+        catch(err){
+            return res.status(400).json({
+                success:false,
+                message:"got error while creating Token",
+                error:err.message
+            })
+        }
 
-        req.cookie('token', token, {
-            httpOnly:true,
-            sameSite:'sameSite',
-            maxAge:3600000
-        })
+        try{
+            res.cookie('token', token, {
+                httpOnly:true,
+                secure:process.env.NODE_ENV === 'production',
+                sameSite:'strict',
+                maxAge:3600000
+            })
+        }catch(err){
+            return res.status(400).json({
+                success:false,
+                message:"got error while Cookie creation",
+                error:err.message
+            })
+        }
         return res.status(201).json({
             success:true,
             message:"Successfully Loged In the User", 
