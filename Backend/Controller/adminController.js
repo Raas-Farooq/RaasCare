@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import Admin from '../models/admin.js';
+import {Admin} from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from 'dotenv';
 import path from 'path';

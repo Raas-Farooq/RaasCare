@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Outlet } from "react-router-dom";
 import axios from "axios";
 import {debounce} from 'lodash';
 import { FaSpinner, FaUserPlus } from "react-icons/fa";
@@ -25,7 +26,7 @@ function DoctorDashboard(){
 
    const navigate = useNavigate();
     const handleAddPatientClick = () => {
-    navigate('/addPatient')
+    navigate('/doctor-dashboard/addPatient')
   }
 
   useEffect(() => {
@@ -33,10 +34,10 @@ function DoctorDashboard(){
     function openDashboard(){
       if(!role) return "Role is not Defined";
 
-      console.log("role of the user inside HOME ",role);
-      if(role === 'patient'){
-        navigate('/patient-dashboard');
-      }
+      // console.log("role of the user inside HOME ",role);
+      // if(role === 'patient'){
+      //   navigate('/patient-dashboard');
+      // }
     }
     openDashboard()
   },[])
@@ -49,6 +50,7 @@ function DoctorDashboard(){
         
           console.log("this is the response: of searchIng,", response.data.success );
           if(response.data.success){
+            console.log("response.data if searched response successful ", response.data);
             setPatientsPrfiles(response.data.patients)
           }else{
             console.log("else Runnnn")
@@ -85,13 +87,13 @@ function DoctorDashboard(){
    },[]);
 
 
-    //  useEffect(() => {
-  //     async function fetchPatients(){
-  //       const response = await axios.get('http://localhost:2500/pms/getAllPatientsProfiles');
-  //       console.log("response: ", response);
-  //     } 
-  //     fetchPatients();
-  //  },[])
+     useEffect(() => {
+      async function fetchPatients(){
+        const response = await axios.get('http://localhost:2500/pms/getAllPatientsProfiles');
+        console.log("response: ", response);
+      } 
+      fetchPatients();
+   },[])
 
    function handlePatientClick(id:string, name:string){
     
@@ -102,6 +104,7 @@ function DoctorDashboard(){
     return (
       <>
         <Navbar />
+        <Outlet />
         <div className="bg-gray-200 flex justify-center min-h-screen">
           <div className="bg-white shadow-md rounded-lg px-3 py-3 w-full max-w-[480px] sm:max-w-3xl md:max-w-3xl lg:max-w-5xl h-[80vh] mt-12">
             <nav> 

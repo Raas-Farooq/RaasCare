@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import Patient from '../models/patient.js'
+import {Patient} from '../models/user.js'
 
 
 const AddNewPatient= async(req,res) =>
@@ -123,7 +123,7 @@ const getSearchPatient = async(req,res) =>{
         searchedPatients = await Patient.find({
                 $or:[
                     {patientId:searchTerm},
-                    {patientName:{$regex:searchTerm, $options:'i'}},
+                    {username:{$regex:searchTerm, $options:'i'}},
                     {patientId:{$regex:searchTerm, $options:'i'}},
                 ]     
         }).skip(skip).limit(limit);
@@ -137,7 +137,7 @@ const getSearchPatient = async(req,res) =>{
         }
         return res.status(200).json({
                 success:true,
-                message:"Successfully created new Patient",
+                message:"Successfully found the Patient",
                 patients: searchedPatients
             })
     }catch(err){

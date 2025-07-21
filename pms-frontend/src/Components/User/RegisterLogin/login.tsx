@@ -1,5 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
+import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
@@ -22,6 +23,21 @@ const Login = () => {
             resolver:zodResolver(loginSchema)
         })
 
+        // useEffect(() => {
+        //     const fetchAllUsers = async() => {
+        //          try{
+        //          const response = await axios.get(`http://localhost:2500/pms/getAllUsers`);
+        //          console.log("response of getting all Uses: ", response);
+        //          if(response.data.success){
+        //             console.log("response.data ", response.data);
+        //          }
+        //     }
+        //     catch(err){
+        //         console.error("error while fetching all Users: ", err);
+        //     }
+        //   }
+        //   fetchAllUsers();
+        // },[])
         const submitResult = async(data:SubmitProps) => {
             console.log("data: of submit Result ", data);
             const formData = new FormData();
@@ -39,10 +55,13 @@ const Login = () => {
                  }
                 })
                 if(response.data.success){
+                    console.log("frontend response of login:", response.data);
                     toast.success("Successfully LoggedIn");
+                    const role = response.data.user.role;
+                    localStorage.setItem('role', role);
                     setTimeout(() => navigate('/'), 1000);
                 }
-                console.log("frontend response of login:", response)
+                
             }catch(err){
                 console.log("error while logging the user", err)
             }

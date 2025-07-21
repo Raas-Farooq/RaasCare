@@ -17,7 +17,9 @@ export const patientRoutes = [{
 }
 ];
 
+console.log("patient Routes: ", patientRoutes)
 export default patientRoutes
 
 // hanger 
 // software engineer
+// how many rooms and people here?

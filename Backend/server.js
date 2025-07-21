@@ -4,6 +4,7 @@ import ConnectingToDatabase from './config/db.js';
 import patientRoutes from './routes/patientRoutes.js';
 import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
+import adminRouter from './routes/adminRoutes.js';
 config()
 
 
@@ -32,6 +33,7 @@ app.get('/', (req, res) => {
     })
 
 app.use('/pms', patientRoutes);
+app.use('/pms', adminRouter);
 app.use('/pms', userRoutes)
 const Port = 2500;
 ConnectingToDatabase()

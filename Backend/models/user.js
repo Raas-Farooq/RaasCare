@@ -1,3 +1,4 @@
+import { MongoServerClosedError } from 'mongodb';
 import mongoose from 'mongoose';
 
 
@@ -8,7 +9,12 @@ const userSchema = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:[true, "You can't create profile without email"]
+        required:true,
+        trim:true,
+        unique:true,
+        lowercase:true,
+        match:[/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid email"]
+
     },
     password:{
         type:String,
@@ -20,13 +26,55 @@ const userSchema = new mongoose.Schema({
         enum:['patient', 'doctor', 'admin'],
         default:'patient'
     }
-
 },
 {
     timestamps:true,
-    collection:'users'
+    discriminatorKey:'role'
 })
 
 const User = mongoose.model('user', userSchema);
 
-export default User
+const doctorSchema = {
+    speciality:String,
+    education:String,
+    experience:Number,
+    licenseNumber:String,
+    available:{type:Boolean, default:true},
+    slots:[{
+        time:String,
+        isBooked:{type:Boolean, default:false},
+        patientId:{type:mongoose.Schema.Types.ObjectId, ref:'User'}
+    }],
+    permissions:{
+        type:[String],
+        enum:[
+            'manage_schedule',
+            'view_patient_records'
+        ]
+    }
+
+}
+
+const adminSchema = new mongoose.Schema({
+  department: String,
+  accessLevel: { type: Number, enum: [1, 2, 3] },
+  lastAccess: Date
+});
+
+const patientSchema = new mongoose.Schema({
+    patientId:String,
+    bloodType:String,
+    allergies:String,
+    age:Number,
+    city:String,
+    diagnosis:String,
+})
+const Doctor = User.discriminator('doctor',doctorSchema);
+const Patient = User.discriminator('patient', patientSchema);
+const Admin = User.discriminator('admin', adminSchema)
+
+
+export {Doctor, Patient, Admin}
+
+
+// linked list question:

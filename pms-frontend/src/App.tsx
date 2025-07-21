@@ -1,12 +1,17 @@
 
 import './index.css';
 import './App.css'
-import patientRoutes from './Components/AppRoutes/patientRoutes';
-import userRoutes from './Components/AppRoutes/userRoutes';
+import patientRoutes from './Components/AppRoutesFrontend/patientFrontendRoutes';
+import userRoutes from './Components/AppRoutesFrontend/userFrontendRoutes';
 import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import PatientDashboard from './Components/dashboards/patientDashboards';
+// import PatientDashboard from './Components/dashboards/patientDashboards';
+// import Home from './Components/pages/home';
+import doctorRoutes from './Components/AppRoutesFrontend/doctorFrontendRoutes';
+import DoctorDashboard from './Components/dashboards/doctorDashboard';
 import Home from './Components/pages/home';
+import NotFound from './Components/pages/notFound';
+
     function App() {
       return (
         <div>
@@ -15,6 +20,8 @@ import Home from './Components/pages/home';
             {userRoutes.map((route,index) => (
               <Route key={`user-${index}`} {...route} />
             ))}
+
+            {/* Patient Dashboard Routes */}
             {patientRoutes.map((route, index) =>(
                 <Route key={`patient-${index}`} path={route.path} element={route.element}>
                 {route.children?.map((child, childIndex) => (
@@ -25,7 +32,32 @@ import Home from './Components/pages/home';
                 ))}
                 </Route>
               ))}
+
+              {/* Doctor Routes */}
+              {doctorRoutes.map((route, index) => (
+          <Route key={`doctor-${index}`} path={route.path} element={route.element}>
+            {route.children?.map((child, childIndex) => (
+              child.index ?
+                <Route key={`doctor-child-${childIndex}`} index element={child.element} />
+              :
+                <Route key={`doctor-child-${childIndex}`} path={child.path} element={child.element} />
+            ))}
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        ))}
+              {/* {doctorRoutes.map((route, index) => (
+                <Route key={`doctor-${index}`} path={route.path} element={route.element}>
+                  {route.children?.map((child, childIndex) => (
+                    child.index ?
+                    <Route key={`doctor-child-${childIndex}`} index element={child?.element} />
+                    :
+                    <Route key={`doctor-child-${childIndex}`} path={child.path} element={child.element} />
+                  ))}
+                  </Route>
+              ))} */}
           </Routes>
+
+          {/* Toast Notification */}
           <ToastContainer 
             position="top-right"
             autoClose={3000}

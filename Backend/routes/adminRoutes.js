@@ -1,7 +1,11 @@
 import express from 'express';
-import { superAdmin } from '../Controller/adminController';
+import { fetchAllAdmins } from '../Controller/adminController.js';
+// import { superAdmin } from '../Controller/adminController.js';
+// import { superAdmin } from '../Controller/adminController';
 
-const router = express.Router();
+const adminRouter = express.Router();
 
+adminRouter.get('/getAllAdmins', fetchAllAdmins);
+// adminRouter.post('/superAdmin', superAdmin);
 
-router.post('/superAdmin', superAdmin);
+export default adminRouter;

@@ -1,5 +1,5 @@
 import { strict } from 'assert';
-import User from '../models/user.js';
+import {Patient, Doctor, Admin} from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from "dotenv";
 import { validationResult } from 'express-validator';
@@ -23,7 +23,7 @@ const registerUser = async(req,res) => {
     try{
         const {username, email, password, role} = req.body;
         console.log(`username ${username} email ${email} pass ${password} after deconstructing`);
-        const userExist = await User.findOne({email});
+        const userExist = await Patient.findOne({email});
         if(userExist){
             return res.status(400).json({
                 success:false,
@@ -36,7 +36,7 @@ const registerUser = async(req,res) => {
 
         const securedPassword = await bcrypt.hash(password, saltRounds);
         console.log("secured password: ", securedPassword);
-        const newUser = new User({
+        const newUser = new Patient({
             username,
             email,
             password:securedPassword,
@@ -106,7 +106,7 @@ const userLogin = async(req,res) => {
     }
     try{
          
-        const userExist = await User.findOne({email});
+        const userExist = await Patient.findOne({email});
         if(!userExist){
             return res.status(404).json({
                 success:false,
@@ -166,7 +166,7 @@ const userLogin = async(req,res) => {
 const getAllUsers = async(req,res) => {
 
     try{
-        const allUsers = await User.find({});
+        const allUsers = await Patient.find({});
         if(allUsers.length === 0){
             return res.status(404).json({
                 success:false,
