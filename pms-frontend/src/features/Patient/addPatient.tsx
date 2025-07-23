@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import FormComponent from "../../Components/pages/formComponent";
 
 interface PatientData{
-    patientName:string,
-    patientId?:string,
+    patientName?:string,
     age:number,
     diagnosis:string,
     city:string 

@@ -1,5 +1,5 @@
 import { strict } from 'assert';
-import {Patient, Doctor, Admin} from '../models/user.js';
+import {Patient, User} from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from "dotenv";
 import { validationResult } from 'express-validator';
@@ -44,9 +44,9 @@ const registerUser = async(req,res) => {
         })
         const savedUser = await newUser.save();
         console.log("secret code: ", process.env.JWT_SECRET);
-        let createToken;
+        let createdToken;
         try{
-            createToken = jwt.sign({user_id: savedUser._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
+            createdToken = jwt.sign({user_id: savedUser._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
                 
         }catch(tokenErr){
             console.log("tokenErr: ", tokenErr);
@@ -58,7 +58,7 @@ const registerUser = async(req,res) => {
         }
 
          try{
-             res.cookie('token', createToken, {
+             res.cookie('token', createdToken, {
                 httpOnly:true,
                 secure:process.env.NODE_ENV === 'production',
                 sameSite:'strict',
@@ -105,8 +105,7 @@ const userLogin = async(req,res) => {
         })
     }
     try{
-         
-        const userExist = await Patient.findOne({email});
+        const userExist = await User.findOne({email});
         if(!userExist){
             return res.status(404).json({
                 success:false,
@@ -139,7 +138,8 @@ const userLogin = async(req,res) => {
                 httpOnly:true,
                 secure:process.env.NODE_ENV === 'production',
                 sameSite:'strict',
-                maxAge:3600000
+                maxAge:3600000,
+                path:'/'
             })
         }catch(err){
             return res.status(400).json({
@@ -157,7 +157,7 @@ const userLogin = async(req,res) => {
     catch(err){
         return res.status(500).json({
             success:false,
-            message:"Server error while logging the User",
+            message:`Server error while logging the User ${err}`,
             error:err.messasge
         })
     }
@@ -166,7 +166,7 @@ const userLogin = async(req,res) => {
 const getAllUsers = async(req,res) => {
 
     try{
-        const allUsers = await Patient.find({});
+        const allUsers = await User.find({});
         if(allUsers.length === 0){
             return res.status(404).json({
                 success:false,

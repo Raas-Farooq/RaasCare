@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     role:{
         type:String,
         enum:['patient', 'doctor', 'admin'],
-        default:'patient'
+        // default:'patient'
     }
 },
 {
@@ -61,20 +61,36 @@ const adminSchema = new mongoose.Schema({
   lastAccess: Date
 });
 
-const patientSchema = new mongoose.Schema({
-    patientId:String,
-    bloodType:String,
+const patientProfile = new mongoose.Schema({
+    patientName:String,
     allergies:String,
     age:Number,
+    gender:String,
     city:String,
-    diagnosis:String,
+    medicalHisory:[{
+        date:Date,
+        diagnosis:String,
+        treatment:String,
+        createdBy:{type:mongoose.Schema.Types.ObjectId, ref:'User'}
+    }]
+    
+}, {_id:false});
+
+userSchema.add({
+    patientProfile:patientProfile
 })
+
+// doctorSchema.add({
+//     createdPatient:[patientProfile]
+// })
+
 const Doctor = User.discriminator('doctor',doctorSchema);
-const Patient = User.discriminator('patient', patientSchema);
+const Patient = User.discriminator('patient', patientProfile);
 const Admin = User.discriminator('admin', adminSchema)
 
 
-export {Doctor, Patient, Admin}
+export {Doctor, Patient, Admin, User}
 
 
-// linked list question:
+// questions:
+// can we use upsert for this specific purpose 

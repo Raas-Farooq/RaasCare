@@ -50,9 +50,10 @@ const Login = () => {
             })
             try{
                 const response = await axios.post('http://localhost:2500/pms/loginUser',formData, {
-                 headers:{
-                    "Content-Type":"application/json"
-                 }
+                    withCredentials:true,
+                    headers:{
+                        "Content-Type":"application/json"
+                    }
                 })
                 if(response.data.success){
                     console.log("frontend response of login:", response.data);
