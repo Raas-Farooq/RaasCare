@@ -1,10 +1,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import {debounce} from 'lodash';
-import { FaSpinner, FaUserPlus } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import Navbar from '../Navbar/navbar.tsx'
+// import {debounce} from 'lodash';
+// import { FaSpinner, FaUserPlus } from "react-icons/fa";
+// import { useNavigate } from "react-router-dom";
+import Navbar from "../Components/Navbar/navbar";
 
  interface Patient{
   _id:string,
@@ -20,16 +20,29 @@ import Navbar from '../Navbar/navbar.tsx'
 function Home(){
   
   useEffect(() => {
-    const fetchAdmins = async () =>{
+
+
+    const addPatientDetail = async () =>{
       try{
-        const admins=await axios.get('http://localhost:2500/pms/getAllAdmins');
-        console.log("admins response: ", admins);
+        const updateResponse=await axios.post(`http://localhost:2500/pms/addPatientProfile`,{
+          patientId:'9373853895',
+          patientName:'Rashida',
+          city:'Gujrat',
+          age:65,
+          gender:'female',
+          medicalHistory:[{
+            date:new Date(),
+            diagnosis:'hypertension',
+            treatment:'initial Medicines',
+          }]
+        });
+        console.log("updateResponse patient: ", updateResponse);
       }
       catch(err){
         console.error('got error while fetcing all admins: ', err);
       }
     }
-    fetchAdmins();
+    addPatientDetail();
   })
   useEffect(() => {
     const userRole = localStorage.getItem('role');

@@ -1,11 +1,42 @@
 import { validationResult } from "express-validator";
-import {Patient} from '../models/user.js'
+import {User} from '../models/user.js'
+import Patient from "../models/patient.js";
 
-
+const checkPatientExistence = async(req, res) => {
+    let isPatientExist;
+    console.log("req body: ", req.body);
+    const {phone} = req.body;
+    try{
+        if(!phone){
+        return res.status(400).send("Phone Number is required the one you gave when you visited the doctor")
+        }
+        isPatientExist = await Patient.find({phone:phone});
+        if(!isPatientExist){
+            return res.status(404).json({
+                success:false,
+                message:"No record found for this patient"
+            })
+        }
+        return res.status(200).json({
+            success:true,
+            message:"Patient Successfully found",
+            patient:isPatientExist._id
+        })
+        
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while checking the existence of patient",
+            error:err.message
+        })
+    }
+}
 const AddNewPatient= async(req,res) =>
     {
-       
-    console.log("req body NeW Neural Network: ", req.body);  
+    let isPatientExist;
+    console.log("req body NeW Neural Network: ", req.body);
+    
     try{
 
         const errors = validationResult(req);
@@ -16,7 +47,9 @@ const AddNewPatient= async(req,res) =>
                 error: errors.array()
             })
         }  
-        const {patientId, patientName, city, diagnosis, age} = req.body;
+
+        
+        const {patientId, patientName, city, age, gender, medicalHistory} = req.body;
         const patientExist = await Patient.findOne({patientId});
         
         if(patientExist){
@@ -25,7 +58,7 @@ const AddNewPatient= async(req,res) =>
                 message:"Patient with the same id already Exist"
             })
         }
-        const newPatient= Patient({patientId, patientName, city, diagnosis,age});
+        const newPatient= new Patient({patientId, patientName, city, age, gender,medicalHistory});
         console.log("newPatient: ", newPatient)
         await newPatient.save();
         return res.status(201).json({
@@ -105,8 +138,6 @@ const getAllPatients= async(req,res) =>
 
 const getSearchPatient = async(req,res) =>{
     try{
-        // const patients = await Patient.find({});
-
         const searchTerm = req.query.search?.trim() || "";
         console.log(": Type", typeof(searchTerm), "length of searchTerm: ", searchTerm.length, "searchTerm ", searchTerm);
         const page = parseInt(req.query.page) || 1;
@@ -123,7 +154,7 @@ const getSearchPatient = async(req,res) =>{
         searchedPatients = await Patient.find({
                 $or:[
                     {patientId:searchTerm},
-                    {username:{$regex:searchTerm, $options:'i'}},
+                    {patientName:{$regex:searchTerm, $options:'i'}},
                     {patientId:{$regex:searchTerm, $options:'i'}},
                 ]     
         }).skip(skip).limit(limit);
@@ -176,42 +207,49 @@ async function deletePatientProfile(req,res)
     }
 }
 
+ const checkUpdatingFields = (allowedRoles, received) => {
+    const valuesNeedsUpdation = [];
+    allowedRoles.forEach((field, index) =>{
+        if(received[field] !== undefined){
+            valuesNeedsUpdation[field] = received[field];
+        }
+     }
 
+    )
+    return valuesNeedsUpdation 
+ }
  async function updatePatientProfile(req, res){
     const {id} = req.params;
     console.log("new info inside update backend ", req.body, "And Id ", id);
-    const updatedDetail = JSON.parse(req.body.updatedDetail);
-
+    const parsedReqBody = JSON.parse(req.body.updatedDetail);
+    console.log("parsed Req Body: ", parsedReqBody);
+    const updatedData = {...parsedReqBody};
+    console.log("updatad Data: ", updatedData);
     try{
-        const patient = await Patient.findOne({patientId:id});
+        const patient = await Patient.findOne({_id:id});
         if(!patient){
             return res.status(401).json({
                 success:false,
                 message:"Patient Not found"
             })
         }
-        const updateProfile = await Patient.updateOne(
-            {patientId:id },
-            {$set:updatedDetail},
+
+        const updateProfile = await Patient.findOneAndUpdate(
+            {_id:id },
+            {$set:updatedData},
             {new:true}
         )
-        console.log("patient: found", patient)
-        // const update= await Patient.findOneAndUpdate(
-        //     {patientId:id}, 
-        //     {$set:{...req.body}},
-        //     {new:true}
-        // );
-        if(updateProfile.modifiedCount !== 1){
-            return res.status(403).json({
-                success:false,
-                message:"Failed to Update",
-                err:update
-            })
-        }
+        console.log("result of update operation", updateProfile)
+        // if(updateProfile.modifiedCount !== 1){
+        //     return res.status(403).json({
+        //         success:false,
+        //         message:"Failed to Update, the error might be your data not matching with the schema",
+        //     })
+        // }
         return res.status(200).json({
             success:true,
             message:"Success.Updated!",
-            // patient:update
+            patient:updateProfile
         })
     }catch(err){
         return res.status(500).json({

@@ -1,5 +1,5 @@
 import { strict } from 'assert';
-import {Patient, User} from '../models/user.js';
+import {User} from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from "dotenv";
 import { validationResult } from 'express-validator';
@@ -7,7 +7,60 @@ import jwt from 'jsonwebtoken';
 import { env } from 'process';
 
 
-config()
+config() 
+
+const registerPatient = async(req,res) => {
+    const {isPatientExist} = req.body;
+    try{
+        if(isPatientExist){
+            const {patientId,username,email,role,password} = req.body;
+            const hashedPassword = bcrypt.hash(password, 10);
+            const addPatient = new User({
+                username,
+                email,
+                password:hashedPassword,
+                role,
+                patientRecord:patientId
+            })
+
+            await addPatient.save();
+
+            return res.status(201).json({
+                success:true,
+                message:"Patient registration Successfully completed ",
+                patient:addPatient
+            })
+            
+        }else{
+            const newPatient = await Patient.create({});
+            // const {patientId, patientName, city, age, gender,medicalHistory} //if in case user is being sending all the detials then we have to made some changes but in simple case when generally user register for appointement booking then the intial details is enough;
+             const {username,email,role,password} = req.body;
+            const hashedPassword = bcrypt.hash(password, 10);
+            const addPatient = new User({
+                username,
+                email,
+                password:hashedPassword,
+                role,
+                patientRecord:newPatient._id
+            })
+
+            await addPatient.save();
+
+            return res.status(201).json({
+                success:true,
+                message:"New Patient Successfully Added",
+                patient:addPatient
+            })
+        }
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while creating new Patient",
+            error:err.message
+        })
+    }
+}
 const registerUser = async(req,res) => {
     console.log("register User req.body: ", req.body);
     const errors = validationResult(req);
@@ -190,6 +243,5 @@ const getAllUsers = async(req,res) => {
 }
 export {registerUser, userLogin, getAllUsers}
 // projects folder upload on idrive
-// ammi medison
 // top room cleenliness
 

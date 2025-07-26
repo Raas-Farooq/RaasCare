@@ -26,7 +26,7 @@ function DoctorDashboard(){
 
    const navigate = useNavigate();
     const handleAddPatientClick = () => {
-    navigate('/doctor-dashboard/addPatient')
+      navigate('/doctor/addPatient')
   }
 
   useEffect(() => {
@@ -98,7 +98,7 @@ function DoctorDashboard(){
    function handlePatientClick(id:string, name:string){
     
     console.log("patient clicked ", id, "patient Name: ",name);
-    navigate(`/profile/${id}`);
+    navigate(`/doctor/profile/${id}`);
 
    }
     return (

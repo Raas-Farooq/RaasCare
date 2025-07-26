@@ -1,16 +1,21 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "../../Components/pages/formComponent";
 
 interface PatientData{
     patientName?:string,
-    age:number,
+    // age:number,
+    treatment:string,
+    phone:string,
+    dateOfBirth?:string,
+    date:string,
+    gender?:string,
     diagnosis:string,
-    city:string 
+    city?:string 
 }
-
+ 
 // Patient Form Component
 const PatientAddForm = () => {
     const [addingNewPatient, setAddingNewPatient] = useState(false);
@@ -18,9 +23,19 @@ const PatientAddForm = () => {
 // Form submit function 
     async function formSubmit(data:PatientData){
         console.log("data: ", data);
+        const {diagnosis, ...otherData} = data;
+        const patientDetails = {
+            ...otherData,
+            medicalHistory:[
+                {
+                    diagnosis,
+                    date:new Date()
+                }
+            ]
+        }
         try{
             setAddingNewPatient(true);
-            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, data);
+            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, patientDetails);
             console.log("response: ",response);
             if(response.data.success){
                 console.log("SUCCESS WINNER")
@@ -33,6 +48,7 @@ const PatientAddForm = () => {
             setAddingNewPatient(false);
         }
     }
+
 
     return (
 

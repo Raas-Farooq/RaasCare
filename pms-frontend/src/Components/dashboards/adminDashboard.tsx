@@ -22,7 +22,7 @@ function AdminDashboard(){
                         </button>
                         <button 
                         className="border border-gray-600 p-2 rounded-lg text-gray-700 hover:text-purple-900 hover:bg-purple-300"
-                        > Add Patient 
+                        > Update Doctor Profile 
                         </button>
                         <button 
                         className="border border-gray-600 p-2 rounded-lg text-gray-700 hover:text-purple-900 hover:bg-purple-300"

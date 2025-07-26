@@ -1,5 +1,5 @@
 import PatientProfile from '../../features/Patient/patientDetail.tsx';
-import Home from '../Home/home.tsx';
+import Home from '../../Home/home.tsx';
 import PatientAddForm from '../../features/Patient/addPatient.tsx';
 // import UpdatePatientProfile from '../Patient/updatePatientProfile.tsx';
 import PatientDashboard from '../dashboards/patientDashboards.tsx';

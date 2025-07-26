@@ -3,17 +3,19 @@ import './index.css';
 import './App.css'
 import patientRoutes from './Components/AppRoutesFrontend/patientFrontendRoutes';
 import userRoutes from './Components/AppRoutesFrontend/userFrontendRoutes';
-import { Route, Routes } from 'react-router-dom';
+import { redirect, Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 // import PatientDashboard from './Components/dashboards/patientDashboards';
 // import Home from './Components/pages/home';
 import doctorRoutes from './Components/AppRoutesFrontend/doctorFrontendRoutes';
 import DoctorDashboard from './Components/dashboards/doctorDashboard';
-import Home from './Components/Home/home';
+import Home from './Home/home';
 import NotFound from './Components/pages/notFound';
 import AdminDashboard from './Components/dashboards/adminDashboard';
 import { useState } from 'react';
 import ProtectedRoute from './Components/protectRoutes/protectedRoute';
+import adminRoutes from './Components/AppRoutesFrontend/adminFrontentRoutes';
+import UpdatePatientProfile from './features/Patient/updatePatientProfile';
 
     function App() {
 
@@ -24,7 +26,7 @@ import ProtectedRoute from './Components/protectRoutes/protectedRoute';
         <div>
           
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<DoctorDashboard />} />
             {userRoutes.map((route,index) => (
               <Route key={`user-${index}`} {...route} />
             ))}
@@ -77,7 +79,28 @@ import ProtectedRoute from './Components/protectRoutes/protectedRoute';
                     <Route path="*" element={<NotFound />} />
                   </Route>
               
-        ))}
+                ))}
+
+                {adminRoutes.map((route, index) => (
+                  <Route
+                  element={
+                      <ProtectedRoute
+
+                      allowedRoles={allowedRoles}
+                      userRole={userRole}
+                      isAuthenticated={isAuthenticated}
+                      redirectPath={"/login"}
+                      
+                      >
+                      route.element
+
+                      </ProtectedRoute>
+                    }
+                    >
+
+
+                    </Route>
+                ))}
               {/* {doctorRoutes.map((route, index) => (
                 <Route key={`doctor-${index}`} path={route.path} element={route.element}>
                   {route.children?.map((child, childIndex) => (

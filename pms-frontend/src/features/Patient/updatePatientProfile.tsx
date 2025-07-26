@@ -6,13 +6,17 @@ import { z } from "zod"
 import FormComponent from "../../Components/pages/formComponent";
 import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ImInsertTemplate } from "react-icons/im";
 
  const patientSchema=z.object({
         patientId:z.string().optional(),
         patientName:z.string().min(2),
+        phone:z.string(),
         diagnosis:z.string().min(3),
+        gender:z.string().optional(),
         city:z.string().min(2),
+        dateOfBirth:z.date().max(new Date),
         age:z.number().min(0).max(120)
     })
 
@@ -22,6 +26,7 @@ function UpdatePatientProfile(){
     const [updatingPatientLoading, setUpdatingPatientLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const [objectId, setObjectId] = useState('');
     const patientData = location.state?.[0];
 
     // const {register, handleSubmit, formState:{errors}, reset} = useForm({
@@ -42,32 +47,54 @@ function UpdatePatientProfile(){
     //     }
     // },[patientData, reset])
 
+    useEffect(() => {
+        setObjectId(patientData._id);
+    },[patientData])
    const mySubmitFunction = async (data:PatientDataType) => {
-    console.log("The Submit function Update Patient: ", data);
+    
+    let userUpdatedFields:{[key:string]:any} = {};
+
+     Object.entries(data).forEach(([key, val]) => {
+        if(patientData[key] !== val){
+            userUpdatedFields[key] = val
+        }
+    })
+    console.log("UserUpdatedFields ", userUpdatedFields)
+    // patientData.forEach((element:Object, index) => {
+    //     console.log("element: ",element);
+    // })
     const patchPatientDetail = new FormData();
-    patchPatientDetail.append('updatedDetail', JSON.stringify(data));
+    // const {diagnosis, ...withoutDiagnosis} = data;
+    // const newData = {
+    //     ...withoutDiagnosis,
+    //     phone:'+923012707036',
+    //     medicalHistory:[
+    //         {
+    //             date: new Date(),
+    //             diagnosis
+    //         }
+    //     ]
+    // }
+    // console.log("new data before sending to backend ", newData)
+    // patchPatientDetail.append('updatedDetail', JSON.stringify(newData));
+    // try{
+    //     setUpdatingPatientLoading(true);
+    //     const response = await axios.put(`http://localhost:2500/pms/updatePatientProfile/${objectId}`,
+    //         patchPatientDetail
+    //     )
 
-    try{
-        setUpdatingPatientLoading(true);
-        const response = await axios.put(`http://localhost:2500/pms/updatePatientProfile/${data.patientId}`,
-            patchPatientDetail,{
-                headers:{
-                    "Content-Type":"application/json"
-                }
-            })
-
-            console.log("response after making update request: ", response);
-            if(response.data.success){
-                alert("Successfully Updated the Patient");
-                navigate(-1);
-            }
-    }
-    catch(err){
-        console.log("error got while updating: ", err);
-    }
-    finally{
-        setUpdatingPatientLoading(false)
-    }
+    //         console.log("response after making update request: ", response);
+    //         if(response.data.success){
+    //             alert("Successfully Updated the Patient");
+    //             // navigate(-1);
+    //         }
+    // }
+    // catch(err){
+    //     console.log("error got while updating: ", err);
+    // }
+    // finally{
+    //     setUpdatingPatientLoading(false)
+    // }
     
    }
 
