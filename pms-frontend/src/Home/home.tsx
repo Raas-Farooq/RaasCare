@@ -1,49 +1,65 @@
 
-import { useEffect, useMemo, useState } from "react";
-import axios from "axios";
-// import {debounce} from 'lodash';
-// import { FaSpinner, FaUserPlus } from "react-icons/fa";
-// import { useNavigate } from "react-router-dom";
-import Navbar from "../Components/Navbar/navbar";
-
- interface Patient{
-  _id:string,
-  patientName:string,
-  patientId:string,
-  age?:string,
-  diagnosis:string,
-  city:string
-}
+import { useEffect } from "react";
 
 
+// class Node {
+//   constructor(val) {
+//     this.val = val;
+//     this.next = null;
+//   }
+// }
 
-function Home(){
+// class LinkedList {
+//   constructor() {
+//     this.head = null;
+//     this.length = 0;
+//   }
+
+//   addAtHead(val) {
+//     const node = new Node(val);
+//     let current = this.head;
+//     if (current) {
+//       node.next = current;
+//       // The line 'current = this.head;' here is redundant and can be removed
+//       // as 'current' is not used after this point in this method.
+//     }
+//     this.head = node;
+//     this.length++; // Increment length when adding a node
+//   }
+
+//   removeAtIndex(index) {
+//     if (index < 0 || index >= this.length) { // Corrected condition for valid index
+//       return null;
+//     }
+
+//     if (index === 0) { // Handle removal of head
+//       this.head = this.head.next;
+//       this.length--;
+//       return;
+//     }
+
+//     let count = 0;
+//     let current = this.head;
+//     let prev = null;
+
+//     while (count < index && current) {
+//       prev = current;
+//       count++;
+//       current = current.next;
+//     }
+
+//     if (prev && current) {
+//       prev.next = current.next;
+//       this.length--; // Decrement length when removing a node
+//     }
+//   }
+// }
+
+
+
   
-  useEffect(() => {
-
-
-    const addPatientDetail = async () =>{
-      try{
-        const updateResponse=await axios.post(`http://localhost:2500/pms/addPatientProfile`,{
-          patientId:'9373853895',
-          patientName:'Rashida',
-          city:'Gujrat',
-          age:65,
-          gender:'female',
-          medicalHistory:[{
-            date:new Date(),
-            diagnosis:'hypertension',
-            treatment:'initial Medicines',
-          }]
-        });
-        console.log("updateResponse patient: ", updateResponse);
-      }
-      catch(err){
-        console.error('got error while fetcing all admins: ', err);
-      }
-    }
-    addPatientDetail();
-  })
+function Home(){
+     
   useEffect(() => {
     const userRole = localStorage.getItem('role');
     console.log("this i sthe userRole ", userRole);
@@ -51,7 +67,6 @@ function Home(){
      
     return (
       <>
-        <Navbar />
         <section>
           <header className="flex flex-col items-center">
             <div className="w-full max-w-[90vw] h-auto md:max-w-3xl m-5">

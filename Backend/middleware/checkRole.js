@@ -15,8 +15,3 @@ const checkRole = (allowedRoles) => (req,res,next) => {
 }
 
 export default checkRole
-
-// where does the req.user come from
-// const checkRole = (allowedRoles) = (req,res,next) => {
-
-//     if(!req.user) return res.status(401).send("Unauthorized");

@@ -2,25 +2,32 @@
 // import { useEffect, useState } from "react";
 // import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import { z } from "zod"
 import FormComponent from "../../Components/pages/formComponent";
 import axios from "axios";
+import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";
 import { useEffect, useState } from "react";
-import { ImInsertTemplate } from "react-icons/im";
 
- const patientSchema=z.object({
-        patientId:z.string().optional(),
-        patientName:z.string().min(2),
-        phone:z.string(),
-        diagnosis:z.string().min(3),
-        gender:z.string().optional(),
-        city:z.string().min(2),
-        dateOfBirth:z.date().max(new Date),
-        age:z.number().min(0).max(120)
-    })
 
-type PatientDataType=z.infer<typeof patientSchema>
+ interface PatientHistory
+{
+    date:string,
+    diagnosis:string,
+    treatment:string,
+    _id?:string
+}
+
+interface PatientData{
+    // age:number,
+    patientName:string,
+    patientId?:string,
+    phone:string,
+    dateOfBirth:string,
+    gender?:string,
+    city:string,
+    medicalHistory:PatientHistory[]
+}
+// type PatientDataType=z.infer<typeof patientSchema>
 
 function UpdatePatientProfile(){
     const [updatingPatientLoading, setUpdatingPatientLoading] = useState(false);
@@ -29,72 +36,81 @@ function UpdatePatientProfile(){
     const [objectId, setObjectId] = useState('');
     const patientData = location.state?.[0];
 
-    // const {register, handleSubmit, formState:{errors}, reset} = useForm({
-    //     resolver:zodResolver(patientSchema),
-    //         defaultValues:patientData || {
-    //             patientId:'',
-    //             patientName:'',
-    //             diagnosis:'',
-    //             city:'',
-    //             age:0
-    //         }
-    //     })
-
-    
-    // useEffect(() => {
-    //     if(patientData){
-    //       reset(patientData)  
-    //     }
-    // },[patientData, reset])
+    const isMedicalHistoryMatched = (history1:PatientData["medicalHistory"],history2:PatientData["medicalHistory"]) => {
+        if(history1.length !== history2.length) return false
+       return history1.every((field, index) => {
+            const otherField = history2[index];
+            return (
+                field.date === otherField.date &&
+                field.diagnosis === otherField.diagnosis &&
+                field.treatment === otherField.treatment
+            )
+        })
+    }
+    const normalizeHistory = (history: PatientData["medicalHistory"]) =>
+        history.map(({ date, diagnosis, treatment }) => ({
+            date,
+            diagnosis,
+            treatment,
+    }));
 
     useEffect(() => {
         setObjectId(patientData._id);
     },[patientData])
-   const mySubmitFunction = async (data:PatientDataType) => {
-    
-    let userUpdatedFields:{[key:string]:any} = {};
 
+   const mySubmitFunction = async (data:PatientData) => {
+    console.log("got result of changed fields ", data)
+    let userUpdatedFields:{[key:string]:any} = {};
+    
      Object.entries(data).forEach(([key, val]) => {
-        if(patientData[key] !== val){
+        if(key === 'medicalHistory'){
+            const history= patientData.medicalHistory;
+            const updatedHistory = val as PatientData["medicalHistory"];
+            if(!isMedicalHistoryMatched(normalizeHistory(history), normalizeHistory(updatedHistory))){
+                userUpdatedFields[key]= val;
+            }
+        }
+        else if(key === 'dateOfBirth'){
+            const formatDOB = patientData[key].split("T")[0];
+            if(formatDOB !== val){
+                userUpdatedFields[key] = val;
+            }
+        }
+        else if(patientData[key] !== val){
             userUpdatedFields[key] = val
         }
     })
     console.log("UserUpdatedFields ", userUpdatedFields)
-    // patientData.forEach((element:Object, index) => {
-    //     console.log("element: ",element);
-    // })
+    if(Object.keys(userUpdatedFields).length === 0){
+        toast.dismiss();
+        toast("No changes detected from the Original profile", {
+            duration:3000,
+            id:'No changes made'
+        });
+        return;
+    }
+    const toastId = toast.loading("Updating a Patient Profile ..")
     const patchPatientDetail = new FormData();
-    // const {diagnosis, ...withoutDiagnosis} = data;
-    // const newData = {
-    //     ...withoutDiagnosis,
-    //     phone:'+923012707036',
-    //     medicalHistory:[
-    //         {
-    //             date: new Date(),
-    //             diagnosis
-    //         }
-    //     ]
-    // }
-    // console.log("new data before sending to backend ", newData)
-    // patchPatientDetail.append('updatedDetail', JSON.stringify(newData));
-    // try{
-    //     setUpdatingPatientLoading(true);
-    //     const response = await axios.put(`http://localhost:2500/pms/updatePatientProfile/${objectId}`,
-    //         patchPatientDetail
-    //     )
+    patchPatientDetail.append('updatedDetail', JSON.stringify(userUpdatedFields));
+    try{
+        setUpdatingPatientLoading(true);
+        const response = await axios.put(`http://localhost:2500/pms/updatePatientProfile/${objectId}`,
+            patchPatientDetail
+        )
 
-    //         console.log("response after making update request: ", response);
-    //         if(response.data.success){
-    //             alert("Successfully Updated the Patient");
-    //             // navigate(-1);
-    //         }
-    // }
-    // catch(err){
-    //     console.log("error got while updating: ", err);
-    // }
-    // finally{
-    //     setUpdatingPatientLoading(false)
-    // }
+            console.log("response after making update request: ", response);
+            if(response.data.success){
+                
+                toast.success("Successfully Updated the Patient", {id:toastId});
+                navigate(-1);
+            }
+    }
+    catch(err){
+        console.log("error got while updating: ", err);
+        toast.error('Failed to Update Data', {id:toastId})    }
+    finally{
+        setUpdatingPatientLoading(false);
+    }
     
    }
 
@@ -111,7 +127,7 @@ function UpdatePatientProfile(){
             }
             <article className="w-full max-w-xl shadow-xl rounded-lg px-8 py-3 bg-white">
                     <h1 className="underline decoration-blue-500 text-2xl font-bold">UPDATE PATIENT</h1>
-                    <FormComponent receiveSubmitData={mySubmitFunction} initialData={patientData} />
+                    <FormComponent receiveSubmitData={mySubmitFunction} initialData={patientData} updating={true} />
             </article>
         </div>
     )

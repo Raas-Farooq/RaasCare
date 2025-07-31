@@ -3,34 +3,59 @@ import './index.css';
 import './App.css'
 import patientRoutes from './Components/AppRoutesFrontend/patientFrontendRoutes';
 import userRoutes from './Components/AppRoutesFrontend/userFrontendRoutes';
-import { redirect, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 // import PatientDashboard from './Components/dashboards/patientDashboards';
 // import Home from './Components/pages/home';
 import doctorRoutes from './Components/AppRoutesFrontend/doctorFrontendRoutes';
-import DoctorDashboard from './Components/dashboards/doctorDashboard';
-import Home from './Home/home';
 import NotFound from './Components/pages/notFound';
-import AdminDashboard from './Components/dashboards/adminDashboard';
-import { useState } from 'react';
+
 import ProtectedRoute from './Components/protectRoutes/protectedRoute';
 import adminRoutes from './Components/AppRoutesFrontend/adminFrontentRoutes';
-import UpdatePatientProfile from './features/Patient/updatePatientProfile';
+import { Toaster } from 'react-hot-toast';
+import Navbar from './Components/Navbar/navbar';
+import DoctorFormComponent from './features/Admin/doctorForm';
+import { useState } from 'react';
+import UpdateDoctorPrfoile from './features/Admin/updateDoctorProfile';
+import Home from './Home/home';
+import AddNewDoctor from './features/Admin/addNewDoctor';
 
     function App() {
-
+      
       const [isAuthenticated, setIsAuthenticated] = useState(true);
       const [allowedRoles, setAllowedRoles] = useState(['doctor']);
       const [userRole, setUserRole] = useState('doctor');
       return (
         <div>
-          
+          <Toaster position='top-center'/>
+          <Navbar />
           <Routes>
-            <Route path="/" element={<DoctorDashboard />} />
+            <Route path="/" element={<AddNewDoctor />} />
             {userRoutes.map((route,index) => (
               <Route key={`user-${index}`} {...route} />
             ))}
+            {doctorRoutes.map((route, index) => (
+                  <Route key={`doctor-${index}`} path={route.path} element={
+                    <ProtectedRoute 
+                    isAuthenticated={isAuthenticated}
+                    allowedRoles={allowedRoles}
+                    userRole={userRole}
+                    redirectPath='/login'
 
+                    >
+                      {route.element}
+                    </ProtectedRoute>
+                    }>
+                    {route.children?.map((child, childIndex) => (
+                      child.index ?
+                        <Route key={`doctor-child-${childIndex}`} index element={child.element} />
+                      :
+                        <Route key={`doctor-child-${childIndex}`} path={child.path} element={child.element} />
+                    ))}
+                    <Route path="*" element={<NotFound />} />
+                  </Route>
+              
+                ))}
             {/* Patient Dashboard Routes */}
             {patientRoutes.map((route, index) =>(
                 <Route key={`patient-${index}`} path={route.path} element={route.element}>
@@ -58,28 +83,7 @@ import UpdatePatientProfile from './features/Patient/updatePatientProfile';
               >
                // you can define {doctorRoutes.map} so it will cover all the elements of doctor Route
                </Route> */}
-                {doctorRoutes.map((route, index) => (
-                  <Route key={`doctor-${index}`} path={route.path} element={
-                    <ProtectedRoute 
-                    isAuthenticated={isAuthenticated}
-                    allowedRoles={allowedRoles}
-                    userRole={userRole}
-                    redirectPath='/login'
-
-                    >
-                      {route.element}
-                    </ProtectedRoute>
-                    }>
-                    {route.children?.map((child, childIndex) => (
-                      child.index ?
-                        <Route key={`doctor-child-${childIndex}`} index element={child.element} />
-                      :
-                        <Route key={`doctor-child-${childIndex}`} path={child.path} element={child.element} />
-                    ))}
-                    <Route path="*" element={<NotFound />} />
-                  </Route>
-              
-                ))}
+                
 
                 {adminRoutes.map((route, index) => (
                   <Route
@@ -125,11 +129,10 @@ import UpdatePatientProfile from './features/Patient/updatePatientProfile';
             draggable
             pauseOnHover
           />
+
         </div>
       )
 }
 
 export default App
 
-{/* <div className="bg-gray-50 min-h-screen py-10">
-      <div className="bg-white shadow-md rounded:lg px-6 py-8 w-full mx-auto max-w-3xl"> */}

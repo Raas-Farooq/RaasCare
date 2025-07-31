@@ -2,6 +2,30 @@ import { validationResult } from "express-validator";
 import {User} from '../models/user.js'
 import Patient from "../models/patient.js";
 
+
+const checkRedundantData = async(req,res) => {
+    try{
+            const findInvalid = await Patient.find({
+            $or:[
+                {phone:null},
+                {dateOfBirth:null}
+            ]
+        })
+        return res.status(200).json({
+            success:true,
+            message:"duplicates or invalid data: ", 
+            data:findInvalid
+            })
+    }catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while checking data redundancy",
+            error:err.message
+        })
+    }
+}
+
+
 const checkPatientExistence = async(req, res) => {
     let isPatientExist;
     console.log("req body: ", req.body);
@@ -41,7 +65,7 @@ const AddNewPatient= async(req,res) =>
 
         const errors = validationResult(req);
         if(!errors.isEmpty()){
-            return res.status(401).json({
+            return res.status(400).json({
                 success:false,
                 message:"Got Validation Errors",
                 error: errors.array()
@@ -49,16 +73,23 @@ const AddNewPatient= async(req,res) =>
         }  
 
         
-        const {patientId, patientName, city, age, gender, medicalHistory} = req.body;
-        const patientExist = await Patient.findOne({patientId});
+        const {patientId, city, dateOfBirth, gender, medicalHistory} = req.body;
+        const phone = req.body.phone.trim();
+        const patientName= req.body.patientName.trim();
+        const dateOfBirthISO = new Date(dateOfBirth);
+        const patientExist = await Patient.findOne(
+            {
+                phone, dateOfBirth:dateOfBirthISO
+            }
+        );
         
         if(patientExist){
             return res.status(400).json({
                 success:false,
-                message:"Patient with the same id already Exist"
+                message:"Patient with the same Phone Number already Exist"
             })
         }
-        const newPatient= new Patient({patientId, patientName, city, age, gender,medicalHistory});
+        const newPatient= new Patient({patientId, patientName, city, phone,dateOfBirth, gender,medicalHistory});
         console.log("newPatient: ", newPatient)
         await newPatient.save();
         return res.status(201).json({
@@ -81,7 +112,7 @@ const getPatient= async(req,res) =>
             console.log("Single Patient Runs")
             const id = req.params.id;
             console.log("id received: ", id);
-            const patient = await Patient.findOne({patientId:id});
+            const patient = await Patient.findOne({_id:id});
         
             console.log("get all Patients: runs ");
             if(!patient){
@@ -218,28 +249,68 @@ async function deletePatientProfile(req,res)
     )
     return valuesNeedsUpdation 
  }
+
+  const isMedicalHistoryMatched = (history1,history2) => {
+        if(history1.length !== history2.length) return false
+       return history1.every((field, index) => {
+            const otherField = history2[index];
+            return (
+                field.date === otherField.date &&
+                field.diagnosis === otherField.diagnosis &&
+                field.treatment === otherField.treatment
+            )
+        })
+    }
+
+
  async function updatePatientProfile(req, res){
     const {id} = req.params;
     console.log("new info inside update backend ", req.body, "And Id ", id);
-    const parsedReqBody = JSON.parse(req.body.updatedDetail);
-    console.log("parsed Req Body: ", parsedReqBody);
-    const updatedData = {...parsedReqBody};
-    console.log("updatad Data: ", updatedData);
+    const receivedUserData = JSON.parse(req.body.updatedDetail);
+    console.log("parsed Req Body: ", receivedUserData, "type of data ", typeof(receivedUserData));
+    const updatedData = {...receivedUserData};
+
+    const changedEntries = {}
+
     try{
-        const patient = await Patient.findOne({_id:id});
-        if(!patient){
+        const existingPatient = await Patient.findOne({_id:id});
+        if(!existingPatient){
             return res.status(401).json({
                 success:false,
                 message:"Patient Not found"
             })
         }
 
+        console.log("existing existingPatient: ", existingPatient);
+        Object.entries(receivedUserData).forEach(([key,val]) => {
+            if(key === 'medicalHistory'){
+                const existedMedicalHistory = existingPatient.medicalHistory;
+                if(!isMedicalHistoryMatched(val, existedMedicalHistory)){
+                    changedEntries[key] = val;
+                }
+            }
+            else if(key === 'dateOfBirth'){
+                const existingDOB = existingPatient.dateOfBirth.toISOString().split('T')[0];
+                if(existingDOB !== val){
+                    changedEntries[key] = val
+                }
+            }else if(existingPatient[key] !== val){
+                changedEntries[key] = val;
+            }
+        })
+
+        if(Object.keys(changedEntries).length === 0){
+            return res.status(200).json({
+                success:true,
+                message:"NO changes detected"
+            })
+        }
         const updateProfile = await Patient.findOneAndUpdate(
             {_id:id },
-            {$set:updatedData},
+            {$set:changedEntries},
             {new:true}
         )
-        console.log("result of update operation", updateProfile)
+        // console.log("result of update operation", updateProfile)
         // if(updateProfile.modifiedCount !== 1){
         //     return res.status(403).json({
         //         success:false,
@@ -260,12 +331,4 @@ async function deletePatientProfile(req,res)
     }
  }
 
-export default {getPatient,AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient}
-
-// if(searchedPatients.length === 0){
-//             return res.status(404).json({
-//                     success:false,
-//                     message:"Patient NOt found"
-//                 })
-//         }
-//         why are you using 'patients.length' instead of !patients
+export default {getPatient,AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient, checkRedundantData}

@@ -3,17 +3,25 @@ import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "../../Components/pages/formComponent";
+import toast from 'react-hot-toast';
+import { ImDatabase } from "react-icons/im";
+
+interface PatientHistory
+{
+    date:string,
+    diagnosis:string,
+    treatment:string,
+}
 
 interface PatientData{
-    patientName?:string,
     // age:number,
-    treatment:string,
+    patientName:string,
+    patientId?:string,
     phone:string,
-    dateOfBirth?:string,
-    date:string,
+    dateOfBirth:string,
     gender?:string,
-    diagnosis:string,
-    city?:string 
+    city:string,
+    medicalHistory:PatientHistory[]
 }
  
 // Patient Form Component
@@ -22,27 +30,28 @@ const PatientAddForm = () => {
     const navigate = useNavigate();
 // Form submit function 
     async function formSubmit(data:PatientData){
-        console.log("data: ", data);
-        const {diagnosis, ...otherData} = data;
-        const patientDetails = {
-            ...otherData,
-            medicalHistory:[
-                {
-                    diagnosis,
-                    date:new Date()
-                }
-            ]
+        
+        const patientId = `${Date.now()}`;
+        const mongoId = '_93432894723'
+        const patientPayload= {
+            patientId,
+            ...data,
+           
         }
+        const toastId = toast.loading("Ading Patient..")
+        console.log("data has been reached inside Add Patient : ", patientPayload);
         try{
             setAddingNewPatient(true);
-            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, patientDetails);
+            
+            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, patientPayload);
             console.log("response: ",response);
             if(response.data.success){
-                console.log("SUCCESS WINNER")
+                toast.success('Success Response received by Backend', {id:toastId})
             }
         }
         catch(err){
-            console.log('error :', err);
+            console.log("err ", err)
+            toast.error("Error Adding A Patient", {id:toastId})
         }
         finally{
             setAddingNewPatient(false);
@@ -57,13 +66,13 @@ const PatientAddForm = () => {
                 <article className="w-full max-w-2xl rounded-lg shadow-xl p-6">
                     <h1 className="text-center text-2xl text-green-600 font-semibold mb-6">Enter The Details of New Patient</h1>
                     <FormComponent receiveSubmitData={formSubmit} />
-                    {addingNewPatient && 
+                    {/* {addingNewPatient && 
                         <div className="fixed inset-0 bg-black opacity-50 flex justify-center items-center">
                             <div className="bg-white text-black shadow-lg rounded-md flex justify-center items-center p-4 ">
                                 <FaSpinner className="animate-spin text-2xl" /> Adding Patient..
                             </div>
                         </div>
-                    }
+                    } */}
                     <div className="text-center space-y-3">
                         <button className="text-gray-500 hover:text-gray-800" onClick={() => navigate(-1)}>Back</button>
                     </div>

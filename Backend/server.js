@@ -6,6 +6,7 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import cookieParser from 'cookie-parser';
+import Patient from './models/patient.js';
 config()
 
 

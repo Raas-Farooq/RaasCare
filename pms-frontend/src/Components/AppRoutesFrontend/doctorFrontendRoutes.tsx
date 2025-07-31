@@ -7,7 +7,7 @@ import DoctorDashboard from "../dashboards/doctorDashboard";
 
 
 const doctorRoutes = [{
-    path:'/doctor',
+    path:'/doctor-dashboard',
     element:<DoctorDashboard />,
     children:[
         {index:true, element:<DoctorHome />},

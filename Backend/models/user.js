@@ -36,11 +36,14 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('user', userSchema);
 
 const doctorSchema = new mongoose.Schema({
+    profileImage:String,
     speciality:String,
     education:String,
     experience:Number,
     licenseNumber:String,
     available:{type:Boolean, default:true},
+    consultationFee:Number,
+    address:String,
     slots:[{
         time:String,
         isBooked:{type:Boolean, default:false},

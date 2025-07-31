@@ -45,7 +45,7 @@ const PatientProfile = () => {
 
     function handleEditClick(e:React.MouseEvent<HTMLButtonElement>){
         e.preventDefault();
-        navigate('/doctor/updatePatientProfile', {state:currentPatient})
+        navigate('/doctor-dashboard/updatePatientProfile', {state:currentPatient})
     }
 
     const handleDeleteClick = async() => {

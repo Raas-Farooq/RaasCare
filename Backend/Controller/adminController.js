@@ -10,7 +10,7 @@ import path from 'path';
 const createDoctor = async(req,res) => {
 
     try{
-        const {role,speciality, name, email, education, available,experience, licenseNumber, slots, permissions} = req.body.doctorInput;
+        const {role,speciality, profileImage,username, password, email, education, available,experience,address, consultationFee, licenseNumber, slots, permissions} = req.body.doctorInput;
         const isDoctorExist = await Doctor.findOne({email:email});
         if(isDoctorExist){
             return res.status(400).json({
@@ -22,11 +22,15 @@ const createDoctor = async(req,res) => {
         const permissionsParsed = JSON.parsed(permissions);
         const securedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
 
+
         const addDoctor= new Doctor({
-            username:name,
+            username,
             email:email,
             password:securedPassword,
+            profileImage,
             speciality,
+            address,
+            consultationFee,
             experience:experience,
             education:education,
             role,
@@ -52,44 +56,62 @@ const createDoctor = async(req,res) => {
 
  }
 
- const checkUpdatingFields = (allowedRoles, received) => {
-    const valuesNeedsUpdation = [];
-    allowedRoles.forEach((field, index) =>{
-        if(received[field] !== undefined){
-            valuesNeedsUpdation[field] = received[field];
-        }
-     }
+ const checkSlotsFields = (fields1, fields2) => {
+    if(fields1.length !== fields2.length) return false;
 
-    )
-    return valuesNeedsUpdation 
+    return fields1.every((item, index) => {
+        const otherItem = fields2[index];
+
+        return(
+            otherItem.time !== item.time &&
+            otherItem.isBooked !== item.isBooked
+        )
+    })
  }
 
 
  const updateDoctor = async(req,res) => {
     const {id} = req.params;
     const updatedInfo = req.body;
-    
-    
-    const allowedRoles = ['role', 'speciality', 'username', 'education', 'available', 'experience', 'licenseNumber', 'slots', 'permissions', 'email', 'password'];
-     console.log("new function check Updating result: ", checkUpdatingFields(allowedRoles, req.body))
+    const changedValues = {};
     try{
-        const doctor = await Doctor.findOne({_id:id});
-        if(!doctor){
+        const existingDoctor = await Doctor.findOne({_id:id});
+        if(!existingDoctor){
             return res.status(404).json({
                 success:false,
-                message:"Record Not Found"
+                message:"Doctor Not Found"
             })
         }
 
-        const update = await Doctor.updateOne(
-            {_id:id},
-            {$set:{...req.body}},
+
+        Object.entries(updatedInfo).forEach(([key, value]) => {
+            if(existingDoctor[key] === 'slots'){
+                if(!checkSlotsFields){
+                    changedValues[key] = value
+                }
+            }
+            else if (existingDoctor[key] !== value){
+                changedValues[key] = value
+            }
+        })
+
+        if(Object.keys(changedValues).length === 0){
+            return res.status(200).json({
+                success:false,
+                message:"No change Detected"
+            })
+        }
+        const update = await Doctor.findOneAndUpdate(
+            {_id:existingDoctor._id},
+            {$set:{changedValues}},
             {new:true}
         )
         return res.status(201).json({
             success:true,
             message:"Doctor Profile successfully Updated",
+            newProfile:update
         })
+
     }catch(err){
         return res.status(500).json({
             success:false,
@@ -100,8 +122,10 @@ const createDoctor = async(req,res) => {
 
  }
 
+ // manage Bookings like cancel or change the timings
 
  const manageAppointments = async(req,res) => {
+
     const {id} = req.params;
     const updatedInfo = req.body;
     try{
@@ -155,4 +179,4 @@ const createDoctor = async(req,res) => {
 
  }
 
- export {fetchAllAdmins, updateDoctor}
+ export {fetchAllAdmins, createDoctor, updateDoctor}

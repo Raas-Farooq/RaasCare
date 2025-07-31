@@ -1,10 +1,11 @@
 import {z} from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from "react";
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { FaSpinner } from 'react-icons/fa';
 import { initial } from 'lodash';
-
+import parsePhoneNumberFromString, { PhoneNumber } from 'libphonenumber-js';
+import toast from 'react-hot-toast';
 
 
 // Date Defintion
@@ -16,57 +17,93 @@ import { initial } from 'lodash';
  const patientSchema=z.object({
         patientId:z.string().optional(),
         patientName:z.string().min(2),
-        phone:z.string(),
-        diagnosis:z.string().min(3),
+        phone:z.string().nonempty("Phone Must be valid 9 digit pakistani mobile number"),
         gender:z.string().min(1, "Please Select Your Gender").optional(),
+        city:z.string().min(2),
+        dateOfBirth:z.string().nonempty("Date Of Birth is required"),
+        medicalHistory:z.array(z.object({
         treatment:z.string().min(5, "you should write meaningful statement here"),
-        date:z.string(),
-        city:z.string().min(2).optional(),
-        dateOfBirth:z.string().optional(),
-    })
-
+        diagnosis:z.string().min(3).nonempty('Diagnosis details must be mentioned'),
+        date:z.string().nonempty('treatment Start date must be mentioned'),
+        _id: z.string()
+         }))
+        })
 
 // defining the type of Patient Data
-    type PatientFormData = z.infer<typeof patientSchema>
+    type AddPatientFormData = z.infer<typeof patientSchema>
+
 type FormComponentProps = {
-    initialData?: PatientFormData,
-    receiveSubmitData:(data: PatientFormData)=>Promise<void>;
+    updating?:boolean,
+    initialData?: AddPatientFormData,
+    receiveSubmitData:(data: AddPatientFormData)=>Promise<void>;
 }
 
 
 // Patient Form Component
 const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
     const [submitting, setSubmitting] = useState(false);
+    const [correctedPhoneNumber, setCorrectedPhoneNumber] = useState('');
+    let processedInitialData;
 
     // useForm with Resolver definition
-    const {register, handleSubmit, formState:{errors}, reset} = useForm<PatientFormData>({
+    const {register, control,handleSubmit, formState:{errors}, reset} = useForm<AddPatientFormData>({
         resolver: zodResolver(patientSchema),
-        defaultValues: initialData || {}
-    })
-
-    // useEffect(() => {
-    // console.log("intialData: ", initialData)
-    // },[])
-// Form submit function 
-    async function handleSubmitPatientForm(data:PatientFormData){
-        alert("Submit clicked")
-        console.log("data: ",data);
-        const patientId = `${Date.now()}`;
-        const updatedFormData= {
-            patientId,
-            ...data
+        defaultValues: initialData || 
+        {
+            medicalHistory:[{date:'', diagnosis:'', treatment:''}]
         }
+    })
+    const {fields, append, remove} = useFieldArray(
+        {
+            control,
+            name:'medicalHistory'
+        }
+    )
 
-        console.log("new patient details added: ", updatedFormData);
-        // setSubmitting(true);
-        // try{
-        //     await receiveSubmitData(updatedFormData);
-        //     if(!initialData) reset();
-        // }
-        // finally{
-        //     setSubmitting(false)
-        // }
-        
+       useEffect(() => {
+        if (initialData) {
+            const formattedMedicalHistory = initialData.medicalHistory.map((entry) => ({
+            ...entry,
+            date: entry.date.split("T")[0], // format date for input field
+            _id: entry._id, // carry this forward
+            }));
+
+            reset({
+            ...initialData,
+            dateOfBirth: initialData.dateOfBirth.split("T")[0],
+            medicalHistory: formattedMedicalHistory,
+            });
+        }
+}, [initialData, reset]);
+    
+// Form submit function 
+    async function handleSubmitPatientForm(data:AddPatientFormData){
+        const phoneNumber = parsePhoneNumberFromString(data.phone, 'PK');
+
+        if (!phoneNumber || !phoneNumber.isValid()) {
+            toast.error("Phone Number is not Valid");
+            return;
+        }
+        if(!phoneNumber.number.startsWith('+923')){
+            toast.error("Pakistani number Must start from +923 or 03");
+            return;
+        }
+        const normalizedPhone = phoneNumber.number;
+       
+        // console.log("new patient details added: ", updatedPatientData);
+            const {phone, ...restData} = data
+          let updatedPatientData = {
+            phone:normalizedPhone,
+            ...restData
+            }
+            setSubmitting(true);
+            try{
+                await receiveSubmitData(updatedPatientData);
+                // if(!initialData) reset();
+            }
+            finally{
+                setSubmitting(false)
+            }     
     }
 
     return (
@@ -95,9 +132,9 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                         className="w-full px-3 py-2 border-b border-gray-400 shadow-none focus:outline-none"
                          >
                             <option className="shadow-none" value="">Select..</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>   
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>   
                             <option value="No Answer">Prefer Not To Say</option>
                         </select>
                         {errors.gender && <p className='text-red-500'> {errors.gender.message?.toString()}</p>}
@@ -113,7 +150,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                          {errors.dateOfBirth && <p className="text-red-500">{errors.dateOfBirth.message}</p>}
                     </div>
                     <div>
-                        <label className='block text-gray-700' htmlFor='phoneNO'> Enter Phone Number without Dashes *</label>
+                        <label className='block text-gray-700' htmlFor='phoneNO'> Enter Your Mobile Number *</label>
                         <input 
                         type="text"
                         id="phoneNO"
@@ -124,48 +161,56 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                     </div>
                     <div>
                         <h2 className='text-xl font-bold m-2'> Medical History </h2>
-                        <div>
-                            <label htmlFor="diagnosis" className="block text-gray-700 mb-1 font-medium text-sm">
-                                Diagnosis *
-                            </label>
-                            <input
-                                className="w-full px-3 py-2 border-b border-gray-400 focus:outline-none"
-                                // placeholder="Enter Patient Disease or Diagnosis"
-                                id="diagnosis"
-                                {...register("diagnosis")}
-                            />
-                            {errors.diagnosis && <p className="text-red-500">{errors.diagnosis.message}</p>}
-                        </div>
-                        <div>
-                            <label htmlFor="treatment" className="block text-gray-700 mb-1 font-medium text-sm">
-                                Treatment *
-                            </label>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 border-b border-gray-400 focus:outline-none"
-                                // placeholder="Enter Patient Disease or Diagnosis"
-                                id="treatment"
-                                {...register("treatment")}
-                            />
-                            {errors.treatment && <p className="text-red-500">{errors.treatment.message}</p>}
-                        </div>
-                         <div>
-                            <label htmlFor="startDate" className="block text-gray-700 mb-1 font-medium text-sm">
-                                When treatment Started *
-                            </label>
-                            <input
-                                type="date"
-                                className="w-full px-3 py-2 border-b border-gray-400 focus:outline-none"
-                                // placeholder="Enter Patient Disease or Diagnosis"
-                                id="startDate"
-                                {...register("date")}
-                            />
-                            {errors.date && <p className="text-red-500">{errors.date.message}</p>}
-                        </div>
+                        {fields.map((field, index) => {
+                            return(
+                                <div key={field.id} className='space-y-2 p-2 mb-4 border'>
+                                    <input
+                                    placeholder="Diagnosis"
+                                    {...register(`medicalHistory.${index}.diagnosis`)}
+                                    className="w-full px-3 py-2 border-b border-gray-400"
+                                    />
+                                    {errors.medicalHistory?.[index]?.diagnosis && (
+                                        <p className="text-red-500">
+                                            {errors.medicalHistory[index].diagnosis?.message}
+                                        </p>
+                                    )}
+
+                                    <input
+                                        placeholder="Treatment"
+                                        {...register(`medicalHistory.${index}.treatment`)}
+                                        className="w-full px-3 py-2 border-b border-gray-400"
+                                        />
+                                        {errors.medicalHistory?.[index]?.treatment && (
+                                            <p className="text-red-500">
+                                                {errors.medicalHistory[index].treatment?.message}
+                                            </p>
+                                        )}
+
+                                <input
+                                    type="date"
+                                    {...register(`medicalHistory.${index}.date`)}
+                                    className="w-full px-3 py-2 border-b border-gray-400"
+                                    />
+                                    {errors.medicalHistory?.[index]?.date && (
+                                        <p className="text-red-500">
+                                            {errors.medicalHistory[index].date?.message}
+                                        </p>
+                                    )}
+
+                                {/* <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="text-red-600 text-sm"
+                                    >
+                                        Remove
+                                    </button> */}
+                                </div>
+                            )
+                        })}
                     </div>
                     <div>
                         <label htmlFor="city" className="block text-gray-700 mb-1 font-medium text-sm">
-                            City
+                            City *
                         </label>
                         <input 
                             id="city"
@@ -185,3 +230,4 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
     )
 }
 export default FormComponent
+
