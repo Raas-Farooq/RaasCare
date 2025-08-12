@@ -1,59 +1,7 @@
 
 import { useEffect } from "react";
+import Navbar from "../Components/Navbar/navbar";
 
-
-// class Node {
-//   constructor(val) {
-//     this.val = val;
-//     this.next = null;
-//   }
-// }
-
-// class LinkedList {
-//   constructor() {
-//     this.head = null;
-//     this.length = 0;
-//   }
-
-//   addAtHead(val) {
-//     const node = new Node(val);
-//     let current = this.head;
-//     if (current) {
-//       node.next = current;
-//       // The line 'current = this.head;' here is redundant and can be removed
-//       // as 'current' is not used after this point in this method.
-//     }
-//     this.head = node;
-//     this.length++; // Increment length when adding a node
-//   }
-
-//   removeAtIndex(index) {
-//     if (index < 0 || index >= this.length) { // Corrected condition for valid index
-//       return null;
-//     }
-
-//     if (index === 0) { // Handle removal of head
-//       this.head = this.head.next;
-//       this.length--;
-//       return;
-//     }
-
-//     let count = 0;
-//     let current = this.head;
-//     let prev = null;
-
-//     while (count < index && current) {
-//       prev = current;
-//       count++;
-//       current = current.next;
-//     }
-
-//     if (prev && current) {
-//       prev.next = current.next;
-//       this.length--; // Decrement length when removing a node
-//     }
-//   }
-// }
 
 
 
@@ -67,6 +15,7 @@ function Home(){
      
     return (
       <>
+        <Navbar />
         <section>
           <header className="flex flex-col items-center">
             <div className="w-full max-w-[90vw] h-auto md:max-w-3xl m-5">

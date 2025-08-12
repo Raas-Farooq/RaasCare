@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaSpinner } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import FormComponent from "../../Components/pages/formComponent";
+import FormComponent from "./patientFormComponent";
 import toast from 'react-hot-toast';
 import { ImDatabase } from "react-icons/im";
 
@@ -32,10 +32,11 @@ const PatientAddForm = () => {
     async function formSubmit(data:PatientData){
         
         const patientId = `${Date.now()}`;
-        const mongoId = '_93432894723'
+        const mongoId = '_9343289472335'
         const patientPayload= {
             patientId,
             ...data,
+            _id:mongoId
            
         }
         const toastId = toast.loading("Ading Patient..")

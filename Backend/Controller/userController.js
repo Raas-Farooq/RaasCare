@@ -149,6 +149,8 @@ const registerUser = async(req,res) => {
 const userLogin = async(req,res) => {
    
     const {email, password} = req.body;
+
+    
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         return res.status(400).json({
@@ -175,8 +177,11 @@ const userLogin = async(req,res) => {
             })
         }
         let token;
+        let expiryTime = 10 * 60;
         try{
-            token = jwt.sign({id:userExist._id}, process.env.JWT_SECRET, {expiresIn:'1h'});
+            
+            token = jwt.sign({id:userExist._id, email:userExist.email, role:userExist.role}, process.env.JWT_SECRET, {expiresIn:'10m'});
+            console.log("token after signing ", token);
         }
         catch(err){
             return res.status(400).json({
@@ -189,12 +194,13 @@ const userLogin = async(req,res) => {
         try{
             res.cookie('token', token, {
                 httpOnly:true,
-                secure:process.env.NODE_ENV === 'production',
-                sameSite:'strict',
+                secure:false,
+                sameSite:'lax',
                 maxAge:3600000,
                 path:'/'
             })
-        }catch(err){
+        }
+        catch(err){
             return res.status(400).json({
                 success:false,
                 message:"got error while Cookie creation",
@@ -204,7 +210,9 @@ const userLogin = async(req,res) => {
         return res.status(201).json({
             success:true,
             message:"Successfully Loged In the User", 
-            user:userExist
+            user:{username:userExist.username, id:userExist._id, role:userExist.role},
+            token,
+            expiresIn:expiryTime
         })
     }
     catch(err){
@@ -215,7 +223,7 @@ const userLogin = async(req,res) => {
         })
     }
 }
-
+// process.env.NODE_ENV === 'production'
 const getAllUsers = async(req,res) => {
 
     try{
@@ -241,7 +249,32 @@ const getAllUsers = async(req,res) => {
         })
     }
 }
-export {registerUser, userLogin, getAllUsers}
-// projects folder upload on idrive
-// top room cleenliness
+const logout = (req,res) => {
 
+    try{
+            res.clearCookie('token', {
+            httpOnly:true,
+            secure:process.env.NODE_ENV === 'production',
+            path:'/'
+        })
+        res.json({success:true});
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"Error while logging out",
+            error:err.message
+        })
+    }
+    
+}
+
+export {registerUser, userLogin, getAllUsers, logout}
+
+
+
+
+// projects folder upload on idrive
+
+
+//question:

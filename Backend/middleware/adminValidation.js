@@ -5,18 +5,30 @@ const createDoctorValidation = [
     body('username').isString().isLength({ min: 2 }).withMessage("Username should have at least 2 characters"),
     body('password').isLength({ min: 6 }).withMessage("Password must have at least 6 characters"),
     body('email').isEmail().withMessage("Email must be in valid format"),
+    body('profileImage').isObject().withMessage("Profile Image must be an Object")
+    .custom((value) => {
+        if(!value.imageUrl || !value.public_id){
+            throw new Error("Profile image must contain 'imageUrl' and 'public_id'");
+        }
+        if(typeof value.imageUrl !== 'string' || typeof value.public_id !== 'string'){
+            throw new Error('image Url and Public Id both must have typeof string ')
+        }
+        if (!value.imageUrl.startsWith('https://res.cloudinary.com/')) {
+            throw new Error('imageUrl must be a valid Cloudinary URL');
+        }
+        return true
+    }),
     body('role').isIn(['doctor']).withMessage("Role must be 'doctor'"),
     body('education').isString().isLength({ min: 2 }).withMessage("Education should have at least 2 characters"),
     body('speciality').isString().notEmpty().withMessage("Speciality must be provided"),
-    body('licenseNumber').isString().notEmpty().withMessage("License number must be valid"),
     body('experience').isNumeric().withMessage("Experience in years required"),
+    body('about').isString().isLength({min:10}).withMessage("About Area Should have atleat 10 characters"),
     body('address').isString().notEmpty().withMessage("please Enter Doctor Location"),
     body('consultationFee').isNumeric().notEmpty().withMessage("consultationFee is required"),
-    body('available').isBoolean().withMessage("Doctor availability status required"),
-    body('slots.*.time').isString().notEmpty().withMessage("Slot time must be mentioned"),
+    body('slots.*.slotTime').isString().notEmpty().withMessage("Slot time must be mentioned"),
     body('slots.*.isBooked').isBoolean().withMessage("Slot booking status required"),
-    body('slots.*.patient_Id_backend').optional().isMongoId().withMessage("Patient ID must be valid"),
-    body('permissions').isArray().notEmpty().withMessage("Doctor permissions must be defined")
+    body('slots.*.patientId').optional().isMongoId().withMessage("Patient ID must be valid"),
+
 ];
 
 export {createDoctorValidation}

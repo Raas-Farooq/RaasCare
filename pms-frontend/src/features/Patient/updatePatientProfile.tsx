@@ -2,7 +2,7 @@
 // import { useEffect, useState } from "react";
 // import { useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
-import FormComponent from "../../Components/pages/formComponent";
+import FormComponent from "./patientFormComponent";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";

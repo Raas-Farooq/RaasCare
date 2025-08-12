@@ -5,11 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev":"concurrently \"cd Backend && nodemon server.js\" \"cd pms-frontend && npm run dev\""
+    "dev": "concurrently \"cd Backend && nodemon server.js\" \"cd pms-frontend && npm run dev\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "express-fileupload": "^1.5.2"
   }
 }

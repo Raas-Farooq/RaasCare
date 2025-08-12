@@ -18,6 +18,6 @@ const registerUserValidation=[
 
 const loginValidation=[
     body('email').isEmail().withMessage("You should enter valid Email address"),
-    body('password').isLength({min:3}).withMessage("Password length should be atleast 8 characters long")
+    body('password').isLength({min:6}).withMessage("Password length should be atleast 6 characters long")
 ]
 export {registerUserValidation, loginValidation};

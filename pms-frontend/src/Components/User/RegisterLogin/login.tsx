@@ -1,16 +1,16 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
-import { useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { toast } from "react-toastify"
 import { z } from "zod"
+import { useAuth } from "../../../context/appContext"
 
  const loginSchema = z.object({
               email:z.string()
             .email('You should enter a valid Email'),
             password:z.string()
-            .min(8, "password must contains atleast 8 characters")
+            .min(6, "password must contains atleast 8 characters")
             // .regex(/[0-9]/,'Password should contains atleast one number')
             // .regex(/[A-Z]/, 'Password should contains atleast one UpperCase letter')
             // .regex(/[!@#$%&*]/, 'Password should contains atleast one Special Case Letter')
@@ -18,12 +18,17 @@ import { z } from "zod"
 
 type SubmitProps=z.infer<typeof loginSchema>
 const Login = () => {
+        const {login} = useAuth()
         const navigate = useNavigate();
         const {register, handleSubmit, formState:{errors, isSubmitting}, reset } = useForm({
             resolver:zodResolver(loginSchema)
         })
 
         // useEffect(() => {
+        //     console.log("userRole, isloggedIn inside login Component: ", userRole, "isLogged ", isLoggedIn, "setIsAuthenticated ");
+        //     if(2 < 5){
+        //         setIsAuthenticated(true);
+        //     }
         //     const fetchAllUsers = async() => {
         //          try{
         //          const response = await axios.get(`http://localhost:2500/pms/getAllUsers`);
@@ -38,29 +43,41 @@ const Login = () => {
         //   }
         //   fetchAllUsers();
         // },[])
+
+  
         const submitResult = async(data:SubmitProps) => {
-            console.log("data: of submit Result ", data);
-            const formData = new FormData();
-            formData.append('email', data.email);
-            formData.append('password', data.password);
-            const formValues = Object.fromEntries(formData);
-            console.log("formValues: ", formValues);
-            Object.entries(formData).forEach(data => {
-                console.log("data of form front: ", data)
-            })
+            
             try{
-                const response = await axios.post('http://localhost:2500/pms/loginUser',formData, {
+                const response = await axios.post('http://localhost:2500/pms/loginUser',
+                    { email:data.email, password:data.password}, 
+                    {
                     withCredentials:true,
-                    headers:{
-                        "Content-Type":"application/json"
-                    }
                 })
                 if(response.data.success){
                     console.log("frontend response of login:", response.data);
                     toast.success("Successfully LoggedIn");
-                    const role = response.data.user.role;
-                    localStorage.setItem('role', role);
-                    setTimeout(() => navigate('/'), 1000);
+                    const loginResponse = response.data;
+                    console.log('loginResponse: ', loginResponse);
+                    const role = loginResponse.user.role; 
+                    login(loginResponse.user, loginResponse.token, loginResponse.expiresIn);
+                    console.log("user role after login: ", role);
+                    switch(role){
+                        case 'patient':{
+                            navigate('/patient-dashboard');
+                            break;
+                        }
+                        case 'doctor':{
+                            navigate('/doctor-dashboard');
+                            break;
+                        }
+                        case 'admin':{
+                            navigate('/admin-dashboard');
+                            break;
+                        }
+                        default:{
+                            navigate('/');
+                        }
+                    }
                 }
                 
             }catch(err){
@@ -92,7 +109,7 @@ const Login = () => {
                          <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full bg-purple-700 text-white py-2 px-4 rounded-md hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full hover:bg-purple-600 px-2 py-2"
                             >
                         Login
                         </button>

@@ -3,6 +3,7 @@ import {Admin, Doctor} from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from 'dotenv';
 import path from 'path';
+import { validationResult } from 'express-validator';
 
 
 
@@ -10,7 +11,17 @@ import path from 'path';
 const createDoctor = async(req,res) => {
 
     try{
-        const {role,speciality, profileImage,username, password, email, education, available,experience,address, consultationFee, licenseNumber, slots, permissions} = req.body.doctorInput;
+        const {role,speciality,profileImage, username, password, email, education,experience,address, consultationFee,about, slots} = req.body;
+        console.log("req Body ", req.body)
+
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.status(400).json({
+                success:false,
+                message:"Validation errors",
+                errors:errors.array()
+            })
+        }
         const isDoctorExist = await Doctor.findOne({email:email});
         if(isDoctorExist){
             return res.status(400).json({
@@ -18,9 +29,7 @@ const createDoctor = async(req,res) => {
                 message:"This Doctor already exited in Database"
             })
         }
-        const slotsParsed=JSON.parsed(slots);
-        const permissionsParsed = JSON.parsed(permissions);
-        const securedPassword = await bcrypt.hash(password, process.env.SALT_ROUNDS);
+        const securedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
 
 
         const addDoctor= new Doctor({
@@ -33,11 +42,9 @@ const createDoctor = async(req,res) => {
             consultationFee,
             experience:experience,
             education:education,
+            about,
             role,
-            available: available | true,
-            slots:slotsParsed,
-            licenseNumber,
-            permissions:permissionsParsed
+            slots:slots
         })
 
         await addDoctor.save();
@@ -49,7 +56,7 @@ const createDoctor = async(req,res) => {
     }catch(err){
         return res.status(500).json({
             success:false,
-            message:"Got server error while creating adding Doctor",
+            message:"Got server error while Adding New Doctor",
             err:err.message
         })
     }

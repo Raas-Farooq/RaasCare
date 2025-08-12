@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import cookieParser from 'cookie-parser';
 import Patient from './models/patient.js';
+import fileUpload from 'express-fileupload';
 config()
 
 
@@ -18,17 +19,16 @@ app.use(cookieParser());
 const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174'];
 app.use(cors({
     origin:function(requestOrigin , callback){
-        if(!requestOrigin) callback(null, true)
 
-        if(allowedOrigins.includes(requestOrigin)){
-            callback(null, true)
-        }else{
-            callback (new Error(null, "No origin defined"))
+        if(!requestOrigin || allowedOrigins.includes(requestOrigin)){
+            return callback(null, true)
         }
+            
+        return callback (new Error("Not allowed by CORS"))
+        
     },
     credentials:true
 }),
-
 );
 app.get('/', (req, res) => {
         res.send("Welcome the The Arena of Last BALL. Alhamdulila")

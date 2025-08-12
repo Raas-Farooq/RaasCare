@@ -25,7 +25,8 @@ import toast from 'react-hot-toast';
         treatment:z.string().min(5, "you should write meaningful statement here"),
         diagnosis:z.string().min(3).nonempty('Diagnosis details must be mentioned'),
         date:z.string().nonempty('treatment Start date must be mentioned'),
-        _id: z.string()
+        _id:z.string().optional()
+        // mongoDb _id will be assigned later when you add roles and other setup
          }))
         })
 
@@ -185,25 +186,41 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                                                 {errors.medicalHistory[index].treatment?.message}
                                             </p>
                                         )}
-
-                                <input
-                                    type="date"
-                                    {...register(`medicalHistory.${index}.date`)}
-                                    className="w-full px-3 py-2 border-b border-gray-400"
-                                    />
-                                    {errors.medicalHistory?.[index]?.date && (
-                                        <p className="text-red-500">
-                                            {errors.medicalHistory[index].date?.message}
-                                        </p>
-                                    )}
-
-                                {/* <button
-                                    type="button"
-                                    onClick={() => remove(index)}
-                                    className="text-red-600 text-sm"
-                                    >
-                                        Remove
-                                    </button> */}
+                                        <div className="relative">
+                                            <input
+                                                type="date"
+                                                {...register(`medicalHistory.${index}.date`)}
+                                                className="w-full px-3 py-2 border-b border-gray-400 appearance-none"
+                                            />
+                                            {!field.date && (
+                                                <span className="absolute right-10 top-2 text-gray-400 pointer-events-none">
+                                                When did treatment begin
+                                                </span>
+                                            )}
+                                            </div>
+                                            {errors.medicalHistory?.[index]?.date && (
+                                            <p className="text-red-500">
+                                                {errors.medicalHistory[index].date?.message}
+                                            </p>
+                                            )}
+                                {/* <div>
+                                    {`medicalHistory.${index}.date` ? 
+                                        <span>when did treatment begin</span>
+                                        :
+                                        <input
+                                        type="date"
+                                        {...register(`medicalHistory.${index}.date`)}
+                                        className="w-full px-3 py-2 border-b border-gray-400"
+                                        />
+                                        {errors.medicalHistory?.[index]?.date && (
+                                            <p className="text-red-500">
+                                                {errors.medicalHistory[index].date?.message}
+                                            </p>
+                                        )}
+                                    }
+                                    
+                                </div> */}
+                                
                                 </div>
                             )
                         })}

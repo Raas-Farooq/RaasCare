@@ -9,36 +9,42 @@ import { ToastContainer } from 'react-toastify';
 // import Home from './Components/pages/home';
 import doctorRoutes from './Components/AppRoutesFrontend/doctorFrontendRoutes';
 import NotFound from './Components/pages/notFound';
-
 import ProtectedRoute from './Components/protectRoutes/protectedRoute';
 import adminRoutes from './Components/AppRoutesFrontend/adminFrontentRoutes';
-import { Toaster } from 'react-hot-toast';
-import Navbar from './Components/Navbar/navbar';
-import DoctorFormComponent from './features/Admin/doctorForm';
-import { useState } from 'react';
-import UpdateDoctorPrfoile from './features/Admin/updateDoctorProfile';
+import toast, { Toaster } from 'react-hot-toast';
+import {useEffect, useState } from 'react';
+
 import Home from './Home/home';
-import AddNewDoctor from './features/Admin/addNewDoctor';
+import { useAuth } from './context/appContext';
+
 
     function App() {
       
-      const [isAuthenticated, setIsAuthenticated] = useState(true);
-      const [allowedRoles, setAllowedRoles] = useState(['doctor']);
-      const [userRole, setUserRole] = useState('doctor');
+      const {userRole, isAuthenticated,loading} = useAuth();
+      const [allowedRoles, setAllowedRoles] = useState([]);
+
+
+      useEffect(() => {
+        console.log("Inside App.tsx  isAuthenticated: ", isAuthenticated, "allowedRoles", allowedRoles, "userRole ", userRole) 
+      },[isAuthenticated, userRole])
+
+      
+      if(loading) return <h1>Loading..</h1>
       return (
         <div>
           <Toaster position='top-center'/>
-          <Navbar />
+          
           <Routes>
-            <Route path="/" element={<AddNewDoctor />} />
-            {userRoutes.map((route,index) => (
-              <Route key={`user-${index}`} {...route} />
-            ))}
+           
+              <Route path="/" element={<Home />} />
+              {userRoutes.map((route,index) => (
+                <Route key={`user-${index}`} {...route} />
+              ))}
             {doctorRoutes.map((route, index) => (
                   <Route key={`doctor-${index}`} path={route.path} element={
                     <ProtectedRoute 
                     isAuthenticated={isAuthenticated}
-                    allowedRoles={allowedRoles}
+                    allowedRoles={['doctor']}
                     userRole={userRole}
                     redirectPath='/login'
 
@@ -67,24 +73,6 @@ import AddNewDoctor from './features/Admin/addNewDoctor';
                 ))}
                 </Route>
               ))}
-
-              {/* Doctor Routes */}
-
-              {/* <Route
-               element={
-                <ProtectedRoute
-                    isAuthenticated={isAuthenticated}
-                    allowedRoles={allowedRoles}
-                    userRole={userRole}
-                    redirectPath='/login'
-
-                    ></ProtectedRoute>
-               }
-              >
-               // you can define {doctorRoutes.map} so it will cover all the elements of doctor Route
-               </Route> */}
-                
-
                 {adminRoutes.map((route, index) => (
                   <Route
                   element={
@@ -101,20 +89,8 @@ import AddNewDoctor from './features/Admin/addNewDoctor';
                       </ProtectedRoute>
                     }
                     >
-
-
                     </Route>
                 ))}
-              {/* {doctorRoutes.map((route, index) => (
-                <Route key={`doctor-${index}`} path={route.path} element={route.element}>
-                  {route.children?.map((child, childIndex) => (
-                    child.index ?
-                    <Route key={`doctor-child-${childIndex}`} index element={child?.element} />
-                    :
-                    <Route key={`doctor-child-${childIndex}`} path={child.path} element={child.element} />
-                  ))}
-                  </Route>
-              ))} */}
           </Routes>
 
           {/* Toast Notification */}

@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactElement, type ReactHTMLElement } from "react";
 import axios from "axios";
 import {debounce} from 'lodash';
 import { FaSpinner, FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/appContext";
 
 
  interface Patient{
@@ -20,25 +21,13 @@ const DoctorHome = () => {
      const [patientsProfiles, setPatientsPrfiles] = useState<Patient[]>([]);
      const [loadingSearchedPatients, setLoadingSearchedPatients] = useState(false);
      const [doesUserSearch, setDoesUserSearch] = useState(false);
+    const {logout} = useAuth();
 
    const navigate = useNavigate();
     const handleAddPatientClick = () => {
       navigate('/doctor-dashboard/addPatient')
   }
 
-  useEffect(() => {
-    console.log("Doctor Home running.....")
-    const role = localStorage.getItem('userRole');
-    function openDashboard(){
-      if(!role) return "Role is not Defined";
-
-      // console.log("role of the user inside HOME ",role);
-      // if(role === 'patient'){
-      //   navigate('/patient-dashboard');
-      // }
-    }
-    openDashboard()
-  },[])
   const debounceSearchPatient = useMemo( 
       () => debounce(async(value:string) => {
         setLoadingSearchedPatients(true);
@@ -85,19 +74,23 @@ const DoctorHome = () => {
    },[]);
 
 
-     useEffect(() => {
-      async function fetchPatients(){
-        const response = await axios.get('http://localhost:2500/pms/getAllPatientsProfiles');
-        console.log("response: ", response);
-      } 
-      fetchPatients();
-   },[])
-
    function handlePatientClick(id:string, name:string){
-    
-    console.log("patient clicked ", id, "patient Name: ",name);
     navigate(`/doctor-dashboard/profile/${id}`);
 
+   }
+
+   const handleLogoutClick = async () => {
+    alert ("Logout Clicked! ");
+    async function loggingOut(){
+      const response = await axios.get('http://localhost:2500/pms/logout', {
+        withCredentials:true
+      });
+      if(response.data.success){
+       logout();
+      }
+    }
+    
+    loggingOut()
    }
 
     return (
@@ -123,6 +116,9 @@ const DoctorHome = () => {
                    <button onClick={handleAddPatientClick} className="flex gap-2 border border-gray-800 bg-purple-600 text-white text-[12px] sm:p-2 sm:text-lg sm:w-40"> New Patient <FaUserPlus /> </button>
                 </div>
                
+                <div>
+                    <button onClick={handleLogoutClick} className="border border-gray-600 bg-red-400 hover:bg-red-600 px-2 py-2 shadow-md rounded-full transition-transform duration-300 hover:scale-110">LogOut</button>
+                </div>
               </div>
            </article>
            {loadingSearchedPatients && <div><FaSpinner className="animate-spin " />   </div>}
