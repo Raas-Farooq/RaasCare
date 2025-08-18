@@ -8,7 +8,7 @@ import DoctorDashboard from "../dashboards/doctorDashboard";
 
 const doctorRoutes = [{
     path:'/doctor-dashboard',
-    element:<DoctorDashboard />,
+    element:<DoctorDashboard />, 
     children:[
         {index:true, element:<DoctorHome />},
         {path:'addPatient', element:<PatientAddForm /> },
@@ -18,7 +18,5 @@ const doctorRoutes = [{
     ]
 }
 ]
-
-console.log("doctor Routes: ", doctorRoutes);
 
 export default doctorRoutes;

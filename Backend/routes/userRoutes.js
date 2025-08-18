@@ -9,7 +9,7 @@ import Authenticate from '../authentication/Authenticate.js';
 
 userRoutes.post('/createNewUser', registerUserValidation, registerUser);
 userRoutes.post('/loginUser', upload.none(), loginValidation,userLogin)
-userRoutes.get('/logout', Authenticate, logout);
+userRoutes.get('/logout',logout);
 userRoutes.get('/getAllUsers', getAllUsers);
 userRoutes.get('/checkAuthentication', Authenticate);
 

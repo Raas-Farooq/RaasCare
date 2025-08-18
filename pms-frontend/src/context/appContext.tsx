@@ -8,7 +8,46 @@ interface User{
     email?:string,
     role:string
 }
-
+interface Permissions{
+    manage_patients:string,
+    view_reports:string,
+    manage_doctors:string,
+    system_settings:string
+}
+interface AdminProfile{
+    username: string,
+    email: string,
+    password: string,
+    role:string,
+    address?: string,
+    about?:string,
+    permissions:Permissions[]
+}
+interface TimeSlots {
+    slotTime: string,
+    isBooked: boolean,
+    _id?: string,
+}
+interface ProfileImage{
+    imageUrl:string,
+    public_id:string
+}
+interface DoctorProfile {
+    username: string,
+    email: string,
+    password: string,
+    education: string,
+    speciality: string,
+    experience:number,
+    about:string,
+    available:boolean,
+    licenseNumber:string,
+    address: string,
+    role:string,
+    consultationFee: number,
+    profileImage:ProfileImage,
+    slots: TimeSlots[]
+}
 declare global {
     interface Window {
         axios:AxiosInstance
@@ -19,15 +58,19 @@ interface AuthContextProps{
     expiryTime:number | null;
     jwt_token:string | null;
     userRole:string | '';
+    adminProfile:AdminProfile | null;
+    doctorProfile:DoctorProfile | null;
     isAuthenticated:boolean;
     loading:boolean,
     setLoading:React.Dispatch<React.SetStateAction<boolean>>;
     setIsAuthenticated:React.Dispatch<React.SetStateAction<boolean>>;
     setUserRole:React.Dispatch<React.SetStateAction<string | ''>>;
-    login: (user: User, token: string, expiresInSec: number) => void;
+    setAdminProfile:React.Dispatch<React.SetStateAction<AdminProfile | null>>;
+    setDoctorProfile:React.Dispatch<React.SetStateAction<DoctorProfile | null>>;
+    login: (user: User, token: string, expiresInSec: number, userProfile:DoctorProfile | AdminProfile) => void;
     logout: ()=>void;
     setExpiryTime:React.Dispatch<React.SetStateAction<number | null>>;
-    setUser:React.Dispatch<SetStateAction<User | null>>;
+    setUser:React.Dispatch<React.SetStateAction<User | null>>;
     setJwt_token:React.Dispatch<SetStateAction<string | null>>;
     
 }
@@ -36,6 +79,8 @@ const AuthContext = React.createContext<AuthContextProps | undefined>(undefined)
 
 export const AuthProvider = ({children}:{children:React.ReactNode}) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
+    const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [jwt_token, setJwt_token] = useState<string | null>(null);
     const [expiryTime, setExpiryTime] = useState<number | null>(null);
@@ -44,12 +89,15 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
     let logoutTimer:NodeJS.Timeout | undefined;
 
     const logout = useCallback(async() => {
-        alert("LOGOUT RUNS")
+        toast("Your Session Expired. Please Login Again!")
         try{
-            const logoutResponse = await axios.get('http://localhost:2500/pms/logout',
+            await axios.get('http://localhost:2500/pms/logout',
                 {withCredentials:true}
             );
+
         }catch(err){
+            toast.dismiss();
+            toast.error("Error while logging Out");
             console.error("Error while clearing Cookie",err)
         }
         setExpiryTime(null);
@@ -58,15 +106,16 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
         setUserRole('');
         setIsAuthenticated(false);
         localStorage.removeItem('auth');
+        localStorage.removeItem('doctorProfile');
+        localStorage.removeItem('adminProfile');
         if(logoutTimer){
             clearTimeout(logoutTimer)
         }
-
+        
     },[]);
 
     const scheduledLogout = useCallback((exp:number) => {
         const timeLeft = exp - Date.now();
-        console.log("timeLeft: ", timeLeft);
         if(timeLeft > 0){
             logoutTimer = setTimeout(logout,timeLeft)
         }else{
@@ -75,7 +124,16 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
     },[logout])
 
 
-    const login = (user:User, token:string, expiresInSec:number) => {
+    const login = (user:User, token:string, expiresInSec:number, userProfile:DoctorProfile|AdminProfile) => {
+        if(user.role === 'doctor'){
+
+            setDoctorProfile(userProfile as DoctorProfile);
+            localStorage.setItem('doctorProfile', JSON.stringify(userProfile));
+        }
+        if(user.role === 'admin'){
+            setAdminProfile(userProfile as AdminProfile);
+            localStorage.setItem('adminProfile', JSON.stringify(userProfile));
+        }
         setUser(user);
         setJwt_token(token);
         setUserRole(user.role);
@@ -89,22 +147,29 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
             userRole:user.role,
             isAuthenticated:true
         })
-        )
-        
+        )        
         scheduledLogout(expiryInSeconds)
     } 
 
     
-    useEffect(() => {
-        console.log("Inside ProtectedRoute  isAuthenticated: ", isAuthenticated, "userRole ", userRole)
-    },[])
-
     useEffect(() => {
         
         const localSavedData = localStorage.getItem('auth');
         console.log("if you have refreshsed: ", localSavedData);
         if(localSavedData){
             const {user, expiryTime, jwt_token,userRole, isAuthenticated} = JSON.parse(localSavedData);
+            if(userRole === 'doctor'){
+                const localStoredProfile = localStorage.getItem('doctorProfile');
+                if(localStoredProfile){
+                    try{
+                    const profile = JSON.parse(localStoredProfile);
+                    setDoctorProfile(profile);
+                }
+                    catch(err){
+                        console.error('Error while parsing Profile ', err);
+                    }
+                }
+            }
             if(Date.now() < expiryTime){
                 setUser(user);
                 setJwt_token(jwt_token);
@@ -138,7 +203,7 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
 
         axiosInstance.interceptors.response.use((res) => res,
         (err) => {
-            if(err.response.status === 401){
+            if(err.response?.status === 401){
                 logout()
             }
             return Promise.reject(err);
@@ -150,7 +215,7 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
 
 
     return (
-        <AuthContext.Provider value={{loading, setLoading,isAuthenticated, setIsAuthenticated, user, setUserRole,userRole,jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token}}>
+        <AuthContext.Provider value={{adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading,isAuthenticated, setIsAuthenticated, user, setUserRole,userRole,jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token}}>
             {children}
         </AuthContext.Provider>
     )

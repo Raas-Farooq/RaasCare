@@ -1,69 +1,111 @@
 import { useEffect, useState } from "react"
 import { FaBars, FaTimes } from "react-icons/fa"
 import useWindowSize from "./windowSize";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/appContext";
+import { Heart } from "lucide-react";
 
 
 
 const Navbar = () => {
     const [isShowMenu, setIsShowMenu] = useState(false);
-    const {width} = useWindowSize();
+    const { userRole,logout } = useAuth();
+    const { width } = useWindowSize();
     const navigate = useNavigate();
-    function handleMenuClick(){
-            setIsShowMenu(!isShowMenu);
+    function handleMenuClick() {
+        setIsShowMenu(!isShowMenu);
     }
-    
+
     useEffect(() => {
-        
-        if(width>1024){
+
+        if (width > 1024) {
             setIsShowMenu(false);
         }
-    },[width])
+    }, [width])
 
-   function handleRegister(){
+    function handleRegister() {
 
-    navigate('/register')
-   }
+        navigate('/register')
+    }
 
-   function handleLogin(){
-    navigate('/login');
-   }
+    function handleLogout() {
+        const confirm = window.confirm("Are You Surely Want to Logout");
+        if(confirm){
+            logout();
+        };
+    }
+
+    function handleLogin() {
+        navigate('/login');
+    }
+    const navbarLinks = [
+        { name: 'Services', href: "#" },
+        { name: 'Book Appointment', href: '#' },
+        { name: 'Contact', href: "#" },
+        { name: 'About', href: "#" },
+    ]
+    const buttonBase =
+        "px-6 py-2 rounded-full shadow-md transition-all duration-300"
 
     return (
-        <div className={`flex items-center flex-wrap justify-between relative ${isShowMenu ? 'lg:h-auto': ''}`}>
-            <header className="font-bold text-3xl ">
+        <div className={`sticky top-0 z-10 flex items-center flex-wrap bg-gradient-to-r from-white to-purple-50 justify-between bg-white shadow-sm px-2 py-4 relative ${isShowMenu ? 'lg:h-auto' : ''}`}>
+            <div className="flex gap-3">
+                <header className="text-2xl md:text-3xl text-purple-800 font-semibold ">
                 MediCare
             </header>
+            <Heart className="text-red-500" size={30}/>
+            </div>
             <div>
-                <button 
-                onClick={handleMenuClick} 
-                aria-label="toggle Menu"
-                aria-expanded={isShowMenu}
-                className="text-3xl lg:hidden ml-auto transition: all 0.3s ease-in-out">
-                
-                    {isShowMenu ? <FaTimes /> : <FaBars /> } 
-                    </button>
+                <button
+                    onClick={handleMenuClick}
+                    aria-label="Toggle Menu"
+                    aria-expanded={isShowMenu}
+                    className="text-3xl lg:hidden ml-auto">
+
+                    {isShowMenu ? <FaTimes /> : <FaBars />}
+                </button>
             </div>
             <nav className={`w-full lg:w-auto ${isShowMenu ? 'block absolute top-full left-0 bg-white shadow-lg z-50 p-4' : 'hidden lg:block'}`}
-            aria-labelledby="main-navigation" >
+                aria-labelledby="Main-Navigation" >
                 <ul className={`flex flex-col lg:flex-row gap-6 ${isShowMenu ? 'py-4' : ''}`}>
-                    {['Services', 'Book Appointment', 'Awards', 'Contact', 'About'].map((tab, ind) => (
-                         <li key={ind}><a href="#" className="hover:text-purple-600 hover:scale-105 transition-transform block focus:outline-none focus:bg-purple-400 focus:rounded-md text-lg"> {tab} </a></li>
+                    {navbarLinks.map((tab, ind) => (
+                        <li key={ind}>
+                            <NavLink to={tab.href} className={({ isActive }) =>
+                                `inline-block relative text-lg font-normal text-gray-700 transition-all 
+                                after:block after:h-[2px] after:w-0 after:bg-purple-500 
+                                after:transition-all hover:after:w-full hover:text-purple-600 
+                                ${isActive ? "font-thin text-gray-900" : ""}`
+                            }>
+                                {tab.name}
+                            </NavLink>
+                        </li>
                     ))}
                 </ul>
             </nav>
-            <div className={`w-full lg:w-auto ${isShowMenu ? 'block bg-white pb-4 px-4' : 'hidden lg:flex'} gap-4`}>
-                <button 
-                onClick={handleLogin} 
-                className="text-lg hover:scale-110 transition-transform block w-full lg:w-auto text-left lg:text-center px-4 py-2 hover:text-purple-600">
-            LogIn
-        </button>
-        <button 
-        onClick={handleRegister}
-        className="border border-gray-700 bg-purple-400 rounded-full shadow-xl px-6 py-2 hover:bg-purple-500 transition-colors w-full lg:w-auto text-center">
-            Get Started
-        </button>
+            <div className={`w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex'} gap-5`}>
+                {userRole ?
+                    <button
+                        onClick={handleLogout}
+                        className={`${buttonBase} font-semibold bg-purple-500 text-white hover:bg-purple-600`}>
+                        Logout
+                    </button>
+                    :
+                    (
+                        <>
+                            <button
+                                onClick={handleLogin}
+                                className={` ${buttonBase} hover:scale-105 font-medium text-gray-700 hover:text-purple-600 ${isShowMenu && 'mr-3 '}`}>
+                                LogIn
+                            </button>
+                            <button
+                                onClick={handleRegister}
+                                className={`${buttonBase} font-semibold bg-purple-500 text-white hover:bg-purple-600`}>
+                                Get Started
+                            </button>
+                        </>
+                    )
+
+                }
             </div>
         </div>
     )

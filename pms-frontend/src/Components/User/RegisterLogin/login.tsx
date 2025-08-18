@@ -57,9 +57,8 @@ const Login = () => {
                     console.log("frontend response of login:", response.data);
                     toast.success("Successfully LoggedIn");
                     const loginResponse = response.data;
-                    console.log('loginResponse: ', loginResponse);
                     const role = loginResponse.user.role; 
-                    login(loginResponse.user, loginResponse.token, loginResponse.expiresIn);
+                    login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile);
                     console.log("user role after login: ", role);
                     switch(role){
                         case 'patient':{
@@ -109,7 +108,7 @@ const Login = () => {
                          <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full hover:bg-purple-600 px-2 py-2"
+                            className="w-full hover:bg-purple-600 px-2 py-2 cursor-pointer"
                             >
                         Login
                         </button>

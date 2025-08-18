@@ -64,10 +64,20 @@ import { useAuth } from './context/appContext';
                 ))}
             {/* Patient Dashboard Routes */}
             {patientRoutes.map((route, index) =>(
-                <Route key={`patient-${index}`} path={route.path} element={route.element}>
+                <Route key={`patient-${index}`} path={route.path} 
+                element={
+                  <ProtectedRoute
+                  isAuthenticated={isAuthenticated}
+                  allowedRoles={['patient']}
+                  userRole={userRole}
+                  redirectPath='/login'
+                  >
+                    {route.element}
+                  </ProtectedRoute>
+                }>
                 {route.children?.map((child, childIndex) => (
                   child.index? 
-                  <Route key={`patient-child-${childIndex}`} index element={child.path} />
+                  <Route key={`patient-child-${childIndex}`} index element={child.element} />
                   :
                   <Route key={`patient-child-${childIndex}`} path={child.path} element={child.element} />
                 ))}
@@ -75,20 +85,28 @@ import { useAuth } from './context/appContext';
               ))}
                 {adminRoutes.map((route, index) => (
                   <Route
+                  key={`admin-${index}`}
+                  path={route.path}
                   element={
                       <ProtectedRoute
 
-                      allowedRoles={allowedRoles}
+                      allowedRoles={['admin']}
                       userRole={userRole}
                       isAuthenticated={isAuthenticated}
                       redirectPath={"/login"}
                       
                       >
-                      route.element
+                      {route.element}
 
                       </ProtectedRoute>
                     }
                     >
+                      {route.children?.map((childRoute, childIndex) => (
+                        childRoute.index ?
+                        <Route key={`admin-child-${childIndex}`} index element={childRoute.element} />
+                        :
+                        <Route key={`admin-child-${childIndex}`} path={childRoute.path} element={childRoute.element} />
+                      ))}
                     </Route>
                 ))}
           </Routes>

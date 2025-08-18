@@ -47,10 +47,10 @@ const AddNewDoctor = () => {
     }
    
     return (
-        <div className="h-screen bg-gray-100">
-            <h1 className="p-5 text-3xl text-orange-800 text-center"> Add a New Doctor</h1>
+        <div className="w-full max-w-4xl mx-auto p-4 md:p-6">
+            <h1 className="p-1 text-2xl md:text-3xl text-gray-800 text-center font-semibold mb-6"> Add a New Doctor</h1>
             
-            <div className="w-full m-3">
+            <div className="bg-white rounded-xl p-4 md:p-6">
                 <DoctorFormComponent receiveUpdatedDetails={handleDoctorSubmission} />
             </div>
 

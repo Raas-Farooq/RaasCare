@@ -126,12 +126,12 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
     }
 
     return (
-        <div className="min-h-screen flex justify-center items-start bg-gray-100 overflow-x-hidden px-4 py-8">
-            <main className="w-full max-w-sm sm:max-w-2xl md:max-w-3xl p-6 sm:p-10 shadow-lg bg-white max-h-[90vh] overflow-y-auto">
-                
+        <div className="min-h-screen flex justify-center items-start overflow-x-hidden bg-white px-2 py-3 md:px-4">
+            <main className="w-full max-w-2xl p-4 sm:p-6 bg-white rounded-lg shadow-sm">
+               {/* flex-1 space-y-4 min-w-0  */}
                 <form onSubmit={handleSubmit(handleFormSubmission, (formErrors) => console.log('caught errors while submitting form', formErrors))}
                     className="flex flex-col md:flex-row gap-8">
-                    <div className="flex-1 space-y-4 min-w-0">
+                    <div className="grid grid-cols-1 gap-5">
                         <div className="max-w-xs">
                             <UploadProfileImage imageUpload={getUploadedImage} />
                         </div>

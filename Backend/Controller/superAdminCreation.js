@@ -22,6 +22,7 @@ const superAdmin = async(req, res) => {
         email:userEmail,
         password:hashedPassword,
         role:'admin',
+        address:string,
         lastAccess:Date(),
         permissions:
             [
