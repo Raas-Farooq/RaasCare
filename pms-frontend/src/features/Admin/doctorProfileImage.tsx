@@ -63,7 +63,7 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
 
             {/* Hidden file input */}
             <input
-                type="file"
+                type="file"     
                 id="docProfileImg"
                 accept="image/*"
                 onChange={handleImageInsertion}

@@ -18,7 +18,7 @@ const UploadOnCloudinary = async(req,res) => {
         })
     try{
         const uploadImage= await cloudinary.uploader.upload_stream( 
-            {folder:'MediCare'},
+            {folder:'MediCare-doctors'},
             (err, result) => {
                 if(err){
                     console.log('error while uploading on Cloudinary: ', err)

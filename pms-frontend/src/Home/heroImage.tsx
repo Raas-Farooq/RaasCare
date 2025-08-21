@@ -14,3 +14,5 @@ const HeroImage = () => {
 
 export default HeroImage
 
+// what is the diff btw transtion and transition-all
+
