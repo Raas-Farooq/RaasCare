@@ -1,6 +1,9 @@
 import axios, { type AxiosInstance } from "axios";
 import React, { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
 import toast from "react-hot-toast";
+import type { ZodEnum } from "zod";
+
+const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 interface User{
     username:string,
@@ -26,13 +29,23 @@ interface AdminProfile{
 interface TimeSlots {
     slotTime: string,
     isBooked: boolean,
+    isCancelled?:boolean,
+    isCompleted?:boolean,
+    patientId?:string,
+    patientName:string,
     _id?: string,
+}
+interface AvailableDays{
+    day:string,
+    slots:TimeSlots[]
+
 }
 interface ProfileImage{
     imageUrl:string,
     public_id:string
 }
 interface DoctorProfile {
+    _id:string,
     username: string,
     email: string,
     password: string,
@@ -46,7 +59,8 @@ interface DoctorProfile {
     role:string,
     consultationFee: number,
     profileImage:ProfileImage,
-    slots: TimeSlots[]
+    slots: TimeSlots[],
+    availableDays?:AvailableDays[]
 }
 declare global {
     interface Window {
@@ -89,7 +103,7 @@ export const AuthProvider = ({children}:{children:React.ReactNode}) => {
     let logoutTimer:NodeJS.Timeout | undefined;
 
     const logout = useCallback(async() => {
-        toast("Your Session Expired. Please Login Again!")
+        toast("Your Session Expired. Please Login Again!") 
         try{
             await axios.get('http://localhost:2500/pms/logout',
                 {withCredentials:true}

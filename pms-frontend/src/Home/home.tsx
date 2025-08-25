@@ -5,15 +5,31 @@ import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight, Users } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function Home() {
   const { userRole } = useAuth();
+  const navigate = useNavigate();
   useEffect(() => {
     const userRole = localStorage.getItem('role');
     console.log("this i sthe userRole ", userRole);
   }, [])
 
+  useEffect(() => {
+    async function allPatients(){
 
+      try{
+        const response = await axios.get('http://localhost:2500/pms/getAllPatientsProfiles');
+        console.log("all patients response ", response);
+      }
+      catch(err){
+        console.error("got error while fetching all Patients ", err);
+      }
+    }
+
+    allPatients();
+  }, [])
 
   return (
     <>
@@ -33,7 +49,8 @@ function Home() {
             Book appointments with trusted healthcare professionals in just few clicks
           </p>
           <div className="mt-6 flex justify-center gap-5">
-            <button className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
+            <button onClick={function(){navigate('/allDoctorsPublic')}}
+              className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
             <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">

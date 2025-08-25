@@ -13,8 +13,7 @@ const doctorRoutes = [{
         {index:true, element:<DoctorHome />},
         {path:'addPatient', element:<PatientAddForm /> },
         {path:'updatePatientProfile', element:<UpdatePatientProfile /> },
-        { path: "profile/:patientId", element: <PatientProfile /> }
-
+        { path: "profile/:patientId", element: <PatientProfile /> },
     ]
 }
 ]

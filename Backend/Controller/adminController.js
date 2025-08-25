@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {Admin, Doctor} from '../models/user.js';
+import { Admin, Doctor } from '../models/user.js';
 import bcrypt from 'bcrypt';
 import { config } from 'dotenv';
 import path from 'path';
@@ -8,182 +8,197 @@ import { validationResult } from 'express-validator';
 
 
 
-const createDoctor = async(req,res) => {
+const createDoctor = async (req, res) => {
 
-    try{
-        const {role,speciality,profileImage, username, password, email, education,experience,address, consultationFee,about, slots} = req.body;
-        console.log("req Body ", req.body)
+    try {
+        const { role, speciality, profileImage, username, password, email, availableDays, education, experience, address, consultationFee, about, slots } = req.body;
+        // console.log("req Body ", req.body)
 
         const errors = validationResult(req);
-        if(!errors.isEmpty()){
+        if (!errors.isEmpty()) {
             return res.status(400).json({
-                success:false,
-                message:"Validation errors",
-                errors:errors.array()
+                success: false,
+                message: "Validation errors",
+                errors: errors.array()
             })
         }
-        const isDoctorExist = await Doctor.findOne({email:email});
-        if(isDoctorExist){
+        const isDoctorExist = await Doctor.findOne({ email: email });
+        if (isDoctorExist) {
             return res.status(400).json({
-                success:false,
-                message:"This Doctor already exited in Database"
+                success: false,
+                message: "This Doctor already exited in Database"
             })
         }
         const securedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
+        let combinedSlots;
+        if (availableDays) {
+            combinedSlots = availableDays.map((day, index) => {
+                return {
+                    day,
+                    slots
+                }
+            })
 
+            // console.log("have a combined Slots: ", newSlots)
+        }
 
-        const addDoctor= new Doctor({
-            username,
-            email:email,
-            password:securedPassword,
-            profileImage,
-            speciality,
-            address,
-            consultationFee,
-            experience:experience,
-            education:education,
-            about,
-            role,
-            slots:slots
-        })
+        if (combinedSlots) {
+            const addDoctor = new Doctor({
+                username,
+                email: email,
+                password: securedPassword,
+                profileImage,
+                speciality,
+                address,
+                consultationFee,
+                experience: experience,
+                education: education,
+                about,
+                role,
+                availableDays: combinedSlots
+            })
 
-        await addDoctor.save();
+            await addDoctor.save();
+            // console.log("addDoctor :", addDoctor);
+        }
+
         return res.status(201).json({
-            success:true,
-            message:"Doctor Profile successfully Created",
+            success: true,
+            message: "Doctor Profile successfully Created",
             doctor:addDoctor
         })
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
-            success:false,
-            message:"Got server error while Adding New Doctor",
-            err:err.message
+            success: false,
+            message: "Got server error while Adding New Doctor",
+            err: err.message
         })
     }
 
- }
+}
 
- const checkSlotsFields = (fields1, fields2) => {
-    if(fields1.length !== fields2.length) return false;
+const checkSlotsFields = (fields1, fields2) => {
+    if (fields1.length !== fields2.length) return false;
 
     return fields1.every((item, index) => {
         const otherItem = fields2[index];
 
-        return(
+        return (
             otherItem.time !== item.time &&
             otherItem.isBooked !== item.isBooked
         )
     })
- }
+}
 
 
- const updateDoctor = async(req,res) => {
-    const {id} = req.params;
+const updateDoctor = async (req, res) => {
+    const { id } = req.params;
     const updatedInfo = req.body;
     const changedValues = {};
-    try{
-        const existingDoctor = await Doctor.findOne({_id:id});
-        if(!existingDoctor){
+    try {
+        const existingDoctor = await Doctor.findOne({ _id: id });
+        if (!existingDoctor) {
             return res.status(404).json({
-                success:false,
-                message:"Doctor Not Found"
+                success: false,
+                message: "Doctor Not Found"
             })
         }
 
 
         Object.entries(updatedInfo).forEach(([key, value]) => {
-            if(existingDoctor[key] === 'slots'){
-                if(!checkSlotsFields){
+            if (existingDoctor[key] === 'slots') {
+                if (!checkSlotsFields) {
                     changedValues[key] = value
                 }
             }
-            else if (existingDoctor[key] !== value){
+            else if (existingDoctor[key] !== value) {
                 changedValues[key] = value
             }
         })
 
-        if(Object.keys(changedValues).length === 0){
+        if (Object.keys(changedValues).length === 0) {
             return res.status(200).json({
-                success:false,
-                message:"No change Detected"
+                success: false,
+                message: "No change Detected"
             })
         }
         const update = await Doctor.findOneAndUpdate(
-            {_id:existingDoctor._id},
-            {$set:{changedValues}},
-            {new:true}
+            { _id: existingDoctor._id },
+            { $set: { changedValues } },
+            { new: true }
         )
         return res.status(201).json({
-            success:true,
-            message:"Doctor Profile successfully Updated",
-            newProfile:update
+            success: true,
+            message: "Doctor Profile successfully Updated",
+            newProfile: update
         })
 
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
-            success:false,
-            message:"Got server error while creating adding Doctor",
-            err:err.message
+            success: false,
+            message: "Got server error while creating adding Doctor",
+            err: err.message
         })
     }
 
- }
+}
 
- // manage Bookings like cancel or change the timings
+// manage Bookings like cancel or change the timings
 
- const manageAppointments = async(req,res) => {
+const manageAppointments = async (req, res) => {
 
-    const {id} = req.params;
+    const { id } = req.params;
     const updatedInfo = req.body;
-    try{
+    try {
         const update = await Doctor.updateOne(
-            {_id:id},
-            {$set:{...req.body}},
-            {new:true}
+            { _id: id },
+            { $set: { ...req.body } },
+            { new: true }
         )
-        if(!allAdmins.length){
+        if (!allAdmins.length) {
             return res.status(404).json({
-                success:false,
-                message:"No Admin found"
+                success: false,
+                message: "No Admin found"
             })
         }
         return res.status(201).json({
-            success:true,
-            message:"Doctor Profile successfully Created",
+            success: true,
+            message: "Doctor Profile successfully Created",
         })
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
-            success:false,
-            message:"Got server error while creating adding Doctor",
-            err:err.message
+            success: false,
+            message: "Got server error while creating adding Doctor",
+            err: err.message
         })
     }
 
- }
+}
 
- const fetchAllAdmins = async(req,res) => {
+const fetchAllAdmins = async (req, res) => {
 
-    try{
+    try {
         const allAdmins = await Admin.find({});
-        if(!allAdmins.length){
+        if (!allAdmins.length) {
             return res.status(404).json({
-                success:false,
-                message:"No Admin found"
+                success: false,
+                message: "No Admin found"
             })
         }
         return res.status(200).json({
-            success:true,
-            message:"Admins have successfully found",
+            success: true,
+            message: "Admins have successfully found",
             allAdmins
         })
-    }catch(err){
+    } catch (err) {
         return res.status(500).json({
-            success:false,
-            message:"Got server error while fetching all Admins",
-            err:err.message
+            success: false,
+            message: "Got server error while fetching all Admins",
+            err: err.message
         })
     }
 
- }
+}
 
- export {fetchAllAdmins, createDoctor, updateDoctor}
+export { fetchAllAdmins, createDoctor, updateDoctor }
+

@@ -16,6 +16,7 @@ import {useEffect, useState } from 'react';
 
 import Home from './Home/home';
 import { useAuth } from './context/appContext';
+import AllDoctors from './features/Doctor/allDoctorsList';
 
 
     function App() {
@@ -33,14 +34,12 @@ import { useAuth } from './context/appContext';
       return (
         <div>
           <Toaster position='top-center'/>
-          
-          <Routes>
-           
+          <Routes>    
               <Route path="/" element={<Home />} />
               {userRoutes.map((route,index) => (
                 <Route key={`user-${index}`} {...route} />
-              ))}
-            {doctorRoutes.map((route, index) => (
+              ))}             
+              {doctorRoutes.map((route, index) => (
                   <Route key={`doctor-${index}`} path={route.path} element={
                     <ProtectedRoute 
                     isAuthenticated={isAuthenticated}

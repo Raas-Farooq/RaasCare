@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 const Authenticate = (req,res,next) => {
-    console.log("req cookiee ", req.cookies);
     const tokenAccessed = req.cookies.token;
     if(!tokenAccessed){
         return res.status(401).json({message:'No token is provided'})

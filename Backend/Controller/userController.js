@@ -88,7 +88,6 @@ const registerUser = async (req, res) => {
 
 
         const securedPassword = await bcrypt.hash(password, saltRounds);
-        console.log("secured password: ", securedPassword);
         const newUser = new Patient({
             username,
             email,
@@ -177,10 +176,10 @@ const userLogin = async (req, res) => {
             })
         }
         let token;
-        let expiryTime = 30 * 60;
+        let expiryTime = 50 * 60;
         try {
 
-            token = jwt.sign({ id: userExist._id, email: userExist.email, role: userExist.role }, process.env.JWT_SECRET, { expiresIn: '30m' });
+            token = jwt.sign({ id: userExist._id, email: userExist.email, role: userExist.role }, process.env.JWT_SECRET, { expiresIn: '50m' });
             console.log("token after signing ", token);
         }
         catch (err) {

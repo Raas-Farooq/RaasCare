@@ -1,10 +1,14 @@
 import Register from "../User/RegisterLogin/register.tsx"
 import Login from "../User/RegisterLogin/login.tsx"
+import DoctorPublicProfile from "../../features/Doctor/doctorProfile.tsx"
+import AllDoctors from "../../features/Doctor/allDoctorsList.tsx"
 
 
 const userRoutes = [
-     {path:"/register", element:<Register /> },
-     {path:"/login", element:<Login /> }
+     {path:"/register", element:<Register />,public:true },
+     {path:"/login", element:<Login />,public:true },
+     {path:"/allDoctorsPublic", element:<AllDoctors />,public:true },
+     {path:"/doctorPublicProfile/:doctorId", element:<DoctorPublicProfile />,public:true }
 ]
    
 

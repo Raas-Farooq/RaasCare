@@ -8,6 +8,7 @@ import adminRouter from './routes/adminRoutes.js';
 import cookieParser from 'cookie-parser';
 import Patient from './models/patient.js';
 import fileUpload from 'express-fileupload';
+import doctorRoutes from './routes/doctorRoutes.js';
 config()
 
 
@@ -37,6 +38,7 @@ app.get('/', (req, res) => {
 app.use('/pms', patientRoutes);
 app.use('/pms', adminRouter);
 app.use('/pms', userRoutes)
+app.use('/pms', doctorRoutes);
 // app.get('/', (req, res) => {
 //   console.log('Received cookies:', req.cookies);
 //   res.send('Check your server logs');

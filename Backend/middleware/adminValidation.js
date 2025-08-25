@@ -25,6 +25,13 @@ const createDoctorValidation = [
     body('about').isString().isLength({min:10}).withMessage("About Area Should have atleat 10 characters"),
     body('address').isString().notEmpty().withMessage("please Enter Doctor Location"),
     body('consultationFee').isNumeric().notEmpty().withMessage("consultationFee is required"),
+    body('availableDays')
+    .isArray({min:1})
+    .withMessage("There must be one day of the week")
+    .custom((days) => {
+        const acceptableDays= ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        return days.every(day => acceptableDays.includes(day));
+    }).withMessage("Day must be valid and from this list (Mon, Tue, Wed, Thu, Fri, Sat, Sun)"),
     body('slots.*.slotTime').isString().notEmpty().withMessage("Slot time must be mentioned"),
     body('slots.*.isBooked').isBoolean().withMessage("Slot booking status required"),
     body('slots.*.patientId').optional().isMongoId().withMessage("Patient ID must be valid"),

@@ -1,13 +1,14 @@
-import { useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
-import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check } from "lucide-react";
+import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, DeleteIcon, CircleX, CheckCircle } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
+import axios from "axios";
 
 
 const DoctorHome = () => {
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile'>('Dashboard');
-
+  const { setDoctorProfile } = useAuth();
   const [bookingDetails, setBookingDetails] = useState([{
     patientName: 'Ali',
     paymentMethod: 'cash',
@@ -15,7 +16,7 @@ const DoctorHome = () => {
     age: '29',
     fee: '$30',
     status: 'Completed',
-    action:'Done'
+    action: 'Done'
   },
   {
     patientName: 'Hamza',
@@ -24,7 +25,7 @@ const DoctorHome = () => {
     age: '33',
     fee: '$40',
     status: 'Completed',
-    action:'Done'
+    action: 'Done'
   },
   {
     patientName: 'Shayan',
@@ -33,7 +34,7 @@ const DoctorHome = () => {
     age: '39',
     fee: '$50',
     status: 'Completed',
-    action:'Done'
+    action: 'Done'
   },
   {
     patientName: 'Faiz',
@@ -42,7 +43,7 @@ const DoctorHome = () => {
     age: '27',
     fee: '$30',
     status: 'Pending',
-    action:'cancel'
+    action: 'cancel'
   }]);
 
   const { doctorProfile } = useAuth();
@@ -53,16 +54,61 @@ const DoctorHome = () => {
   // }
 
   useEffect(() => {
-    console.log("doctorProfile ", doctorProfile);
+
   }, [])
 
 
-  // function handlePatientClick(id: string, name: string) {
-  //   navigate(`/doctor-dashboard/profile/${id}`);
+  async function handleAppointment(action: string, patientId: string, day: string, time: string) {
+    console.log("Cancel clicked ", action)
+    console.log("day ", day, "tim ", time, patientId,);
+    if (!day || !time) {
+      alert("please provide the day and time of cancelling appointment");
+      return;
+    }
+    if (!patientId) {
+      alert("For cancelling Appointment patient Id is required");
+      alert;
+    }
 
-  // }
+    try {
+      let response;
+      if (action === 'cancel') {
+        response = await axios.post(`http://localhost:2500/pms/cancelAppointment/${doctorProfile?._id}`,
+          {
+            patientId,
+            slotDay: day,
+            slotTime: time
+          },
+          { withCredentials: true }
+        )
+      }
+      else {
+        response = await axios.post(`http://localhost:2500/pms/completeAppointment/${doctorProfile?._id}`,
+          {
+            patientId,
+            slotDay: day,
+            slotTime: time
+          },
+          { withCredentials: true }
+        )
+      }
 
-  const stylingOfMain=`w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`
+      console.log("response: ", response);
+      if (response.data.success) {
+        const data = response.data;
+        setDoctorProfile(data.updatedProfile);
+        localStorage.setItem('doctorProfile', JSON.stringify(
+          data.updatedProfile
+        ))
+      }
+
+    }
+    catch (err) {
+      console.error("got error while making request", err);
+    }
+  }
+
+  const stylingOfMain = `w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`
 
   return (
     <>
@@ -71,25 +117,25 @@ const DoctorHome = () => {
         <nav className="w-full max-w-5xl mx-auto py-4 px-2">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <button
-            aria-selected={activeTab === 'Dashboard'}
-            onClick={() => setActiveTab('Dashboard')} 
-            className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Dashboard' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+              aria-selected={activeTab === 'Dashboard'}
+              onClick={() => setActiveTab('Dashboard')}
+              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Dashboard' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
             >
               <LayoutDashboardIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Dashboard</span>
             </button>
-            <button 
-            onClick={() => setActiveTab('Appointments')} 
-            aria-selected={activeTab === 'Appointments'}
-            className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Appointments' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+            <button
+              onClick={() => setActiveTab('Appointments')}
+              aria-selected={activeTab === 'Appointments'}
+              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Appointments' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
             >
               <BookAIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Appointments</span>
             </button>
-            <button 
-            onClick={() => setActiveTab('Profile')}
-            aria-selected={activeTab === 'Profile'} 
-            className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Profile' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}>
+            <button
+              onClick={() => setActiveTab('Profile')}
+              aria-selected={activeTab === 'Profile'}
+              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Profile' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}>
               <User className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">
                 Profile
@@ -148,17 +194,55 @@ const DoctorHome = () => {
                   <h2 className="text-lg font-semibold text-gray-800">Latest Bookings</h2>
                 </div>
                 <div className="px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <UserIcon className="w-5 h-5 text-gray-500" />
+                  <div className="flex flex-col w-full justify-between">
+                    {doctorProfile?.availableDays?.map((slotsData, index) => (
+                      <div key={index}>
+                        {slotsData.slots?.map((slot, slotIndex) => (
+                          <div key={slotIndex} className="flex items-center space-x-4">
+                            {(slot.isBooked || slot.isCancelled || slot.isCompleted) && (
+                              <div>
+                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                  <UserIcon className="w-5 h-5 text-gray-500" />
+                                </div>
+                                <h3 className="">{slot.patientName}</h3>
+                                <div className="grid grid-cols-2 justify-between">
+                                  <div className="font-medium text-gray-800">
+                                    {(!(slot.isCompleted) && slot.isBooked) &&
+                                      <div className="flex gap-4">
+                                        <button
+                                          onClick={() => handleAppointment('complete', slot.patientId as string, slotsData.day, slot.slotTime)}
+                                          className="text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                          <CheckCircle />
+                                        </button>
+                                        <button
+                                          onClick={() => handleAppointment('cancel', slot.patientId as string, slotsData.day, slot.slotTime)}
+                                          className="text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                          <CircleX />
+                                        </button>
+                                      </div>
+                                    }
+                                    {slot.isCancelled && (
+                                      <div>
+                                        <p className="text-pink-500 text-xs">cancelled</p>
+                                      </div>
+                                    )}
+                                    {slot.isCompleted && (
+                                      <div>
+                                        <p className="text-green-500 text-xs">completed</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="mb-10">
+                                    <p className="text-sm text-gray-500">{doctorProfile.speciality} - {slot.slotTime}</p>
+                                    <h2 className="text-sm text-gray-500">{slotsData.day}</h2>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-800">John Smith</p>
-                        <p className="text-sm text-gray-500">Cardiology - 10:30 AM</p>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-500">Today</div>
+                    ))}
                   </div>
                 </div>
               </div>
