@@ -11,26 +11,44 @@ import axios from "axios";
 function Home() {
   const { userRole } = useAuth();
   const navigate = useNavigate();
+
+
   useEffect(() => {
     const userRole = localStorage.getItem('role');
     console.log("this i sthe userRole ", userRole);
   }, [])
 
-  useEffect(() => {
-    async function allPatients(){
+  function learning(){
+    // function destructure([first, second]:string[]){
+    //   console.log("first ", first[0]);
+    //   console.log("second ", second);
+    // }
+    // const first = 'Embrace the Journey of Life';
+    // const second = 'Journey will matter At the END'
+    // destructure([first, second])
+    new Promise((reject) => {
+      console.log("rejected promise")
+    })
+    const timeProvider = new Promise((resolve, reject) => {
+      setTimeout(function display(){
+        if(5 > 8){
+          resolve("Yes 5 Won")
+        }
+        else{
+          reject("5 Need to be Patient and success inshallah is coming by..")
+        }
+      },1000)
+    })
 
-      try{
-        const response = await axios.get('http://localhost:2500/pms/getAllPatientsProfiles');
-        console.log("all patients response ", response);
-      }
-      catch(err){
-        console.error("got error while fetching all Patients ", err);
-      }
-    }
-
-    allPatients();
-  }, [])
-
+    timeProvider.then((mes) => {
+      console.log("timer is there", mes)
+    }).catch((error) => {
+      console.log("we all make errors ",error)
+    })
+  }
+    
+// first:'With your Nafs', second:'With your external environment'
+ 
   return (
     <>
       <section className="Hero-Section relative bg-gradient-to-r from-purple-50 to-white">
@@ -53,7 +71,7 @@ function Home() {
               className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
-            <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+            <button onClick = {learning} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
             </button>
           </div>
@@ -227,3 +245,55 @@ export default Home
 // raas@gmail.com raas$0022
 
 //has to ask about usage of curly braces with Route:- when using with object we don't use {} with 'element' but why use when then when Route is not sorrounded by object?
+
+// Linked List example:
+// class ListNode{
+//       val:number
+//       next:ListNode | null
+//       constructor(val?:number, next?:ListNode | null){
+//         this.val=(val === undefined ? 0 : val),
+//         this.next=(next === undefined ? null : next)
+//       }
+//     }
+
+//     class LinkedList<T>{
+//       head:Node | null
+//       length:number 
+//       constructor(){
+//         this.head=null,
+//         this.length=0
+//       }
+//     }
+
+//     function isPalindrome(head: ListNode | null): boolean {
+    
+//     let dummyNode = new ListNode(0);
+//     dummyNode.next= head;
+//     let reversed = dummyNode;
+//     let current = head;
+//     let count =0;
+//     while(current !== null){
+//         // dummyCopy.next = current.next
+//         count+= 1;
+//         current=current.next;
+//     }
+    
+//     let i=0;
+//     let mid = Math.floor(count/2)
+//     while(i < count){
+//         current = head;
+//         let j = 0;
+//         while(j< mid){
+            
+//             const nextNode = current?.next;
+//             // current.next= reversed;
+//             // reversed = current;
+//             // current = nextNode;
+//             j++;
+//         }
+        
+//         i++
+//     }
+//     console.log("dummy ", dummyNode, "reversed ", reversed);
+    
+//     return false

@@ -5,17 +5,39 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useAuth } from "../../context/appContext";
+import useFetchApi from "./fetchRequestHook";
+import ngrokRequest from "../../ngrokRequesthook";
+import makeNgrokRequest from "../../ngrokRequesthook";
 
 interface Slots {
     slotTime: string,
-    isBooked: boolean,
-    isCancelled: boolean,
-    isCompleted: boolean,
-    _id?: string
+    isBooked?: boolean,
+    isCancelled?: boolean,
+    isCompleted?: boolean,
+    slotId?: string
 }
-interface AvailableDays {
-    day: string,
+interface BookedSlots {
+    doctorId: string,
+    slotTime: string,
+    isBooked: boolean,
+    isCancelled?: boolean,
+    source: string,
+    slotDate: {
+        startDate: Date,
+        endDate?: Date
+    },
+    isCompleted?: boolean,
+    patientId?: string,
+    patientName: string,
+    _id: string,
+}
+interface ReceiveAvailableSlots {
+    date: string,
     slots: Slots[]
+}
+interface DoctorDays {
+    day: string,
+    slots: [string]
 }
 interface ProfileImage {
     imageUrl: string,
@@ -34,98 +56,145 @@ interface DoctorProfileInterface {
     about: string,
     address: string,
     consultationFee: number,
-    availableDays: AvailableDays[]
+    availableDays: DoctorDays[]
 }
+
 
 function DoctorPublicProfile() {
     const fetchRef = useRef(false);
     const [doctorProfile, setDoctorProfile] = useState<DoctorProfileInterface | null>(null);
+    const [doctorSlotsAvailable, setDoctorSlotsAvailable] = useState<ReceiveAvailableSlots[] | null>(null);
     const [daySelected, setDaySelected] = useState('');
-    const [timeSelected, setTimeSelected] = useState('');
-    const {user, userRole} = useAuth();
+    const [selectedSlot_id, setSelectedSlot_id] = useState('');
+    const { user, userRole, bookedSlots, setBookedSlots } = useAuth();
     const navigate = useNavigate();
 
     const { doctorId } = useParams();
+    const urlLink = 'http://localhost:2500/pms/fetchDoctorProfile';
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
+
+    
+    const { fetchLoading, fetchResult, fetchError } = useFetchApi(backendUrl, doctorId || null);
+    const gain = { gain: 'No pain No gain' };
+
+    
     useEffect(() => {
-        if (fetchRef.current) return;
-        fetchRef.current = true;
+        if (fetchResult) {
+            setDoctorProfile(fetchResult);
+        }
+    },[fetchResult]);
+
+    useEffect(() => {
+        if (fetchResult) {
+            setDoctorProfile(fetchResult);
+        }
+        if (!doctorId) {
+            return;
+        }
+        console.log("backend url; ", backendUrl);
         const fetchDoctorProfile = async () => {
-            const toastId = toast.loading('Loading Doctors');
+            const toastId = toast.loading('');
             try {
-                const fetchResponse = await axios.get(`http://localhost:2500/pms/fetchDoctorProfile/${doctorId}`);
+                console.log("docId before: ", doctorId);
+                const fetchResponse = await makeNgrokRequest({url:`pms/getDoctorAvailableDays/${doctorId}`, method:'get'});
+                console.log("doctor available days response; ", fetchResponse);
                 if (fetchResponse.data.success) {
-                    console.log('doctors fetchResponse ', fetchResponse);
-                    setDoctorProfile(fetchResponse.data.doctorProfile);
+                    console.log('generate doctor slots Results ', fetchResponse);
+                    setDoctorSlotsAvailable(fetchResponse.data.remainingSlots);
                     toast.success("loaded doctors successfully", { id: toastId })
                 }
             }
             catch (err) {
                 toast.error("Error while fetching Doctors", { id: toastId })
-                console.error("Get Error while fetching all doctors", err);
+                console.error("Get Error while generating all doctors slots", err);
             }
         }
         fetchDoctorProfile()
-    }, [doctorId])
+    }, [fetchResult])
 
-    const handleSlotSelection = (time:string) => {
+    const handleSlotSelection = (id: string, time: string) => {
         console.log("time received: ", time);
-        setTimeSelected(time);
+        setSelectedSlot_id(id);
     }
 
-    const handleDaySelected = (day:string) => {
+    const handleDaySelected = (day: string) => {
         console.log("day Selected: ", day);
         setDaySelected(day);
     }
 
-    const handleMakeAppointment = async() => {
-        if(!userRole){
+    function syncSlots(bookedSlots: BookedSlots[] | null, newSlot: BookedSlots) {
+        console.log("newSlots: ", newSlot);
+        if (bookedSlots && bookedSlots.length > 0) {
+            const validDateSlots = bookedSlots.map((slots: BookedSlots) => {
+                return {
+                    ...slots,
+                    slotDate: {
+                        startDate: new Date(slots.slotDate.startDate),
+                        endDate: slots.slotDate.endDate ? new Date(slots.slotDate.endDate) : null
+                    }
+                }
+            })
+            const formattedSlots = [...validDateSlots, newSlot ]
+            console.log("using new Techninqueee....", formattedSlots);
+        } else {
+            const newSlotArr = [newSlot];
+            setBookedSlots(newSlotArr)
+        }
+
+    }
+    const handleMakeAppointment = async () => {
+        if (!userRole) {
             const loginConfirm = window.confirm("please login within seconds to Confirm your appointment");
-            if(loginConfirm){
+            if (loginConfirm) {
                 navigate('/login')
             }
             return;
         }
-        else if(userRole !== 'patient'){
+        else if (userRole !== 'patient') {
             alert("You aren't allowed to make an appointment");
             return;
         }
-        
-        else if(!timeSelected || !daySelected){
+
+        else if (!selectedSlot_id) {
             alert('You must select the time slot and day to confirm booking');
             return;
         }
         let storedUser;
-        try{
+        try {
             const localStoredUser = localStorage.getItem('auth');
-            if(localStoredUser){
+            if (localStoredUser) {
                 storedUser = JSON.parse(localStoredUser);
             }
         }
-        catch(err){
+        catch (err) {
             console.error("error while fetching locallay stored user ", err);
         }
-        
-        console.log("userRole ", userRole, 'timeSelected ',timeSelected, ' daySelected ', daySelected, 'user from localStorage', storedUser.user.username);
 
-        try{
-            const response = await axios.post(`http://localhost:2500/pms/bookAppointment/${user?.id}`,
+        console.log("userRole ", userRole, 'selectedSlot_id ', selectedSlot_id, 'user from localStorage', storedUser);
+
+        try {
+            const response = await axios.post(`${backendUrl}/pms/bookSlot/${selectedSlot_id}`,
                 {
                     docId: doctorId,
-                    selectedDay: daySelected,
-                    selectedTime: timeSelected,
-                    patientName:storedUser.user.username
-                    
+                    patientId: storedUser.user.id,
+                    patientName: storedUser.user.username
+
                 },
                 {
-                    withCredentials:true
+                    withCredentials: true
                 }
             )
             console.log("response of appointment booking ", response)
-            if(response.data.success){
+            if (response.data.success) {
+                const newSlot = response.data.slot;
+                if (Object.keys(newSlot).length > 0) {
+                    syncSlots(bookedSlots, newSlot);
+                }
+
                 console.log("Success")
             }
         }
-        catch(err){
+        catch (err) {
             console.error('Got Error :', err);
         }
     }
@@ -143,6 +212,12 @@ function DoctorPublicProfile() {
         );
     }
 
+    if (fetchLoading) return <h2> Loading..</h2>
+    if (fetchError) console.error('error while fetching the doctor profile: ', fetchError);
+    // if(Object.keys(fetchResult).length ){
+    //     alert('Got fetchResult')
+    //     console.log("Fetch result " ,fetchResult);
+    // }
     return (
 
         <main className="container mx-auto px-4 py-8">
@@ -189,29 +264,42 @@ function DoctorPublicProfile() {
                             {doctorProfile.availableDays?.map((slot, index) => (
                                 <>
                                     <div key={index}>
-                                        <button onClick={() => handleDaySelected(slot.day)} 
-                                        key={index} className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-blue-200 shadow-sm ring-2 focus:ring-2 focus:ring-green-500 focus:bg-blue-200">
+                                        {doctorSlotsAvailable && <p>available Slots : {doctorSlotsAvailable.length} </p>}
+                                        <button onClick={() => handleDaySelected(slot.day)}
+                                            key={index} className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-blue-200 shadow-sm ring-2 focus:ring-2 focus:ring-green-500 focus:bg-blue-200">
                                             <span className="hover:bg-blue-200">
                                                 {slot.day}
                                             </span>
                                         </button>
+
                                     </div>
                                 </>
                             ))}
-                             {doctorProfile.availableDays?.map((slot, index) => (
-                             <div className="flex">
-                                        {index < slot.slots.length && (
-                                            <button key={index} onClick={() => handleSlotSelection(slot.slots[index].slotTime)}
-                                                className="py-2 px-4 !bg-blue-100 rounded-3xl shadow:md hover:shadow-lg hover:!bg-blue-300">
-                                                {slot.slots[index].slotTime}
-                                            </button>
-                                        )}
+                            {doctorSlotsAvailable?.map((day, index) => (
+                                <div key={index} className="flex flex-col">
+                                    <div className="">
+                                        <button
+                                            key={index} className="bg-white border border-gray-200 rounded-lg p-4 hover:bg-blue-200 shadow-sm ring-2 focus:ring-2 focus:ring-green-500 focus:bg-blue-200">
+                                            <span className="hover:bg-blue-200">
+                                                {day.date.split('T')}
+                                            </span>
+                                        </button>
+                                        {day.slots?.map(slot => (
+                                            <>
+                                                <button onClick={() => handleSlotSelection(slot.slotId as string, slot.slotTime)}
+                                                    className="py-2 px-4 !bg-blue-100 rounded-3xl shadow:md hover:shadow-lg hover:!bg-blue-300">
+                                                    {slot.slotTime}
+                                                </button>
+                                            </>
+                                        ))}
                                     </div>
-                             ))}
+
+                                </div>
+                            ))}
                         </div>
                     </div>
                     <div className="mb-4"
-                    onClick={handleMakeAppointment}>
+                        onClick={handleMakeAppointment}>
 
                         <button className="bg-purple-400 rounded-full px-2 py-3 hover:shadow-md hover:bg-purple-500"> Make Appointment</button>
                     </div>
@@ -230,3 +318,29 @@ function DoctorPublicProfile() {
 }
 
 export default DoctorPublicProfile
+
+//  {doctorSlotsAvailable?.map((slot, index) => (
+//     <div className="flex">
+//         {index < slot?.slots?.length && (
+//             <button key={index} onClick={() => handleSlotSelection(slot.slots[index].slotId, slot.slots[index].slotTime)}
+//                 className="py-2 px-4 !bg-blue-100 rounded-3xl shadow:md hover:shadow-lg hover:!bg-blue-300">
+//                 {slot.slots[index].slotTime}
+//             </button>
+//         )}
+//     </div>
+// ))}
+
+//                             interface Slots {
+//     slotTime: string,
+//     isBooked?: boolean,
+//     isCancelled?: boolean,
+//     isCompleted?: boolean,
+//     slotId?: string
+// }
+// interface ReceiveAvailableSlots{
+//     date:string,
+//     slots:Slots[]
+// }
+// getting error of 'Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+//   Type 'undefined' is not assignable to type 'string' on slotId 
+//   then i did 'handleSlotSelection(slot.slots[index].slotId as string' and the error goes away. is it good way to debug these errors?

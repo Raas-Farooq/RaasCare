@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
-import { toast } from "react-toastify"
+import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
 
@@ -16,6 +16,7 @@ import { useAuth } from "../../../context/appContext"
             // .regex(/[!@#$%&*]/, 'Password should contains atleast one Special Case Letter')
         })
 
+const backend_url = import.meta.env.VITE_BACKEND_URL
 type SubmitProps=z.infer<typeof loginSchema>
 const Login = () => {
         const {login} = useAuth()
@@ -24,41 +25,24 @@ const Login = () => {
             resolver:zodResolver(loginSchema)
         })
 
-        // useEffect(() => {
-        //     console.log("userRole, isloggedIn inside login Component: ", userRole, "isLogged ", isLoggedIn, "setIsAuthenticated ");
-        //     if(2 < 5){
-        //         setIsAuthenticated(true);
-        //     }
-        //     const fetchAllUsers = async() => {
-        //          try{
-        //          const response = await axios.get(`http://localhost:2500/pms/getAllUsers`);
-        //          console.log("response of getting all Uses: ", response);
-        //          if(response.data.success){
-        //             console.log("response.data ", response.data);
-        //          }
-        //     }
-        //     catch(err){
-        //         console.error("error while fetching all Users: ", err);
-        //     }
-        //   }
-        //   fetchAllUsers();
-        // },[])
-
-  
+       
+        
         const submitResult = async(data:SubmitProps) => {
-            
+              const toastId = toast.loading('Signing In..')
             try{
-                const response = await axios.post('http://localhost:2500/pms/loginUser',
+              
+                console.log(" vite backend url: ",backend_url);
+                const response = await axios.post(`${backend_url}/pms/loginUser`,
                     { email:data.email, password:data.password}, 
                     {
                     withCredentials:true,
                 })
                 if(response.data.success){
                     console.log("frontend response of login:", response.data);
-                    toast.success("Successfully LoggedIn");
+                    toast.success("Successfully LoggedIn", {id:toastId});
                     const loginResponse = response.data;
                     const role = loginResponse.user.role; 
-                    login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile);
+                    login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
                     console.log("user role after login: ", role);
                     switch(role){
                         case 'patient':{
@@ -80,6 +64,7 @@ const Login = () => {
                 }
                 
             }catch(err){
+                toast.error("Error while logging In", {id:toastId});
                 console.log("error while logging the user", err)
             }
         }

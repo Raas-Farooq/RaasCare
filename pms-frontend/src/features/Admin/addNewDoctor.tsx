@@ -17,7 +17,7 @@ interface doctorProfileInfoType {
     speciality: string,
     address: string,
     consultationFee: number,
-    slots: TimeSlots[]
+    // slots:TimeSlots
 }
 
 
@@ -34,6 +34,8 @@ const AddNewDoctor = () => {
                 }
             );
             if(response.data.success){
+                localStorage.removeItem('doctorProfileImage');
+                localStorage.removeItem('doctorProfilePublic_id');
                 toast.dismiss(toastId);
                 toast.success('Success! Doctor Added');
             }

@@ -31,18 +31,13 @@ const createDoctor = async (req, res) => {
         }
         const securedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
         let combinedSlots;
-        if (availableDays) {
+        if (Array.isArray(availableDays) && availableDays.length > 0) {
             combinedSlots = availableDays.map((day, index) => {
                 return {
                     day,
-                    slots
+                    slots: slots.map(slot => slot.slotTime)
                 }
             })
-
-            // console.log("have a combined Slots: ", newSlots)
-        }
-
-        if (combinedSlots) {
             const addDoctor = new Doctor({
                 username,
                 email: email,
@@ -59,14 +54,14 @@ const createDoctor = async (req, res) => {
             })
 
             await addDoctor.save();
-            // console.log("addDoctor :", addDoctor);
+            return res.status(201).json({
+                success: true,
+                message: "Doctor Profile successfully Created",
+                doctor: addDoctor
+            })
         }
 
-        return res.status(201).json({
-            success: true,
-            message: "Doctor Profile successfully Created",
-            doctor:addDoctor
-        })
+
     } catch (err) {
         return res.status(500).json({
             success: false,

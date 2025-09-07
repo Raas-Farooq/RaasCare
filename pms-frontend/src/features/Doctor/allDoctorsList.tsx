@@ -3,6 +3,7 @@ import { ArrowRight, DollarSign, Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
+import makeNgrokRequest from "../../ngrokRequesthook";
 
 interface TimeSlots {
     slotTime: string,
@@ -31,14 +32,15 @@ interface AllDoctorInterface {
 const AllDoctors = () => {
     const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]>([]);
     const fetchRef = useRef(false);
-
+    const backend_url = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
         if (fetchRef.current) return;
         fetchRef.current = true;
+        console.log(" backendUrl: all Doctors ", backend_url);
         const fetchDoctors = async () => {
             const toastId = toast.loading('Loading Doctors');
             try {
-                const fetchResponse = await axios.get('http://localhost:2500/pms/fetchAllDoctors');
+                const fetchResponse = await makeNgrokRequest({url:'pms/fetchAllDoctors', method:'get'})
                 if (fetchResponse.data.success) {
                     console.log('doctors fetchResponse ', fetchResponse);
                     setAllDoctors(fetchResponse.data.doctorsList);
@@ -55,7 +57,7 @@ const AllDoctors = () => {
 
 
     return (
-        <div className="min-h-screen bg-gray-50 mx-auto px-4 py-8">
+        <div className="relative min-h-screen bg-gray-50 mx-auto px-4 py-8">
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-3xl text-teal-700 mb-8 text-center">Our Experienced Team</h1>
                 <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-center">

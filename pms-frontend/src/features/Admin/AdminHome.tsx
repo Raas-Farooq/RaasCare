@@ -1,54 +1,71 @@
 
-import { BookAIcon, DollarSignIcon, LayoutDashboardIcon, User, Users } from "lucide-react";
+import { BookAIcon, Check, Delete, DollarSignIcon, LayoutDashboardIcon, Trash, User, Users } from "lucide-react";
 import { useState } from "react";
 import DashboardCharts from "./charts/dashboardCharts";
 import AddNewDoctor from "./addNewDoctor";
+import { useAuth } from "../../context/appContext";
+import toast from "react-hot-toast";
+import axios from "axios";
 
+interface BookedSlot {
+  isBooked: boolean,
+  isCancelled: boolean,
+  isCompleted: boolean,
+  doctorId: string,
+  patientId: string,
+  patientName: string,
+  source: string,
+  slotDate: {
+    startDate: string,
+    endDate?: string
+  },
+  slotTime: string,
+  _id: string
+}
 
 const AdminHome = () => {
 
 
-
+    const { bookedSlots, setBookedSlots, userRole } = useAuth();
     const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile'>('Dashboard');
 
-    const [bookingDetails, setBookingDetails] = useState([{
-        patientName: 'Ali',
-        paymentMethod: 'cash',
-        date: '8 July 09-10 AM',
-        age: '29',
-        fee: '$30',
-        status: 'Completed',
-        action: 'Done'
-    },
-    {
-        patientName: 'Hamza',
-        paymentMethod: 'online',
-        date: '18 July 09-10 AM',
-        age: '33',
-        fee: '$40',
-        status: 'Completed',
-        action: 'Done'
-    },
-    {
-        patientName: 'Shayan',
-        paymentMethod: 'cash',
-        date: '28 July 11-12 AM',
-        age: '39',
-        fee: '$50',
-        status: 'Completed',
-        action: 'Done'
-    },
-    {
-        patientName: 'Faiz',
-        paymentMethod: 'cash',
-        date: '15 Aug 09-10 AM',
-        age: '27',
-        fee: '$30',
-        status: 'Pending',
-        action: 'cancel'
-    }]);
+    const stylingOfMain = `w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`;
+    async function handleAppointment(action: string, slotId: string, docId: string) {
+        try {
+            let response;
+            response = await axios.post(`http://localhost:2500/pms/updateSlotStatus/${slotId}`,
+                {
+                    action,
+                    docId,
+                    role:userRole
+                },
+                { withCredentials: true }
+            )
+            console.log("response: ", response);
+            if (response.data.success) {
+                toast.dismiss();
+                toast.success(`successfully ${action}ed the Slot`)
+                if (response.data.updatedSlots.length) {
+                    const updatedSlots = response.data.updatedSlots;
+                    localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
+                    const parsedBookedSlots = updatedSlots.map((slots: BookedSlot) => (
+                        {
+                            ...slots,
+                            slotDate: {
+                                startDate: new Date(slots.slotDate.startDate),
+                                endDate: slots.slotDate.endDate ? new Date(slots.slotDate.endDate) : undefined,
+                            }
+                        }
+                    ))
+                    setBookedSlots(parsedBookedSlots)
+                }
+            }
 
-    const stylingOfMain = `w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`
+        }
+        catch (err) {
+            console.error(`got error while making an appointment ${action} request`, err);
+        }
+    }
     return (
         <>
             <div className="bg-gray-50 min-h-screen">
@@ -146,27 +163,53 @@ const AdminHome = () => {
                                     <thead className="border border-gray-100 text-sm md:text-base">
                                         <tr>
                                             <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Name</th>
+                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Payment</th>
                                             <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Date</th>
-                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Age</th>
                                             <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Fee</th>
                                             <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Status</th>
                                             <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {bookingDetails.map((booking, index) => (
+                                        {bookedSlots && bookedSlots?.map((slot, index) => (
                                             <tr key={index}>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{booking.patientName}</td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4border-b text-gray-700">{booking.age}</td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">{booking.date}</td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{booking.fee}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{slot.patientName}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{index < 3 ? 'cash' : 'online'} </td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">{slot.slotDate.startDate.toLocaleString()}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">Rs 4000</td>
                                                 <td
-                                                    className={`px-6 py-4 border-b font-medium ${booking.status === "Completed"
-                                                        ? "text-green-600"
-                                                        : "text-yellow-600"
-                                                        }`}
-                                                >{booking.status}</td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{booking.action}</td>
+                                                    className={`px-6 py-4 border-b font-medium text-sm
+                                                        ${slot.isCompleted && "text-green-600"} ${slot.isCancelled && 'text-red-600'} ${slot.isBooked && 'text-blue-600'}`}
+                                                >{slot.isBooked && 'Pending' || slot.isCancelled && 'Cancelled' || slot.isCompleted && 'Completed'}</td>
+                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b">
+
+                                                    {slot.isBooked &&
+                                                        <div>
+                                                            <button onClick={() => handleAppointment('cancel', slot._id, slot.doctorId)}
+                                                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                                            >
+                                                                <Delete className="text-red-500" size={15} />
+                                                            </button>
+                                                            <button onClick={() => handleAppointment('complete', slot._id, slot.doctorId)}
+                                                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                                            >
+                                                                <Check className="text-green-500" size={15} />
+                                                            </button>
+                                                        </div>
+                                                    }
+
+                                                    {(slot.isCompleted || slot.isCancelled) &&
+                                                        <div className="text-center">
+                                                            <button onClick={() => handleAppointment('remove', slot._id, slot.doctorId)}
+                                                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                                            >
+                                                                <Trash className="text-red-500" size={15} />
+                                                            </button>
+
+                                                        </div>
+                                                    }
+
+                                                </td>
                                             </tr>
                                         ))}
                                     </tbody>

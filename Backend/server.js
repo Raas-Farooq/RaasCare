@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 import Patient from './models/patient.js';
 import fileUpload from 'express-fileupload';
 import doctorRoutes from './routes/doctorRoutes.js';
+import slotsRoutes from './routes/availableSlotRoutes.js';
 config()
 
 
@@ -17,7 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174'];
+const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://da46e8198308.ngrok-free.app'];
 app.use(cors({
     origin:function(requestOrigin , callback){
 
@@ -39,6 +40,7 @@ app.use('/pms', patientRoutes);
 app.use('/pms', adminRouter);
 app.use('/pms', userRoutes)
 app.use('/pms', doctorRoutes);
+app.use('/pms', slotsRoutes);
 // app.get('/', (req, res) => {
 //   console.log('Received cookies:', req.cookies);
 //   res.send('Check your server logs');
@@ -46,3 +48,5 @@ app.use('/pms', doctorRoutes);
 const Port = 2500;
 ConnectingToDatabase()
 app.listen(Port,() => console.log("port ", Port));
+
+

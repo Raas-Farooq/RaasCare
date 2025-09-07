@@ -3,13 +3,14 @@ import { FaBars, FaTimes } from "react-icons/fa"
 import useWindowSize from "./windowSize";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/appContext";
-import { Heart } from "lucide-react";
+import { Heart, User } from "lucide-react";
 
 
 
 const Navbar = () => {
     const [isShowMenu, setIsShowMenu] = useState(false);
-    const { userRole,logout } = useAuth();
+    const [isPatientCard, setIsPatientCard] = useState(false);
+    const { userRole, logout } = useAuth();
     const { width } = useWindowSize();
     const navigate = useNavigate();
     function handleMenuClick() {
@@ -23,20 +24,38 @@ const Navbar = () => {
         }
     }, [width])
 
+    useEffect(() => {
+
+        console.log("isPatienCatd: ", isPatientCard);
+    }, [isPatientCard])
+
+
     function handleRegister() {
 
         navigate('/register')
     }
-
+    const handleMyAppointments = () => {
+        console.log("my Appointments;  run");
+        navigate('/patient-dashboard/myAppointments')
+    }
     function handleLogout() {
         const confirm = window.confirm("Are You Surely Want to Logout");
-        if(confirm){
+        if (confirm) {
             logout();
         };
     }
 
     function handleLogin() {
         navigate('/login');
+    }
+    function handleUserClick() {
+        console.log("handle user clicked: ")
+        const message = window.confirm('You have clicked the user Menu. Are you sure to Change Yourself');
+        if(message){
+            window.alert("Be alert. Now you will change Every aspect of your life");
+        }else{
+             window.alert("Okay you can Take more time if you have?");
+        }
     }
     const navbarLinks = [
         { name: 'Services', href: "#" },
@@ -51,9 +70,9 @@ const Navbar = () => {
         <div className={`sticky top-0 z-10 flex items-center flex-wrap bg-gradient-to-r from-white to-purple-50 justify-between bg-white shadow-sm px-2 py-4 relative ${isShowMenu ? 'lg:h-auto' : ''}`}>
             <div className="flex gap-3">
                 <header className="text-2xl md:text-3xl text-purple-800 font-semibold ">
-                MediCare
-            </header>
-            <Heart className="text-red-500" size={30}/>
+                    RaasCare
+                </header>
+                <Heart className="text-red-500" size={30} />
             </div>
             <div>
                 <button
@@ -83,29 +102,40 @@ const Navbar = () => {
                 </ul>
             </nav>
             <div className={`w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex'} gap-5`}>
-                {userRole ?
+                {userRole && userRole === 'patient' &&
+                    <div>
+                        <button className={`${isShowMenu && 'hidden'}`}  onClick={() => setIsPatientCard(!isPatientCard)} > {isPatientCard ? <FaTimes /> : <User /> } </button>
+                        <div className={`${isShowMenu || isPatientCard ? 'flex flex-col' : 'hidden'} `}>
+                            <button className="font-normal" onClick={handleMyAppointments}>My Appointments</button>
+                            <button>Profile</button>
+                            <button onClick={handleLogout} >logout</button>
+                        </div>
+                    </div>
+
+                }
+                {userRole && userRole !== 'patient' &&
                     <button
                         onClick={handleLogout}
                         className={`${buttonBase} font-semibold bg-purple-500 text-white hover:bg-purple-600`}>
                         Logout
                     </button>
-                    :
-                    (
-                        <>
-                            <button
-                                onClick={handleLogin}
-                                className={` ${buttonBase} hover:scale-105 font-medium text-gray-700 hover:text-purple-600 ${isShowMenu && 'mr-3 '}`}>
-                                LogIn
-                            </button>
-                            <button
-                                onClick={handleRegister}
-                                className={`${buttonBase} font-semibold bg-purple-500 text-white hover:bg-purple-600`}>
-                                Get Started
-                            </button>
-                        </>
-                    )
 
                 }
+
+                {!userRole &&
+                    <>
+                        <button
+                            onClick={handleLogin}
+                            className={` ${buttonBase} hover:scale-105 font-medium text-gray-700 hover:text-purple-600 ${isShowMenu && 'mr-3 '}`}>
+                            LogIn
+                        </button>
+                        <button
+                            onClick={handleRegister}
+                            className={`${buttonBase} font-semibold bg-purple-500 text-white hover:bg-purple-600`}>
+                            Get Started
+                        </button>
+                    </>}
+
             </div>
         </div>
     )

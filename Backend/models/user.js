@@ -63,26 +63,46 @@ const doctorSchema = new mongoose.Schema({
             {
                 type: String, enum: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
             },
-            slots: [{
-                slotTime: String,
-                isBooked: { type: Boolean, default: false },
-                isCompleted: { type: Boolean, default: false },
-                isCancelled: { type: Boolean, default: false },
-                patientName: {type:String, default:''},
-                patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
-            }]
+            slots: [String]
         }
     ]
-    ,
-    // permissions:{
-    //     type:[String],
-    //     enum:[
-    //         'manage_schedule',
-    //         'view_patient_records'
-    //     ]
-    // }
-
 })
+
+const availableSlotsSchema = new mongoose.Schema({
+    doctorId:{ type:mongoose.Schema.Types.ObjectId, ref:'Doctor', index:true},
+    patientId: {type: mongoose.Schema.Types.ObjectId, ref:'User', default:null},
+    slotTime:String,
+    doctorName:{type:String, index:true},
+    doctorSpeciality:{type:String, index:true},
+    slotDate:{
+        startDate:{type:Date, index:true, required:true},
+        endDate:{type:Date,required:false}
+    },
+    isCancelled:{type:Boolean, default:false},
+    isCompleted:{type:Boolean, default:false},
+    isBooked:{type:Boolean, default:false},
+    patientName:{type:String, default:''},
+    source:{type:String, enum:['template', 'manual'], default:'template'}
+}, {
+    timestamps:true
+})
+ 
+availableSlotsSchema.indexes({doctorId:1, slotDate:1, patientId:1}, {unique:true});
+availableSlotsSchema.indexes({patientId:1, isBooked:1});
+
+const appointmentSchema = new mongoose.Schema({
+  doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
+  patientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  date: {
+    startDate:{type:Date, required:true},
+    endDate:{type:Date, required:false}
+  }, // The actual day (like Fri, Aug 30, 2025)
+  time: String, // "09:00"
+  status: { type: String, enum: ['booked','cancelled','completed'], default: 'booked' }
+});
+
+
+
 
 const adminSchema = new mongoose.Schema({
     department: String,
@@ -93,6 +113,10 @@ const adminSchema = new mongoose.Schema({
 
 const Doctor = User.discriminator('doctor', doctorSchema);
 const Admin = User.discriminator('admin', adminSchema)
+const AvailableSlots = mongoose.model('availableSlots', availableSlotsSchema);
+const Appointments = mongoose.model('appointments', appointmentSchema);
 
 
-export { Doctor, Admin, User }
+export { Doctor, Admin, User, AvailableSlots, Appointments}
+
+

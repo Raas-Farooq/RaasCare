@@ -1,14 +1,33 @@
 import { useEffect, useState } from "react";
 
-import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, DeleteIcon, CircleX, CheckCircle } from "lucide-react";
+import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, DeleteIcon, CircleX, CheckCircle, Trash } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
+import toast from "react-hot-toast";
 
+interface BookedSlot {
+  isBooked: boolean,
+  isCancelled: boolean,
+  isCompleted: boolean,
+  doctorId: string,
+  patientId: string,
+  patientName: string,
+  source: string,
+  slotDate: {
+    startDate: string,
+    endDate?: string
+  },
+  slotTime: string,
+  _id: string
+}
+
+// Add Patient Tab Have to Be Added
 
 const DoctorHome = () => {
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile'>('Dashboard');
-  const { setDoctorProfile } = useAuth();
+  const { doctorProfile, bookedSlots, setBookedSlots, userRole } = useAuth();
+  // const [myBookedSlots, setMyBookedSlots]= useState<BookedSlot[]|null>(null);
   const [bookingDetails, setBookingDetails] = useState([{
     patientName: 'Ali',
     paymentMethod: 'cash',
@@ -17,94 +36,65 @@ const DoctorHome = () => {
     fee: '$30',
     status: 'Completed',
     action: 'Done'
-  },
-  {
-    patientName: 'Hamza',
-    paymentMethod: 'online',
-    date: '18 July 09-10 AM',
-    age: '33',
-    fee: '$40',
-    status: 'Completed',
-    action: 'Done'
-  },
-  {
-    patientName: 'Shayan',
-    paymentMethod: 'cash',
-    date: '28 July 11-12 AM',
-    age: '39',
-    fee: '$50',
-    status: 'Completed',
-    action: 'Done'
-  },
-  {
-    patientName: 'Faiz',
-    paymentMethod: 'cash',
-    date: '15 Aug 09-10 AM',
-    age: '27',
-    fee: '$30',
-    status: 'Pending',
-    action: 'cancel'
   }]);
 
-  const { doctorProfile } = useAuth();
-
-  // const navigate = useNavigate();
-  // const handleAddPatientClick = () => {
-  //   navigate('/doctor-dashboard/addPatient')
-  // }
 
   useEffect(() => {
-
+    console.log("booked slots doctoHome ", bookedSlots);
   }, [])
 
-
-  async function handleAppointment(action: string, patientId: string, day: string, time: string) {
-    console.log("Cancel clicked ", action)
-    console.log("day ", day, "tim ", time, patientId,);
-    if (!day || !time) {
-      alert("please provide the day and time of cancelling appointment");
-      return;
-    }
-    if (!patientId) {
-      alert("For cancelling Appointment patient Id is required");
-      alert;
-    }
-
+  function syncUpdatedSlots(updatedSlots: BookedSlot[]){
+    console.log("sync Updated slots runs: ", updatedSlots);
+    const updated = updatedSlots.map((slots: BookedSlot) => (
+            {
+              ...slots,
+              slotDate: {
+                startDate: new Date(slots.slotDate.startDate),
+                endDate: slots.slotDate.endDate ? new Date(slots.slotDate.endDate) : undefined,
+              }
+            }
+        ))
+        console.log("updated inside sync: ", updated);
+      setBookedSlots(updated);
+      return updated;
+      
+  }
+  async function handleAppointment(action: string, slotId: string) {
     try {
       let response;
-      if (action === 'cancel') {
-        response = await axios.post(`http://localhost:2500/pms/cancelAppointment/${doctorProfile?._id}`,
-          {
-            patientId,
-            slotDay: day,
-            slotTime: time
-          },
-          { withCredentials: true }
-        )
-      }
-      else {
-        response = await axios.post(`http://localhost:2500/pms/completeAppointment/${doctorProfile?._id}`,
-          {
-            patientId,
-            slotDay: day,
-            slotTime: time
-          },
-          { withCredentials: true }
-        )
-      }
-
+      response = await axios.post(`http://localhost:2500/pms/updateSlotStatus/${slotId}`,
+        {
+          action,
+          docId: doctorProfile?._id,
+          role:userRole
+        },
+        { withCredentials: true }
+      )
       console.log("response: ", response);
       if (response.data.success) {
-        const data = response.data;
-        setDoctorProfile(data.updatedProfile);
-        localStorage.setItem('doctorProfile', JSON.stringify(
-          data.updatedProfile
-        ))
+        toast.dismiss();
+        toast.success(`successfully ${action}ed the Slot`)
+        console.log("response after deletion: ", response);
+        if (response.data.updatedSlots.length) {
+          const updatedSlots = response.data.updatedSlots;
+          // storing locally
+          if(updatedSlots.length > 0){
+             localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
+             localStorage.setItem('bookedSlots', JSON.stringify([]));
+             const local = localStorage.getItem('bookedSlots');
+             syncUpdatedSlots(updatedSlots)
+             console.log("local stored items: ", local)
+          }          
+         
+          
+          //storing globally
+          
+        }
       }
 
     }
     catch (err) {
-      console.error("got error while making request", err);
+      console.error(`got error while making an appointment ${action} request`, err);
     }
   }
 
@@ -115,7 +105,7 @@ const DoctorHome = () => {
       <div className="bg-gray-50 min-h-screen">
         <DoctorNavbar />
         <nav className="w-full max-w-5xl mx-auto py-4 px-2">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <button
               aria-selected={activeTab === 'Dashboard'}
               onClick={() => setActiveTab('Dashboard')}
@@ -131,6 +121,14 @@ const DoctorHome = () => {
             >
               <BookAIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Appointments</span>
+            </button>
+            <button
+              aria-selected={activeTab === 'Dashboard'}
+              onClick={() => setActiveTab('Dashboard')}
+              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Dashboard' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+            >
+              <LayoutDashboardIcon className="w-5 h-5 text-blue-600" />
+              <span className="font-medium text-gray-700">Add Patient</span>
             </button>
             <button
               onClick={() => setActiveTab('Profile')}
@@ -195,52 +193,62 @@ const DoctorHome = () => {
                 </div>
                 <div className="px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
                   <div className="flex flex-col w-full justify-between">
-                    {doctorProfile?.availableDays?.map((slotsData, index) => (
+                    {/* {bookedSlots && bookedSlots.map((slot,ind) => {
+                    return (
+                      <div>
+                        {slot.patientName}
+                      </div>
+                    )
+                  })} */}
+                    {bookedSlots && bookedSlots.map((slot, index) => (
                       <div key={index}>
-                        {slotsData.slots?.map((slot, slotIndex) => (
-                          <div key={slotIndex} className="flex items-center space-x-4">
-                            {(slot.isBooked || slot.isCancelled || slot.isCompleted) && (
-                              <div>
-                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                  <UserIcon className="w-5 h-5 text-gray-500" />
+                        <div className="flex items-center space-x-4">
+                          {(slot.isBooked || slot.isCancelled || slot.isCompleted) && (
+                            <div>
+                              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                <UserIcon className="w-5 h-5 text-gray-500" />
+                              </div>
+                              <h3 className="">{slot.patientName}</h3>
+                              <div className="grid grid-cols-2 justify-between">
+                                <div className="font-medium text-gray-800">
+                                  {(!(slot.isCompleted) && slot.isBooked) &&
+                                    <div className="flex gap-4">
+                                      <button
+                                        onClick={() => handleAppointment('complete', slot._id)}
+                                        className="text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                        <CheckCircle />
+                                      </button>
+                                      <button
+                                        onClick={() => handleAppointment('cancel', slot._id)}
+                                        className="text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                        <CircleX />
+                                      </button>
+                                    </div>
+                                  }
+                                  {slot.isCancelled && (
+                                    <div>
+                                      <p className="text-pink-500 text-xs">cancelled</p>
+                                    </div>
+                                  )}
+                                  {slot.isCompleted && (
+                                    <div>
+                                      <p className="text-green-500 text-xs">completed</p>
+                                    </div>
+                                  )}
+                                  {(slot.isCancelled || slot.isCompleted) &&
+                                    <div>
+                                      <button onClick={() => handleAppointment('remove', slot._id)}><Trash className="text-red-400" size={20} />  </button>
+                                    </div>
+                                  }
                                 </div>
-                                <h3 className="">{slot.patientName}</h3>
-                                <div className="grid grid-cols-2 justify-between">
-                                  <div className="font-medium text-gray-800">
-                                    {(!(slot.isCompleted) && slot.isBooked) &&
-                                      <div className="flex gap-4">
-                                        <button
-                                          onClick={() => handleAppointment('complete', slot.patientId as string, slotsData.day, slot.slotTime)}
-                                          className="text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
-                                          <CheckCircle />
-                                        </button>
-                                        <button
-                                          onClick={() => handleAppointment('cancel', slot.patientId as string, slotsData.day, slot.slotTime)}
-                                          className="text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
-                                          <CircleX />
-                                        </button>
-                                      </div>
-                                    }
-                                    {slot.isCancelled && (
-                                      <div>
-                                        <p className="text-pink-500 text-xs">cancelled</p>
-                                      </div>
-                                    )}
-                                    {slot.isCompleted && (
-                                      <div>
-                                        <p className="text-green-500 text-xs">completed</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="mb-10">
-                                    <p className="text-sm text-gray-500">{doctorProfile.speciality} - {slot.slotTime}</p>
-                                    <h2 className="text-sm text-gray-500">{slotsData.day}</h2>
-                                  </div>
+                                <div className="mb-10">
+                                  <p className="text-sm text-gray-500">{doctorProfile?.speciality} - {slot.slotTime}</p>
+                                  {slot?.slotDate && (<h2 className="text-sm text-gray-500">{slot?.slotDate?.startDate.getDate()} - {slot?.slotDate?.startDate.toLocaleString('default', { month: 'short' })} </h2>)}
                                 </div>
                               </div>
-                            )}
-                          </div>
-                        ))}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -259,27 +267,53 @@ const DoctorHome = () => {
                   <thead className="border border-gray-100 text-sm md:text-base">
                     <tr>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Name</th>
+                      <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Payment</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Date</th>
-                      <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Age</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Fee</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Status</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {bookingDetails.map((booking, index) => (
+                    {bookedSlots && bookedSlots?.map((slot, index) => (
                       <tr key={index}>
-                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{booking.patientName}</td>
-                        <td className="px-3 py-2 md:px-6 md:py-4border-b text-gray-700">{booking.age}</td>
-                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">{booking.date}</td>
-                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{booking.fee}</td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{slot.patientName}</td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{index < 3 ? 'cash' : 'online'} </td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">{slot.slotDate.startDate.toLocaleString()}</td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{doctorProfile?.consultationFee}</td>
                         <td
-                          className={`px-6 py-4 border-b font-medium ${booking.status === "Completed"
-                            ? "text-green-600"
-                            : "text-yellow-600"
-                            }`}
-                        >{booking.status}</td>
-                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{booking.action}</td>
+                          className={` text-yellow-600  px-6 py-4 border-b font-medium ${slot.isCompleted
+                            && "text-green-600"} ${slot.isCancelled && 'text-red-600'}`}
+                        >{slot.isBooked && 'Pending' || slot.isCancelled && 'Cancelled' || slot.isCompleted && 'Completed'}</td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 border-b">
+
+                          {slot.isBooked &&
+                            <div>
+                              <button onClick={() => handleAppointment('cancel', slot._id)}
+                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                              >
+                                <Delete className="text-red-500" size={15} />
+                              </button>
+                              <button onClick={() => handleAppointment('complete', slot._id)}
+                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                              >
+                                <Check className="text-green-500" size={15} />
+                              </button>
+                            </div>
+                          }
+
+                          {(slot.isCompleted || slot.isCancelled) &&
+                            <div className="text-center">
+                              <button onClick={() => handleAppointment('remove', slot._id)}
+                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                              >
+                                <Trash className="text-red-500" size={15} />
+                              </button>
+
+                            </div>
+                          }
+
+                        </td>
                       </tr>
                     ))}
                   </tbody>

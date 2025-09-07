@@ -7,10 +7,6 @@ import { z } from "zod";
 import UploadProfileImage from "./doctorProfileImage";
 
 
-const daysOfWeek = z.enum([
-    "Monday", "Tuesday", 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-])
-
 const doctorSchema = z.object({
     username: z.string().min(2, "doctor name must contains atleast 2 characters"),
     email: z.string().email().nonempty("Email should be valid "),
@@ -22,14 +18,15 @@ const doctorSchema = z.object({
     address: z.string().nonempty("address of doctor is missing"),
     consultationFee: z.coerce.number().min(300, "consultation Fee should be atleast 300 "),
     role: z.string().nonempty("Doctor role is required"),
-    availableDays: z.array(z.string()).min(1, "atleast 1 day must be selected"),
-    slots: z.array(z.object({
-        slotTime: z.string().nonempty("Slot Timing must be defined"),
-        isBooked: z.boolean().default(false),
-        isCancelled: z.boolean().optional(),
-        isCompleted: z.boolean().optional(),
-        patientId: z.string().nullable().optional()
-    }))
+    availableDays: z.array(z.string()).min(1,"Atleast 1 day must be selected"),
+    slots: z.array(z.object(
+        {
+            slotTime:z.string().nonempty("1 Slot Time must be choosen"),
+            isBooked:z.boolean().default(false),
+            isCancelled:z.boolean().optional(),
+            isCompleted:z.boolean().optional(),
+            patientId:z.string().nullable().optional()
+        }))
 })
 
 type DoctorSchemaType = z.infer<typeof doctorSchema>;
@@ -113,9 +110,10 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         }
         data.slots = data.slots.map(slot => ({
             slotTime: slot.slotTime,
-            isBooked: slot.isBooked,
-            ...(slot.patientId ? { patientId: slot.patientId } : {})
+            isBooked:slot.isBooked,
+            ...(slot.patientId ? {patientId: slot.patientId}: {})
         }))
+        
         const doctorProfileDetails = {
             profileImage: profileImageData,
             ...data
