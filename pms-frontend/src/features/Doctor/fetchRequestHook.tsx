@@ -48,13 +48,13 @@ function useFetchApi(url: string, id: string | null) {
         const makingApiRequest = async () => {
             
             const toastId = toast.loading('fetching the data..');
-            setFetchLoading(true);
             setFetchError('');
             try {
                 const response = await makeNgrokRequest({url:`pms/fetchDoctorProfile/${id}`, method:'get'});
                 if (response.data.success) {
                     console.log('doctor fetchResponse ', response);
                     setFetchResult(response.data.doctorProfile);
+                    toast.remove(toastId);
                     toast.success("loaded doctors successfully", { id: toastId })
                 }
             }
@@ -62,9 +62,6 @@ function useFetchApi(url: string, id: string | null) {
                 toast.error("Error while fetching Doctors", { id: toastId });
                 setFetchError(err);
                 console.error("Get Error while fetching doctor", err);
-            }
-            finally {
-                setFetchLoading(false)
             }
         }
         makingApiRequest();
@@ -76,3 +73,10 @@ function useFetchApi(url: string, id: string | null) {
 }
 
 export default useFetchApi
+
+
+// Syed from Safepay
+// Thu, Sep 11, 10:57 AM (1 day ago)
+// to me, Safepay
+
+// hey, your redirect url is missing attributes like environment, success and cancel url please see this document https://safepay-docs.netlify.app/

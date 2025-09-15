@@ -171,8 +171,8 @@ const userLogin = async (req, res) => {
         const slotsFilter = {
              $or:[
                         {isBooked:true},
-                        {isCancelled:true},
-                        {isCompleted:true}
+                        {isCancelled:false},
+                        {isCompleted:false}
                     ]
         }
         
@@ -194,10 +194,9 @@ const userLogin = async (req, res) => {
                     patientId:userExist._id,
                     ...slotsFilter
                 },
-
-            )
-
-            console.log("slotsBooked: Patient case", slotsBooked)
+            ).sort({createdAt:-1}).limit(5).lean()
+            // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
+            console.log("slots inside theuse controller ", slotsBooked);
         }
         const matchPassword = await bcrypt.compare(password, userExist.password);
         console.log("is password matched: ", matchPassword);

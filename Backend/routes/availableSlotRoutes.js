@@ -3,7 +3,9 @@ import { allDoctorsSlotsGenerator, bookSlot, getDoctorAvailableDays, getDoctorBo
 
 const slotsRoutes = express.Router();
 
+// o me, Safepay
 
+// hey, your redirect url is missing attributes like environment, success and cancel url please see this document https://safepay-docs.netlify.app/
 slotsRoutes.get('/generateDoctorsSlots', allDoctorsSlotsGenerator );
 slotsRoutes.post('/bookSlot/:slotId', bookSlot);
 // slotsRoutes.get('/getBookedSlots/:docId', getBookedSlots);

@@ -13,6 +13,7 @@
     "concurrently": "^9.1.2"
   },
   "dependencies": {
+    "@sfpy/node-core": "^0.2.9",
     "express-fileupload": "^1.5.2"
   }
 }

@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useAuth } from "../../context/appContext"
 import { Check, Delete, Trash } from "lucide-react";
+import axios from "axios";
+import makeNgrokRequest from "../../ngrokRequesthook";
 
 
 const MyAppointments = () => {
@@ -14,6 +16,36 @@ const MyAppointments = () => {
 
     const handleAppointment = (action:string, slotId:string) => {
         console.log("handle Appointment clicked!");
+    }
+    async function handlePayOnline(fee:number, slotId:string){
+      console.log("online pay clicked", fee, "slotId ", slotId);
+      const doctorId='39784sdj'
+
+      const body = {
+        amount: fee,
+        doctorId:doctorId
+      }
+
+      try{
+        const paymentRequest = await makeNgrokRequest({url:`pms/onlinePaymentRequest/${slotId}`, method:'post', data:body});
+        console.log("Payment Request ", paymentRequest);
+        if(paymentRequest.data.success){
+          console.log("success inside froentend ");
+          const redirectUrl = paymentRequest.data.redirectUrl;
+          console.log(" outside redirect Url ", redirectUrl);
+          if(redirectUrl){
+            console.log(" Yes indeeeed redirect Url ", redirectUrl);
+            // window.location.replace(redirectUrl);
+            window.location.href=redirectUrl
+          }
+          else {
+            console.warn("redirect Url is missing")
+          }
+        }
+      }
+      catch(err){
+        console.log(" unable to make payment request. Error: ", err);
+      }
     }
     return (
         <div>
@@ -64,7 +96,7 @@ const MyAppointments = () => {
                         <td>
                           {slot.isBooked &&
                             <div>
-                              <button className="text-sm font-normal text-blue-400 hover:text-blue-600 font-base"> Pay Online</button>
+                              <button onClick={() => handlePayOnline(3000, slot._id) } className="text-sm font-normal text-blue-400 hover:text-blue-600 font-base"> Pay Online</button>
                             </div>
                           }
                         </td>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type FC, type RefObject } from "react"
 import { FaBars, FaTimes } from "react-icons/fa"
 import useWindowSize from "./windowSize";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -6,8 +6,12 @@ import { useAuth } from "../../context/appContext";
 import { Heart, User } from "lucide-react";
 
 
+interface NavbarProps { 
+    servicesRef:React.RefObject<HTMLElement | null>;
+    contactRef: React.RefObject<HTMLDivElement | null>;
+}
 
-const Navbar = () => {
+const Navbar = ({servicesRef, contactRef}: NavbarProps) => {
     const [isShowMenu, setIsShowMenu] = useState(false);
     const [isPatientCard, setIsPatientCard] = useState(false);
     const { userRole, logout } = useAuth();
@@ -29,13 +33,42 @@ const Navbar = () => {
         console.log("isPatienCatd: ", isPatientCard);
     }, [isPatientCard])
 
+    useEffect(() => {
+        // if(servicesRef.current){
+        //     console.log(" services ref ", servicesRef.current)
+        // }
+        
+    },[]);
 
+    const handleServiceClick = () => {
+        if(servicesRef.current){
+            console.log(" services ref ", servicesRef.current);
+            servicesRef.current.scrollIntoView({
+                behavior:'smooth',
+                block:'start'
+            })
+        }
+        
+    }
+    
+    const handleContactClick = () => {
+        console.log(" contact ref siple ", contactRef);
+        if(contactRef.current){
+            console.log(" services ref ", contactRef.current);
+            contactRef.current.scrollIntoView({
+                behavior:'smooth',
+                block:'start'
+            })
+        }
+        
+    }
     function handleRegister() {
 
         navigate('/register')
     }
     const handleMyAppointments = () => {
         console.log("my Appointments;  run");
+        setIsShowMenu(false);
         navigate('/patient-dashboard/myAppointments')
     }
     function handleLogout() {
@@ -58,9 +91,9 @@ const Navbar = () => {
         }
     }
     const navbarLinks = [
-        { name: 'Services', href: "#" },
-        { name: 'Book Appointment', href: '#' },
-        { name: 'Contact', href: "#" },
+        { name: 'Services', onclick:handleServiceClick },
+        { name: 'Book Appointment', href: '/allDoctorsPublic' },
+        { name: 'Contact', onclick:handleContactClick },
         { name: 'About', href: "#" },
     ]
     const buttonBase =
@@ -88,15 +121,28 @@ const Navbar = () => {
                 aria-labelledby="Main-Navigation" >
                 <ul className={`flex flex-col lg:flex-row gap-6 ${isShowMenu ? 'py-4' : ''}`}>
                     {navbarLinks.map((tab, ind) => (
-                        <li key={ind}>
-                            <NavLink to={tab.href} className={({ isActive }) =>
+                        <li key={ind} >
+                            {
+                                tab.href ? 
+                                <NavLink to={tab.href} className={({ isActive }) =>
                                 `inline-block relative text-lg font-normal text-gray-700 transition-all 
                                 after:block after:h-[2px] after:w-0 after:bg-purple-500 
                                 after:transition-all hover:after:w-full hover:text-purple-600 
-                                ${isActive ? "font-thin text-gray-900" : ""}`
+                                ${isActive ? "font-thin text-gray-900" : "font-thin"}`
                             }>
                                 {tab.name}
-                            </NavLink>
+                            </NavLink>:
+                             
+                             <button onClick={tab.onclick} className={
+                                `inline-block relative text-lg font-thin text-gray-700 transition-all 
+                                after:block after:h-[2px] after:w-0 after:bg-purple-500 
+                                after:transition-all hover:after:w-full hover:text-purple-600 
+                               `}
+                               >
+                                {tab.name}
+                            </button>
+                            }
+                            
                         </li>
                     ))}
                 </ul>

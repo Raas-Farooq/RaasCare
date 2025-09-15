@@ -70,7 +70,7 @@ const doctorSchema = new mongoose.Schema({
 
 const availableSlotsSchema = new mongoose.Schema({
     doctorId:{ type:mongoose.Schema.Types.ObjectId, ref:'Doctor', index:true},
-    patientId: {type: mongoose.Schema.Types.ObjectId, ref:'User', default:null},
+    patientId: {type: mongoose.Schema.Types.ObjectId, ref:'User', index:true, default:null},
     slotTime:String,
     doctorName:{type:String, index:true},
     doctorSpeciality:{type:String, index:true},
@@ -80,7 +80,7 @@ const availableSlotsSchema = new mongoose.Schema({
     },
     isCancelled:{type:Boolean, default:false},
     isCompleted:{type:Boolean, default:false},
-    isBooked:{type:Boolean, default:false},
+    isBooked:{type:Boolean, default:false, index:true},
     patientName:{type:String, default:''},
     source:{type:String, enum:['template', 'manual'], default:'template'}
 }, {

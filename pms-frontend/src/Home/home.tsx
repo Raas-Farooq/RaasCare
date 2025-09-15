@@ -1,17 +1,93 @@
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "../context/appContext";
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight, Users } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
 import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 
 function Home() {
   const { userRole } = useAuth();
   const navigate = useNavigate();
+  const contactRef = useRef<HTMLDivElement>(null);
+  const servicesRef = useRef<HTMLElement>(null);
 
+//   class ListNode {
+//     val:number
+//     next:ListNode | null
+//     constructor(val, next = null) {
+//         this.val = (val === undefined ? 0 : val);
+//         this.next = (next === undefined ? null : next);
+//     }
+// }
+
+//   function isPalindrome(head:ListNode) {
+//     let dummyNode = new ListNode(0);
+//     dummyNode.next = head;
+
+//     let fast = head;
+//     let slow = head;
+
+//     // Use fast and slow pointers to find the middle of the list
+//     while (fast && fast.next !== null) {
+//       if(slow.next){
+//         slow = slow.next;
+//       }
+//       fast = fast?.next.next;
+//     }
+
+//     // A placeholder for the original comment line
+//     // let mid = Math.floor(count/2);
+
+//     // This section is a broken attempt at reversing the list
+//     let prev = null;
+//     let curr = head; // This should be 'slow' to reverse the second half
+
+//     while (curr !== null) {
+//         const nextNode = slow.next;
+//         slow.next = prev;
+//         prev = slow;
+//         slow = nextNode;
+//         curr = curr.next; // This line causes an issue since 'curr' is not being iterated correctly
+//     }
+    
+//     // The following log statements are for debugging and showing the state
+//     console.log("slow: ", slow); // This will show null if the reversal completes
+//     console.log("reversed half (prev): ", prev);
+//     console.log("current: ", curr); // This will show null if the reversal completes
+
+//     // The original code has no comparison logic and always returns false
+//     return false;
+// }
+
+// // --- Example Usage and Setup for Debugging ---
+// function setupAndRun() {
+//     // Example 1: Create a simple linked list that is a palindrome (1 -> 2 -> 2 -> 1)
+//     let palindromeList = new ListNode(1);
+//     palindromeList.next = new ListNode(2);
+//     palindromeList.next.next = new ListNode(2);
+//     palindromeList.next.next.next = new ListNode(1);
+
+//     console.log("Running isPalindrome on a palindrome list...");
+//     let result1 = isPalindrome(palindromeList);
+//     console.log("Is palindrome? ", result1);
+//     console.log("---");
+
+//     // Example 2: Create a simple linked list that is not a palindrome (1 -> 2 -> 3)
+//     let nonPalindromeList = new ListNode(1);
+//     nonPalindromeList.next = new ListNode(2);
+//     nonPalindromeList.next.next = new ListNode(3);
+
+//     console.log("Running isPalindrome on a non-palindrome list...");
+//     let result2 = isPalindrome(nonPalindromeList);
+//     console.log("Is palindrome? ", result2);
+// }
+
+// // Call the setup and run function
+// setupAndRun();
 
   useEffect(() => {
     const userRole = localStorage.getItem('role');
@@ -19,41 +95,100 @@ function Home() {
   }, [])
 
   function learning(){
-    // function destructure([first, second]:string[]){
-    //   console.log("first ", first[0]);
-    //   console.log("second ", second);
-    // }
-    // const first = 'Embrace the Journey of Life';
-    // const second = 'Journey will matter At the END'
-    // destructure([first, second])
-    new Promise((reject) => {
-      console.log("rejected promise")
-    })
-    const timeProvider = new Promise((resolve, reject) => {
-      setTimeout(function display(){
-        if(5 > 8){
-          resolve("Yes 5 Won")
-        }
-        else{
-          reject("5 Need to be Patient and success inshallah is coming by..")
-        }
-      },1000)
-    })
+    console.log("LEARN More has been callsed")
+    const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
+    function bubbleSort(data:number){
 
-    timeProvider.then((mes) => {
-      console.log("timer is there", mes)
-    }).catch((error) => {
-      console.log("we all make errors ",error)
-    })
-  }
+      if(data <= 0){
+        return 'Go'
+      }
+      console.log(data);
+      bubbleSort(data-1)
+    }
+    console.log('BE READY ')
+    bubbleSort(3)
+    // function binarySearch(arr:number[], n:number){
+    //   let s = 0;
+    //   let e = arr.length - 1;
+    //   if(arr.length === 0){
+    //     return 'there is no data';
+    //   }
+    //   while(s <= e){
+    //     const mid = Math.floor((s+e) / 2);
+    //     console.log("mid: " ,mid);
+    //     if(arr[mid] === n){
+    //       console.log("number found ", arr[mid], " at index: ", mid);
+    //       return "number is Found"
+    //     }
+    //     if(arr[mid] < n){
+    //       console.log("mid: less than number  mid" ,arr[mid], " num ", n );
+    //       s = mid + 1;
+    //     }
+    //     if(arr[mid] > n){
+    //       console.log("mid: greater than number  mid" ,arr[mid], " num ", n );
+    //       e= mid - 1;
+    //     }
+    //   }
+
+    //   return " number not found";
+    // }
+    // const numberToFind = 20;
+    // binarySearch(binarydata, numberToFind)
+    const myArr=['believe', 'Put Trust On Allah(SWT)', 'Challenge', 'Be Tough', 'Play till Last Ball'];
+    let i = 0;
+    function rec(mes:string){
+
+      // base Case
+      if(i >= myArr.length){
+        return 0;
+      }
+      // flow / process of what you want to acheive or do
+      console.log(" The Message of Your Breath: ", mes);
+
+      // recursive case (should finish/end or reach the target of base)s
+      rec(myArr[i++]);
+    }
+    // rec('Lets Start')
+
+    let belief="racecar";
+    let l=0; let r=belief.length-1;
+    let iter = 3;
+    function mergeSort(dataList:number[]){
+      // console.log(" The Nubmer of Your Breath: ", belief[l], " breath right:  ", belief[r]);
+      let arrLen= dataList.length;
+      console.log("arrLen: ", arrLen);
+      let firstHalf:number[] = [];
+      let lastHalf:number[] = [];
+      
+      if(iter < 1){
+        return 0
+      }
+      iter--;
+      while(arrLen>= 1){
+        let half = Math.floor(arrLen / 2);
+        console.log(" half length: ", half);
+        firstHalf = dataList.slice(0,half);
+        lastHalf = dataList.slice(half);
+        console.log("firstHalf ", firstHalf, "Nexthalf", lastHalf);
+      }
+      console.log(" first Half before recursive call ", firstHalf);
+      mergeSort(firstHalf);
+    }
+ 
+      // mergeSort(binarydata)
     
+    
+    
+  }
+
+  
 // first:'With your Nafs', second:'With your external environment'
  
   return (
     <>
       <section className="Hero-Section relative bg-gradient-to-r from-purple-50 to-white">
         {!userRole &&
-          <Navbar />
+          <Navbar servicesRef={servicesRef} contactRef={contactRef} />
         }
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center px-4 py-8">
           <h1 className="text-4xl md:text-5xl mt-5 font-bold text-yellow-600">
@@ -134,7 +269,7 @@ function Home() {
 
         </div>
       </section>
-      <section className="Services-Section bg-gradient-to-br from-purple-50 to-white py-16">
+      <section ref={servicesRef} className="Services-Section bg-gradient-to-br from-purple-50 to-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -212,7 +347,7 @@ function Home() {
             }
           </div>
           {/* grid grid-rows-4 md:grid-rows-2 grid-flow-col */}
-          <div className="pt-8 pb-6">
+          <div className="pt-8 pb-6" ref={contactRef} >
             <div className="flex flex-wrap justify-center items-center gap-4 my-3 text-xs text-gray-500 mb-3">
               {termsAndConditions.map((term, ind) => {
                 return (

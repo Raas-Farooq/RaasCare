@@ -73,12 +73,8 @@ async function allDoctorsSlotsGenerator(req, res) {
         let ops = [];
         doctors.forEach(doctor => {
             const availableDays = doctor.availableDays;
-            for (let dayObj of availableDays) {
+            for (let dayObj of availableDays){
                 const getDates = getNextAvailableDates(dayObj.day, forDays);
-
-                // console.log("getDates: result", getDates)
-
-
                 for (let date of getDates) {
                     dayObj.slots.forEach((slotTime) => {
                         const dateSlots = makeSlotDate(date, slotTime);

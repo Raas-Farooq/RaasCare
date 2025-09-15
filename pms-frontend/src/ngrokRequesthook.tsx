@@ -8,6 +8,7 @@ interface AxiosFetchParameters{
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 const makeNgrokRequest = ({url, method='get', data={}}:AxiosFetchParameters) => {
     const headers= { "ngrok-skip-browser-warning":"true"}
+    console.log(" Ngrok hok backend url + userwritten url: ", backendUrl, " ", url);
     return axios({
          method,
          url:`${backendUrl}/${url}`, 

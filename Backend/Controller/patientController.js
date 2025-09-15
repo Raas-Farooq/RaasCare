@@ -167,6 +167,68 @@ const getAllPatients= async(req,res) =>
     }
 }
 
+const paymentSuccess = (req,res) => {
+
+    const {doctorId, slotId} = req.query;
+    try{
+        
+        return res.status(200).json({
+            success:true,
+            message:"Successfully submitted the payment",
+            doctorId:doctorId,
+            slotId
+        })
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while paying online",
+            error:err.message
+        })
+    }
+}
+
+const paymentCancel = (req,res) => {
+
+    const {doctorId, slotId} = req.query;
+    try{
+        
+        return res.status(200).json({
+            success:true,
+            message:"Successfully cancelled the payment",
+            doctorId:doctorId,
+            slotId
+        })
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"server error while cancelling the online payment",
+            error:err.message
+        })
+    }
+}
+
+const paymentFailure = (req,res) => {
+
+    const {doctorId, slotId} = req.query;
+    try{
+        
+        return res.status(200).json({
+            success:true,
+            message:"failure happen during the transaction",
+        })
+    }
+    catch(err){
+        return res.status(500).json({
+            success:false,
+            message:"failed request",
+            error:err.message
+        })
+    }
+}
+
+
 const getSearchPatient = async(req,res) =>{
     try{
         const searchTerm = req.query.search?.trim() || "";
@@ -331,4 +393,4 @@ async function deletePatientProfile(req,res)
     }
  }
 
-export default {getPatient,AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient, checkRedundantData}
+export default {paymentCancel, paymentFailure,paymentSuccess,getPatient,AddNewPatient,updatePatientProfile, getAllPatients, deletePatientProfile, getSearchPatient, checkRedundantData}

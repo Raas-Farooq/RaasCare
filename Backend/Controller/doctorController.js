@@ -10,7 +10,9 @@
 // });
 // For Registered Patients:
 
+import axios from "axios";
 import { Doctor } from "../models/user.js";
+import safepay from "./safepay.js";
 
 // javascript
 // // Doctor links to existing user
@@ -108,6 +110,68 @@ const fetchAllDoctors = async (req, res) => {
         })
     }
 }
+
+const onlinePaymentRequest = async (req, res) => {
+    const { slotId } = req.params;
+    const { doctorId, amount } = req.body;
+    console.log(" secret key ", process.env.SAFEPAY_SECRET_KEY)
+    console.log(" frontend key ", process.env.FRONT_END);
+    console.log(" public key ", process.env.SAFEPAY_MERCHANT_KEY)
+    try {
+        const payload = {
+            'merchant_api_key': process.env.SAFEPAY_MERCHANT_KEY,
+            'environment': 'sandbox',
+            'order_id': 'order_' + Date.now(),
+            'mode': 'payment',
+            'currency': 'PKR',
+            'source': "RaasCare",
+            'amount': amount,
+            'entry_mode': 'raw',
+            'cancel_url': `${process.env.FRONT_END}/pms/cancelPayment`,
+            "success_url": `${process.env.FRONT_END}/pms/successPayment`,
+            "failure_url": `${process.env.FRONT_END}/pms/failedPayment`,
+
+            "meta": {
+                "doctorId": doctorId,
+                "slotId": slotId,
+            },
+        }
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.SAFEPAY_SECRET_KEY}`
+        };
+
+        // Step 1: Create a tracker with Safepay
+        const createTrackerResponse = await axios.post(
+            'https://sandbox.api.getsafepay.com/order/payments/v3/',
+            payload,
+            { headers }
+        );
+        const trackToken = createTrackerResponse?.data?.data?.tracker?.token;
+        console.log(" data ", createTrackerResponse.data.data.tracker);
+        console.log("createTrackerResponse: data.tracker token", createTrackerResponse.data.data.tracker?.token);
+        let redirectUrl;
+        if (trackToken) {
+            redirectUrl = `https://sandbox.getsafepay.com/checkout/${trackToken}`;
+        }
+        else {
+            console.log(" tracker token is missing. Check your post request again");
+        }
+        // Step 3: Send the redirect URL back to the frontend
+        console.log(" redirect URL ", redirectUrl);
+        res.status(200).json({ success: true, redirectUrl });
+
+    } catch (err) {
+        console.error("Error while making payment requests:", err.response ? err.response.data : err.message);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error while making payment request",
+            err: err.response ? err.response.data : err.message
+        });
+    }
+};
+
 const fetchDoctorProfile = async (req, res) => {
 
     const { id } = req.params;
@@ -136,23 +200,23 @@ const fetchDoctorProfile = async (req, res) => {
 }
 
 const getNextAppointmentDay = (userDay) => {
-    const daysOfWeek={ Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
-    const todayDate= new Date();
+    const daysOfWeek = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
+    const todayDate = new Date();
     const todayIndex = todayDate.getDay();
     const userSelectedDay = daysOfWeek[userDay];
 
     let diff = userSelectedDay - todayIndex;
-    if(diff <0 ) diff+= 7;
+    if (diff < 0) diff += 7;
 
     const targetDate = new Date();
 
     targetDate.setDate(todayDate.getDate() + diff);
-    targetDate.setHours(0,0,0,0);
+    targetDate.setHours(0, 0, 0, 0);
 
     return targetDate;
 }
 
-const modernBookAppointment = async(req,res) => {
+const modernBookAppointment = async (req, res) => {
     const { docId } = req.params;
     console.log("make Appointment Runs")
     const { patientId, selectedDay, selectedTime } = req.body;
@@ -170,75 +234,75 @@ const modernBookAppointment = async(req,res) => {
         const getNextAppointmentDate = getNextAppointmentDay(selectedDay);
 
         const isAlreadyBooked = await Appointment.findOne({
-            doctorId:docId,
+            doctorId: docId,
             patientId,
-            time:selectedTime,
-            date:getNextAppointmentDate,
-            status:'booked'
+            time: selectedTime,
+            date: getNextAppointmentDate,
+            status: 'booked'
         })
 
-        if(isAlreadyBooked){
+        if (isAlreadyBooked) {
             return res.status(400).json("Appointment Already Booked. Please Select another One");
         }
 
-        const addingAppointment = new Appointment ({
-            doctorId:docId,
+        const addingAppointment = new Appointment({
+            doctorId: docId,
             patientId,
-            time:selectedTime,
-            date:getNextAppointmentDate,
-            status:'booked'
+            time: selectedTime,
+            date: getNextAppointmentDate,
+            status: 'booked'
         })
 
         await addingAppointment.save();
 
         return res.status(200).json({
-            success:true,
-            message:"Appointment Added Successfully",
-            newAppointment:added 
+            success: true,
+            message: "Appointment Added Successfully",
+            newAppointment: added
         })
     }
-    catch(err){
+    catch (err) {
 
     }
 
 }
 
-const doctorAvailablity = async(req, res) => {
+const doctorAvailablity = async (req, res) => {
 
-    const id= req.params.id;
-    const doctor = await Doctor.findOne({_id:id});
+    const id = req.params.id;
+    const doctor = await Doctor.findOne({ _id: id });
 
-    if(!doctor){
+    if (!doctor) {
         return res.status(404).json("Doctor not Found");
     }
 
     const availableSlots = doctor.availableDays;
     let upcomingDays = [];
     let slots = [];
-    for(let dailyTiming of availableSlots){
+    for (let dailyTiming of availableSlots) {
         const apptDate = getNextAppointmentDay(dailyTiming.day);
-        
-        for (let slot of dailyTiming.slots){
-            const appt = await Appointment.findOne({
-            doctorId:id,
-            time:slot,
-            date:apptDate,
-            status:'booked'
-        })
 
-        slots.push({
-            time:slot,
-            isBooked:!!appt
-        })
+        for (let slot of dailyTiming.slots) {
+            const appt = await Appointment.findOne({
+                doctorId: id,
+                time: slot,
+                date: apptDate,
+                status: 'booked'
+            })
+
+            slots.push({
+                time: slot,
+                isBooked: !!appt
+            })
         }
-        
-        upcomingDays.push({day:dailyTiming.day, slots})
+
+        upcomingDays.push({ day: dailyTiming.day, slots })
 
         res.json(upcomingDays);
 
     }
 
-}   
+}
 
 const bookAppointment = async (req, res) => {
 
@@ -346,14 +410,14 @@ const handleAppointmentAction = async (req, res) => {
             action === 'remove' ?
                 [
                     { "dayIdentifier.day": slotDay },
-                    { "slotIdentifier.slotTime": slotTime, "slotIdentifier.patientId": patientId}
+                    { "slotIdentifier.slotTime": slotTime, "slotIdentifier.patientId": patientId }
                 ]
                 :
                 [
                     {
                         "dayIdentifier.day": slotDay,
                     },
-                    { "slotIdentifier.slotTime": slotTime}
+                    { "slotIdentifier.slotTime": slotTime }
                 ]
 
         const updateResult = await Doctor.findOneAndUpdate(
@@ -391,4 +455,4 @@ const handleAppointmentAction = async (req, res) => {
 }
 
 
-export { handleAppointmentAction, fetchAllDoctors, fetchDoctorProfile, bookAppointment };
+export { onlinePaymentRequest, handleAppointmentAction, fetchAllDoctors, fetchDoctorProfile, bookAppointment };

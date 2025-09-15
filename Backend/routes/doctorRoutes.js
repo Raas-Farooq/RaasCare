@@ -1,5 +1,5 @@
 import express from 'express';
-import { bookAppointment, fetchAllDoctors, fetchDoctorProfile, handleAppointmentAction } from "../Controller/doctorController.js";
+import { bookAppointment, fetchAllDoctors, fetchDoctorProfile, handleAppointmentAction, onlinePaymentRequest } from "../Controller/doctorController.js";
 import checkRole from '../middleware/checkRole.js';
 import Authenticate from '../authentication/Authenticate.js';
 
@@ -11,5 +11,6 @@ doctorRoutes.get('/fetchAllDoctors', fetchAllDoctors);
 doctorRoutes.get('/fetchDoctorProfile/:id', fetchDoctorProfile);
 doctorRoutes.post('/bookAppointment/:id',Authenticate,checkRole(['patient']) ,bookAppointment)
 doctorRoutes.post('/handleAppointmentAction/:id', Authenticate, checkRole(['doctor', 'admin']), handleAppointmentAction);
+doctorRoutes.post('/onlinePaymentRequest/:slotId', onlinePaymentRequest);
 
 export default doctorRoutes
