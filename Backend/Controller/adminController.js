@@ -38,27 +38,30 @@ const createDoctor = async (req, res) => {
                     slots: slots.map(slot => slot.slotTime)
                 }
             })
-            const addDoctor = new Doctor({
-                username,
-                email: email,
-                password: securedPassword,
-                profileImage,
-                speciality,
-                address,
-                consultationFee,
-                experience: experience,
-                education: education,
-                about,
-                role,
-                availableDays: combinedSlots
-            })
 
-            await addDoctor.save();
-            return res.status(201).json({
-                success: true,
-                message: "Doctor Profile successfully Created",
-                doctor: addDoctor
-            })
+
+            return res.status(200).json("i'm Inside create Doctor");
+            // const addDoctor = new Doctor({
+            //     username,
+            //     email: email,
+            //     password: securedPassword,
+            //     profileImage,
+            //     speciality,
+            //     address,
+            //     consultationFee,
+            //     experience: experience,
+            //     education: education,
+            //     about,
+            //     role,
+            //     availableDays: combinedSlots
+            // })
+
+            // await addDoctor.save();
+            // return res.status(201).json({
+            //     success: true,
+            //     message: "Doctor Profile successfully Created",
+            //     doctor: addDoctor
+            // })
         }
 
 

@@ -1,12 +1,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
-import { Calendar, Clock, Plus, Trash2 } from 'lucide-react';
-import { z } from "zod";
+import { Calendar, Clock, Delete, Plus, Trash2 } from 'lucide-react';
+import { string, z } from "zod";
 import UploadProfileImage from "./doctorProfileImage";
 
-
+const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
+const daysEnum = z.enum(daysOfWeek);
+const DaysAndSlots = z.array(z.object({
+    day: daysEnum,
+    slots: z.array(z.string()).min(1, "Atleast 1 slot must be selected")
+}))
 const doctorSchema = z.object({
     username: z.string().min(2, "doctor name must contains atleast 2 characters"),
     email: z.string().email().nonempty("Email should be valid "),
@@ -17,16 +22,12 @@ const doctorSchema = z.object({
     speciality: z.string().nonempty("speciality is required"),
     address: z.string().nonempty("address of doctor is missing"),
     consultationFee: z.coerce.number().min(300, "consultation Fee should be atleast 300 "),
+    citiesWork: z.array(z.object({
+        city: z.string().nonempty("One city must be provided"),
+        id: z.string()
+    })),
     role: z.string().nonempty("Doctor role is required"),
-    availableDays: z.array(z.string()).min(1,"Atleast 1 day must be selected"),
-    slots: z.array(z.object(
-        {
-            slotTime:z.string().nonempty("1 Slot Time must be choosen"),
-            isBooked:z.boolean().default(false),
-            isCancelled:z.boolean().optional(),
-            isCompleted:z.boolean().optional(),
-            patientId:z.string().nullable().optional()
-        }))
+    availableDays: DaysAndSlots
 })
 
 type DoctorSchemaType = z.infer<typeof doctorSchema>;
@@ -47,47 +48,54 @@ interface DoctorFormProps {
     receiveUpdatedDetails: (data: DoctorSchemaType) => Promise<void>
 };
 
-function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormProps) {
 
+// const DaysSlotsSchema = z.array(DaysAndSlots);
+// type AvailableDaysSlotsType= z.infer<typeof DaysSlotsSchema>
+interface AvailableDaysSlots {
+    day: string,
+    slots: string[]
+}
+function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormProps) {
+    const [commonTimeSlots, setCommonTimeSlots] = useState(COMMON_TIME_SLOTS);
+    const [chosenDay, setChosenDay] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [qualityTime, setQualityTime] = useState({
+        time: '',
+        id: ''
+    })
+    const [specialSlots, setSpecialSlots] = useState<string[]>([]);
+    const [daysSelected, setDaysSelected] = useState<string[]>(['']);
+    const [actualSlotsSave, setActualSlotsSave] = useState<AvailableDaysSlots[]>([]);
     const [profileImageData, setProfileImageData] = useState({
         imageUrl: '',
         public_id: ''
     });
     const [isUploading, setIsUploading] = useState(false);
-    const { register, control, handleSubmit, formState: { errors }, watch, reset } = useForm({
+    const { register, control, handleSubmit, formState: { errors }, watch, reset, setValue, getValues } = useForm({
         resolver: zodResolver(doctorSchema),
         defaultValues: initialData || {
             availableDays: [],
-            slots: [{ slotTime: '', isCompleted: false, isCancelled: false, isBooked: false, patientId: undefined }]
+            citiesWork: [{ city: '', id: '' }]
         }
     })
 
     const { fields, append, remove } = useFieldArray({
         control,
-        name: 'slots'
+        name: 'availableDays'
     })
 
-    const watchedSlots = watch('slots');
+    const watchCities = watch(`citiesWork`)
+    const addSlot = () => {
+        const slotData = { slotTime: '', isCompleted: false, isCancelled: false, isBooked: false, patientId: undefined };
+        return slotData
+    }
+
     const watchedDays = watch('availableDays');
 
-    const addSlot = () => {
-        append({ slotTime: '', isBooked: false, isCancelled: false, isCompleted: false })
-    }
+    useEffect(() => {
+        console.log("watched watchedDays: ", watchedDays)
+    }, [watchCities, watchedDays])
 
-    const removeSlot = (index: number) => {
-        if (fields.length > 1) {
-            remove(index)
-        }
-    }
-
-    const getAvailableTimeSlots = (currentIndex: number) => {
-        const selectedTimes = watchedSlots
-            .map((slot, index) => index !== currentIndex ? slot.slotTime : null)
-            .filter(Boolean);
-
-        return COMMON_TIME_SLOTS.filter(time => !selectedTimes.includes(time));
-    };
 
     function getUploadedImage(imagePayload: ImagePayloadProps, imageUploading: boolean) {
         console.log("imagePayload ", imagePayload, "imageUploading ", imageUploading)
@@ -108,12 +116,8 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
             toast.error('Profile Image is missing');
             return;
         }
-        data.slots = data.slots.map(slot => ({
-            slotTime: slot.slotTime,
-            isBooked:slot.isBooked,
-            ...(slot.patientId ? {patientId: slot.patientId}: {})
-        }))
-        
+
+
         const doctorProfileDetails = {
             profileImage: profileImageData,
             ...data
@@ -128,6 +132,54 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
             setSubmitting(false);
             toast.dismiss(toastId)
         }
+    }
+
+    useEffect(() => {
+        console.log("commonTimeSlots ", commonTimeSlots);
+        console.log("special Slots ", specialSlots);
+    }, [commonTimeSlots, specialSlots])
+
+
+    const handleSlotsSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedSlots = Array.from(e.target.selectedOptions, option => option.value);
+        console.log("Selected values:", selectedSlots);
+        setSpecialSlots(selectedSlots);
+    }
+    const handleSlotToggle = (time: string) => {
+        setSpecialSlots(prev =>
+            prev.includes(time)
+                ? prev.filter(slot => slot !== time) // deselect
+                : [...prev, time] // select
+        );
+    };
+
+    const handleDayClicked = (day: string) => {
+        if (chosenDay === day) {
+            setChosenDay('')
+        } else {
+            setChosenDay(day)
+        }
+
+    }
+
+
+    function handleSaveSlots() {
+        console.log(" day: ", chosenDay, "slots:", specialSlots);
+        if (specialSlots.length === 0) {
+            window.alert("Please select time slots before saving")
+        }
+        if (chosenDay) {
+            append({ day: chosenDay as any, slots: specialSlots })
+            setSpecialSlots([]);
+            setChosenDay('');
+        }
+        else {
+            window.alert("Day is not selected. Please select day first");
+            return null
+        }
+        setCommonTimeSlots(COMMON_TIME_SLOTS);
+        console.log("watched available days ", watchedDays)
+
     }
 
     return (
@@ -266,83 +318,65 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                                 <Calendar className="mr-2 h-5 w-5" />
                                 Available Days
                             </h3>
-                            <div className="grid grid-cols-3 md:grid-cols-3 gap-3 mb-6">
-                                {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(day => (
-                                    <label key={day} className="flex items-center p-3 w-20 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
-                                        <input
-                                            type="checkbox"
-                                            value={day}
-                                            {...register('availableDays')}
-                                            className="mr-2 h-4 w-4 text-blue-600"
-                                        />
-                                        {day}
-                                    </label>
+                            <div>
+                                {daysOfWeek.map((day, ind) => (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDayClicked(day)}
+                                        className={`border border-gray-300 p-2 m-1 hover:bg-blue-100 ${chosenDay === (day) && '!bg-blue-300'}`}> {day}</button>
                                 ))}
+
+                                {daysSelected.length ? <p className="text-blue-500"> Selected Day: {daysSelected} </p> : <p className="text-yellow-500"> please Select the day first</p>}
+
+
                             </div>
-                            {errors.availableDays && (
-                                <p className="text-red-500 text-sm mt-1">{errors.availableDays.message}</p>
-                            )}
-                        </div>
-
-                        {watchedDays.length === 0 && (
-                            <p className="text-yellow-600 mb-2 text-sm"> Please select available days first</p>
-                        )}
-
-                        {/* SEPARATE TIME SLOTS SECTION */}
-                        <div className="border-t pt-6">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-semibold text-gray-800 flex items-center">
-                                    <Clock className="mr-2 h-5 w-5" />
-                                    Available Time Slots
-                                </h3>
+                            <div>
+                                <p> Select slots for {chosenDay} </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {commonTimeSlots.map(time => {
+                                        const isSelected = specialSlots.includes(time);
+                                        return (
+                                            <button
+                                                key={time}
+                                                type="button"
+                                                onClick={() => handleSlotToggle(time)}
+                                                className={`px-3 py-1 rounded-md border 
+                                                        ${isSelected
+                                                        ? "!bg-blue-500 text-white border-blue-600"
+                                                        : "bg-gray-100 hover:bg-gray-200 border-gray-300"
+                                                    }`}
+                                            >
+                                                {time}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
                                 <button
                                     type="button"
-                                    onClick={addSlot}
-                                    disabled={watchedDays.length === 0}
-                                    className={`appearance-none flex items-center px-3 py-2 text-black text-xs
-                            ${watchedDays.length === 0 ? 'disabled:bg-gray-400 cursor-not-allowed disabled:opacity-100' : 'bg-blue-500 !bg-blue-500 hover:!bg-blue-700 disabled:opacity-100 disabled:bg-blue-500 '}
-                            rounded-md`}
-                                >
-                                    <Plus className="mr-1 h-4 w-4" />
-                                    Add Time Slot
+                                    onClick={handleSaveSlots}
+                                    className="border border-gray-300">
+                                    Save Slots for {chosenDay}
                                 </button>
                             </div>
+                            <div className="mt-4 border-t pt-4">
+                                <h4 className="text-md font-semibold">Saved Slots</h4>
+                                {fields.map((field, index) => (
+                                    <>
+                                        <div key={field.id}>
 
-                            {fields.map((field, index) => (
-                                <div key={field.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg bg-gray-50 mb-3">
-                                    {/* Time Selection Only - No Days here */}
-                                    <div className="flex-1">
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                            Time Slot
-                                        </label>
-                                        <select
-                                            {...register(`slots.${index}.slotTime`)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                        >
-                                            <option value="">Select Time</option>
-                                            {getAvailableTimeSlots(index).map(time => (
-                                                <option key={time} value={time}>{time}</option>
-                                            ))}
-                                        </select>
-                                        {errors.slots?.[index]?.slotTime && (
-                                            <p className="text-red-500 text-sm mt-1">{errors.slots[index]?.slotTime?.message}</p>
-                                        )}
-                                    </div>
+                                            <h2 className=""> {field.day}</h2>
+                                            <p> {field.slots.join(' ')}</p>
 
-                                    {/* Remove Button */}
-                                    {fields.length > 1 && (
-                                        <button
-                                            type="button"
-                                            onClick={() => removeSlot(index)}
-                                            className="p-2 text-red-600 hover:bg-red-100 rounded-md self-end"
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            ))}
+                                        </div>
+                                        <button type="button" className="text-red-500" onClick={() => remove(index)}><Trash2 /></button>
+                                    </>
+
+                                ))}
+                            </div>
+                            {errors.availableDays?.root?.message && <p className="text-red-500">{errors.availableDays?.root?.message}</p>}
+
+                            <button type="submit" className="px-5 py-2 !bg-red-400 rounded-2xl hover:shadow-md hover:!bg-red-500">Submit</button>
                         </div>
-                        <button type="submit" className="px-5 py-2 !bg-red-400 rounded-2xl hover:shadow-md hover:!bg-red-500">Submit</button>
                     </div>
                 </form>
             </main>
@@ -351,3 +385,4 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
 }
 
 export default DoctorFormComponent
+

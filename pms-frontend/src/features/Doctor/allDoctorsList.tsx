@@ -72,7 +72,7 @@ const AllDoctors = () => {
                             <div className="flex flex-col h-full">
                                 <div className="relative overflow-hidden">
                                     <img
-                                        className="w-full h-68 object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="w-full max-w-sm h-60 object-cover group-hover:scale-105 transition-transform duration-500"
                                         src={doctor.profileImage.imageUrl}
                                         alt={`${doctor.username} Profile`}
                                     />

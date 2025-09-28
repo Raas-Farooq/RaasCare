@@ -74,9 +74,3 @@ function useFetchApi(url: string, id: string | null) {
 
 export default useFetchApi
 
-
-// Syed from Safepay
-// Thu, Sep 11, 10:57 AM (1 day ago)
-// to me, Safepay
-
-// hey, your redirect url is missing attributes like environment, success and cancel url please see this document https://safepay-docs.netlify.app/

@@ -26,7 +26,7 @@ const AdminNavbar = () => {
             <div className="flex items-center gap-4">
                 <div className="flex items-center">
                     <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                        MediCare
+                        RaasCare
                     </h1>
                     <span className="text-2xl ml-2 text-purple-600"> {<Heart />} </span>
                 </div>

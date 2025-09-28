@@ -114,9 +114,9 @@ const fetchAllDoctors = async (req, res) => {
 const onlinePaymentRequest = async (req, res) => {
     const { slotId } = req.params;
     const { doctorId, amount } = req.body;
-    console.log(" secret key ", process.env.SAFEPAY_SECRET_KEY)
-    console.log(" frontend key ", process.env.FRONT_END);
-    console.log(" public key ", process.env.SAFEPAY_MERCHANT_KEY)
+    // console.log(" secret key ", process.env.SAFEPAY_SECRET_KEY)
+    // console.log(" frontend key ", process.env.FRONT_END);
+    // console.log(" public key ", process.env.SAFEPAY_MERCHANT_KEY)
     try {
         const payload = {
             'merchant_api_key': process.env.SAFEPAY_MERCHANT_KEY,
@@ -127,9 +127,10 @@ const onlinePaymentRequest = async (req, res) => {
             'source': "RaasCare",
             'amount': amount,
             'entry_mode': 'raw',
-            'cancel_url': `${process.env.FRONT_END}/pms/cancelPayment`,
-            "success_url": `${process.env.FRONT_END}/pms/successPayment`,
-            "failure_url": `${process.env.FRONT_END}/pms/failedPayment`,
+            'cancel_url': `${process.env.FRONT_END}/pms/cancelPayment?doctorId=${doctorId}&slotId=${slotId}`,
+            "success_url": `${process.env.FRONT_END}/pms/successPayment?doctorId=${doctorId}&slotId=${slotId}`,
+            "failure_url": `${process.env.FRONT_END}/pms/failedPayment?doctorId=${doctorId}&slotId=${slotId}`,
+            "redirect_url": `${process.env.FRONT_END}/pms/patient-dashboard`, 
 
             "meta": {
                 "doctorId": doctorId,
@@ -155,6 +156,7 @@ const onlinePaymentRequest = async (req, res) => {
         if (trackToken) {
             redirectUrl = `https://sandbox.getsafepay.com/checkout/${trackToken}`;
         }
+        
         else {
             console.log(" tracker token is missing. Check your post request again");
         }

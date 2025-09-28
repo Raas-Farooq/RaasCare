@@ -2,6 +2,7 @@ import { openSync } from "fs";
 import { Appointments, AvailableSlots, Doctor } from "../models/user.js";
 import mongoose from "mongoose";
 import { use } from "react";
+import { pipeline } from "stream";
 
 const weekDays = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 };
 
@@ -153,7 +154,7 @@ async function allDoctorsSlotsGenerator(req, res) {
 const bookSlot = async (req, res) => {
     const { slotId } = req.params;
     const { patientName, docId, patientId } = req.body;
-
+    console.log("slotId inside bookSlot ", slotId, "patientId ", patientId, "patineName ", patientName);
     try {
         const slot = await AvailableSlots.findOneAndUpdate(
             { _id: slotId, isBooked: false, isCancelled: false },
@@ -217,6 +218,7 @@ const getDoctorAvailableDays = async (req, res) => {
                 $project: {
                     slotDate: 1,
                     slotTime: 1,
+                    isBooked:1,
                     dayStr: { $dateToString: { format: "%Y-%m-%d", date: '$slotDate.startDate', timezone: "Asia/Karachi" } }
                 },
             },
@@ -224,7 +226,7 @@ const getDoctorAvailableDays = async (req, res) => {
                 $group: {
                     _id: "$dayStr",
                     date: { $first: "$slotDate.startDate" },
-                    slots: { $push: { slotId: "$_id", slotTime: "$slotTime" } }
+                    slots: { $push: { slotId: "$_id", slotTime: "$slotTime", isBooked:"$isBooked" } }
                 }
             },
             { $sort: { date: 1 } }
@@ -245,6 +247,40 @@ const getDoctorAvailableDays = async (req, res) => {
     }
 }
 
+
+
+const getDoctorsAndAverageSalary = async(req,res) => {
+    console.log("AVage sla baceknd runsss")
+   try{
+     const pipeline = [
+       {
+         $match:{ role:'doctor', available:true}
+       },
+       {
+        $project:{
+            _id:0,
+            education:1,
+            experience:1,
+            address:1
+            }
+       },
+       {
+        $sort:{
+        experience:-1
+       }
+       }
+    ]
+
+    const aggregateResult = await Doctor.aggregate(pipeline);
+      console.log(" result  of aggregate: ", aggregateResult);
+        return res.status(200).json({result: aggregateResult});
+  
+   }
+   catch(err){
+    console.error("err while working with aggregate: ", err);
+    return res.status(500).json({err: err.message})
+   }
+}
 const getDoctorSlots = async (req, res) => {
 
     const { docId } = req.params;
@@ -428,5 +464,5 @@ const updateSlotStatus = async (req, res) => {
 }
 
 
-export { getPatientBookedSlots, updateSlotStatus, allDoctorsSlotsGenerator, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
+export { getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, allDoctorsSlotsGenerator, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
 

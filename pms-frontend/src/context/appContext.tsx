@@ -135,7 +135,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     let logoutTimer: NodeJS.Timeout | undefined;
 
     const logout = useCallback(async () => {
-        toast("Your Session Expired. Please Login Again!")
+        // toast("Your Session Expired. Please Login Again!")
         try {
             await axios.get('http://localhost:2500/pms/logout',
                 { withCredentials: true }

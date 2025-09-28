@@ -1,17 +1,21 @@
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "../context/appContext";
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight, Users } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
-import { useNavigate } from "react-router-dom";
+import { ScrollRestoration, useNavigate } from "react-router-dom";
 
 import axios from "axios";
+import { number } from "zod";
+import TopFacilities from "./topFacilities.tsx";
 
 function Home() {
   const { userRole } = useAuth();
+  const [chalgoza, setChalgoza] = useState(0);
   const navigate = useNavigate();
+  const [almonds, setAlmonds] = useState(0);
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
 
@@ -94,19 +98,34 @@ function Home() {
     console.log("this i sthe userRole ", userRole);
   }, [])
 
-  function learning(){
-    console.log("LEARN More has been callsed")
-    const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
-    function bubbleSort(data:number){
-
-      if(data <= 0){
-        return 'Go'
-      }
-      console.log(data);
-      bubbleSort(data-1)
+  function sort(list:number[]){
+      console.log(" list1: ", list);
+      
     }
-    console.log('BE READY ')
-    bubbleSort(3)
+  function learning(){
+    // console.log("LEARN More has been callsed")
+    // const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
+    // function bubbleSort(limit:number, data:number[], data2:number[]){
+
+    //   if(limit <= 1){
+    //     return 1
+    //   }
+    //   let mid = Math.floor(data.length / 2);
+    //   const leftSide = data.slice(0,mid);
+    //   const rightSide = data.slice(mid);
+    //   console.log("left half ", leftSide);
+    //   console.log("right half ", rightSide);
+    //   return bubbleSort(mid, sort(leftSide),sort(rightSide))
+    // }
+
+    
+    // const res = bubbleSort(binarydata.length, binarydata);
+    // console.log(" fact result ", res)
+
+
+
+
+
     // function binarySearch(arr:number[], n:number){
     //   let s = 0;
     //   let e = arr.length - 1;
@@ -134,62 +153,114 @@ function Home() {
     // }
     // const numberToFind = 20;
     // binarySearch(binarydata, numberToFind)
-    const myArr=['believe', 'Put Trust On Allah(SWT)', 'Challenge', 'Be Tough', 'Play till Last Ball'];
-    let i = 0;
-    function rec(mes:string){
 
-      // base Case
-      if(i >= myArr.length){
-        return 0;
-      }
-      // flow / process of what you want to acheive or do
-      console.log(" The Message of Your Breath: ", mes);
 
-      // recursive case (should finish/end or reach the target of base)s
-      rec(myArr[i++]);
-    }
-    // rec('Lets Start')
+    // MERGED AREA
+//     const merge = (leftArr, rightArr) => {
+//     let sortedArr = [];
+//     let leftIndex = 0;
+//     let rightIndex = 0;
 
-    let belief="racecar";
-    let l=0; let r=belief.length-1;
-    let iter = 3;
-    function mergeSort(dataList:number[]){
-      // console.log(" The Nubmer of Your Breath: ", belief[l], " breath right:  ", belief[r]);
-      let arrLen= dataList.length;
-      console.log("arrLen: ", arrLen);
-      let firstHalf:number[] = [];
-      let lastHalf:number[] = [];
-      
-      if(iter < 1){
-        return 0
-      }
-      iter--;
-      while(arrLen>= 1){
-        let half = Math.floor(arrLen / 2);
-        console.log(" half length: ", half);
-        firstHalf = dataList.slice(0,half);
-        lastHalf = dataList.slice(half);
-        console.log("firstHalf ", firstHalf, "Nexthalf", lastHalf);
-      }
-      console.log(" first Half before recursive call ", firstHalf);
-      mergeSort(firstHalf);
-    }
- 
-      // mergeSort(binarydata)
-    
-    
-    
-  }
+//   // Compare elements from both arrays and add the smaller one
+//     while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
+//       if (leftArr[leftIndex] < rightArr[rightIndex]) {
+//         sortedArr.push(leftArr[leftIndex]);
+//         leftIndex++;
+//       } else {
+//         sortedArr.push(rightArr[rightIndex]);
+//         rightIndex++;
+//       }
+//     }
 
+//   // Add any remaining elements from either array
+//   return [...sortedArr, ...leftArr.slice(leftIndex), ...rightArr.slice(rightIndex)];
+// };
+
+// function mergeSort(dataArr:number[]) {
+//   // Base case: An array with 1 or 0 elements is already sorted
+//   if (dataArr.length <= 1) {
+//     return dataArr; // Return the array itself, not its length.
+//   }
+
+//   // Divide the array into two halves
+//   const half = Math.floor(dataArr.length / 2);
+//   const firstHalf = dataArr.slice(0, half);
+//   const lastHalf = dataArr.slice(half);
+
+//   // Recursively sort the two halves and then merge the result
+//   console.log("firstHalf ", firstHalf, " lastHalf ", lastHalf);
+//   return merge(mergeSort(firstHalf), mergeSort(lastHalf));
+//   }
+
+//   const binarydata = [3, 9, 12, 16, 20, 27, 28, 29, 30, 35, 66, 892];
+//   // const mySortedList = mergeSort(binarydata);
+//   console.log(" mySorted List: ", mySortedList);
+
+
+// MERGE SORT
+
+
+// const merge = (first:number[], sec:number[]) => {
+//   console.log(" inside Merge ", first, ' sec ', sec);
   
+
+// }
+//     const mergeSort = (myList:number[]):number[] => {
+//       let listLength = myList.length;
+
+//       if(listLength <= 1){
+//         return myList
+//       }
+//       const mid = Math.floor(listLength/2);
+//       const leftHalf= myList.slice(0, mid);
+//       const rightHalf = myList.slice(mid);
+//       console.log("inside mergeSort ", leftHalf , "rigthHalf ", rightHalf)
+//       return merge(mergeSort(leftHalf), mergeSort(rightHalf))
+//     }
+
+//     const numList = [7, 1, 4, 12];
+//     const result = mergeSort(numList);
+//     console.log("final result mergeSort ", result);
+
+const text = 'Resilience And Blessings';
+    let reversed = '';
+    function reverseString(text:string, index:number):string{
+
+      if(index <= 0){
+        return text[0];
+      }
+
+      // reversed = reversed + text[index];
+      // console.log("reversed each ", reversed)
+       return text[index] + reverseString(text, index-1);
+      
+    }
+    const length = text.length-1;
+    
+    const result = reverseString(text, length);
+
+    console.log("result of reversed: ", result);
+
+}
+
+const handleAlmonds = () => {
+    // console.log(" Alhamdulila. Allah(SWT) is the Source of All Energy", almonds)
+    setAlmonds(prev => prev+1)
+}
+  const handleAlmondsCallBack = useCallback(() => {
+    console.log("All the blessings belong To Almighty")
+    setAlmonds(prev => prev+1)
+  },[])
+
+  // const handleAlmondsCallback = useCallback(() => {
+  //   console.log("Almonds new value callback ",almonds )
+  // },[almonds])
 // first:'With your Nafs', second:'With your external environment'
  
   return (
     <>
       <section className="Hero-Section relative bg-gradient-to-r from-purple-50 to-white">
-        {!userRole &&
-          <Navbar servicesRef={servicesRef} contactRef={contactRef} />
-        }
+        <Navbar servicesRef={servicesRef} contactRef={contactRef} />
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center px-4 py-8">
           <h1 className="text-4xl md:text-5xl mt-5 font-bold text-yellow-600">
             Your health our priority
@@ -206,7 +277,7 @@ function Home() {
               className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
-            <button onClick = {learning} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+            <button onClick = {() => learning() } className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
             </button>
           </div>
@@ -225,14 +296,16 @@ function Home() {
               </p>
               <div className="flex flex-col gap-4">
                 <p className="mt-4 text-gray-600">Why You must come Here first</p>
-                <button className="block px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+                <button 
+                onClick={() => navigate('/topFacilities')}
+                className="block px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
                   Learn More
                 </button>
               </div>
 
             </div>
             <div className="mt-4">
-              <img className="w-full max-w-xs max-w-sm md:max-w-sm lg:max-w-md rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" src="/relief.jpg" alt={"Treatment & Relief"} />
+              <img className="w-full max-w-sm md:max-w-sm lg:max-w-md rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" src="/relief.jpg" alt={"Treatment & Relief"} />
             </div>
           </div>
         </div>
@@ -369,6 +442,7 @@ function Home() {
           </div>
         </div>
       </footer>
+      {/* <ScrollRestoration /> */}
     </>
 
   )

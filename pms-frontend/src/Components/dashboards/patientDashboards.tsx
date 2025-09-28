@@ -1,6 +1,5 @@
-import { useNavigate, Outlet } from "react-router-dom"
-import Navbar from "../Navbar/navbar"
-// import useNavigate from 'react-router-dom';
+import { useNavigate, Outlet, ScrollRestoration } from "react-router-dom"
+
 
 const PatientDashboard = () => {
 
@@ -11,8 +10,6 @@ const PatientDashboard = () => {
 
     return (
         <div className="patient-dashboard">
-            <Navbar />
-
             <main>
                 <Outlet />
             </main>

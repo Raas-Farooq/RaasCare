@@ -8,15 +8,15 @@ const medicalHistorySchema= new mongoose.Schema({
     date:{
         type:String,
         default:Date.now,
-        required:true,
+        // required:true,
     },
     diagnosis:{
         type:String,
-        required:[true, "Diagnosis of Patient is required"]
+        // required:[true, "Diagnosis of Patient is required"]
     },
     treatment:{
         type:String,
-        required:[true, "what kind of treatment initiated. Must justify "]
+        // required:[true, "what kind of treatment initiated. Must justify "]
     }
     // ,
     // doctorId:{
@@ -30,16 +30,16 @@ const patientSchema = new mongoose.Schema({
      },
         patientName:{
             type:String,
-            required:true
+            // required:true
         },
         phone:{
             type:String,
-            required:true,
+            // required:true,
             match:[/^(\+92)[0-9]{10}$/, "Invalid Phone Number"]
         },
         dateOfBirth:{
             type:Date,
-            required:true
+            // required:true
 
         },
         gender:{
@@ -57,10 +57,10 @@ const patientSchema = new mongoose.Schema({
     timestamps:true
 })
 
-patientSchema.index({phone:1,dateOfBirth:1}, {unique:true});
+// patientSchema.index({phone:1,dateOfBirth:1}, {unique:true});
 
 const Patient = mongoose.model('patient', patientSchema);
-Patient.syncIndexes();
+// Patient.syncIndexes();
 
 
 export default Patient

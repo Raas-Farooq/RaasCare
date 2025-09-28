@@ -17,6 +17,7 @@ import {useEffect, useState } from 'react';
 import Home from './Home/home';
 import { useAuth } from './context/appContext';
 import AllDoctors from './features/Doctor/allDoctorsList';
+import ScrollToTop from './Components/scrollToTop';
 
 
     function App() {
@@ -33,6 +34,7 @@ import AllDoctors from './features/Doctor/allDoctorsList';
       if(loading) return <h1>Loading..</h1>
       return (
         <div>
+          <ScrollToTop />
           <Toaster position='top-center'/>
           <Routes>    
               <Route path="/" element={<Home />} />
@@ -109,7 +111,7 @@ import AllDoctors from './features/Doctor/allDoctorsList';
                     </Route>
                 ))}
           </Routes>
-
+          <Toaster />
           {/* Toast Notification */}
           <ToastContainer 
             position="top-right"
@@ -122,7 +124,6 @@ import AllDoctors from './features/Doctor/allDoctorsList';
             draggable
             pauseOnHover
           />
-
         </div>
       )
 }

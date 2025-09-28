@@ -5,6 +5,7 @@ import { config } from "dotenv";
 import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { env } from 'process';
+import Patient from '../models/patient.js';
 
 
 config()
@@ -35,6 +36,7 @@ const registerPatient = async (req, res) => {
             const newPatient = await Patient.create({});
             // const {patientId, patientName, city, age, gender,medicalHistory} //if in case user is being sending all the detials then we have to made some changes but in simple case when generally user register for appointement booking then the intial details is enough;
             const { username, email, role, password } = req.body;
+            console.log("username; ", username, "email , password ", email, password, ' role ', role);
             const hashedPassword = bcrypt.hash(password, 10);
             const addPatient = new User({
                 username,
@@ -61,6 +63,7 @@ const registerPatient = async (req, res) => {
         })
     }
 }
+
 const registerUser = async (req, res) => {
     console.log("register User req.body: ", req.body);
     const errors = validationResult(req);
@@ -140,7 +143,8 @@ const registerUser = async (req, res) => {
     catch (err) {
         return res.status(500).json({
             success: false,
-            message: "server error while creating new user ", err
+            message: "server error while creating new user ",
+            error:err.message
         })
     }
 }
@@ -304,7 +308,7 @@ const logout = (req, res) => {
 
 }
 
-export { registerUser, userLogin, getAllUsers, logout }
+export { registerPatient, userLogin, getAllUsers, logout }
 
 
 
