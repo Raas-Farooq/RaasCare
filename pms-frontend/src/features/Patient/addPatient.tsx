@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { FaSpinner } from "react-icons/fa";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
 import toast from 'react-hot-toast';

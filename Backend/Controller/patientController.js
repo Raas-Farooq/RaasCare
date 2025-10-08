@@ -137,8 +137,10 @@ const getPatient= async(req,res) =>
 
 const getAllPatients= async(req,res) =>
     {
+        console.log("all Patients Has been Called");
         try{
         const patients = await Patient.find({});
+        
         // await Patient.insertMany([{
         //     patientId:'235',
         //     patientName:"Rehmat Ali",

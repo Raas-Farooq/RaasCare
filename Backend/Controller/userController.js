@@ -11,49 +11,74 @@ import Patient from '../models/patient.js';
 config()
 
 const registerPatient = async (req, res) => {
-    const { isPatientExist } = req.body;
+    const { username, email,password, phone} = req.body;
+    const patientExist= await Patient.findOne({phone:phone});
+    let patientAdded;
     try {
-        if (isPatientExist) {
-            const { patientId, username, email, role, password } = req.body;
-            const hashedPassword = bcrypt.hash(password, 10);
-            const addPatient = new User({
+        if (patientExist) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            patientAdded = new User({
                 username,
                 email,
                 password: hashedPassword,
-                role,
-                patientRecord: patientId
+                role:'patient',
+                patientRecord: patientExist._id
             })
-
-            await addPatient.save();
-
-            return res.status(201).json({
-                success: true,
-                message: "Patient registration Successfully completed ",
-                patient: addPatient
-            })
-
+            await patientAdded.save();
         } else {
             const newPatient = await Patient.create({});
             // const {patientId, patientName, city, age, gender,medicalHistory} //if in case user is being sending all the detials then we have to made some changes but in simple case when generally user register for appointement booking then the intial details is enough;
-            const { username, email, role, password } = req.body;
-            console.log("username; ", username, "email , password ", email, password, ' role ', role);
-            const hashedPassword = bcrypt.hash(password, 10);
-            const addPatient = new User({
+            console.log("username; ", username, "email , password ", email, password);
+            const hashedPassword =await bcrypt.hash(password, 10);
+            patientAdded = new User({
                 username,
                 email,
                 password: hashedPassword,
-                role,
+                role:'patient',
                 patientRecord: newPatient._id
             })
 
-            await addPatient.save();
-
+            await patientAdded.save();
+        }
+        console.log("patientADded after the exist process ", patientAdded);
+        let token;
+        const expiryTime = 60 * 60;
+        try{
+            token = jwt.sign({id: patientAdded._id, email:email, role:'patient'}, process.env.JWT_SECRET, {expiresIn:'1h'});
+        }
+        catch(error){
+                console.error("got error while token Creation: ", error);
+                return res.status(400).json({
+                success: false,
+                message: " error while creating token for New Patient",
+                error: err.message
+            })
+        }
+        console.log(" token Created ", token)
+        try{
+                res.cookie( 'token', token, {
+                httpOnly:true,
+                secure:process.env.NODE_ENV === 'production',
+                sameSite:'lax',
+                maxAge:3600000
+            })
+        }catch(cookieErr){
+                console.error("got error while Cookie Creation: ", cookieErr);
+                return res.status(400).json({
+                success: false,
+                message: " error while creating token for New Patient",
+                error: cookieErr.message
+            })
+        }
             return res.status(201).json({
                 success: true,
                 message: "New Patient Successfully Added",
-                patient: addPatient
+                user:{username, email:patientAdded.email, role:patientAdded.role},
+                expiresIn:expiryTime,
+                jwt_token:token,
+                userProfile:patientAdded,
+                patient: patientAdded
             })
-        }
     }
     catch (err) {
         return res.status(500).json({
@@ -116,7 +141,7 @@ const registerUser = async (req, res) => {
             res.cookie('token', createdToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'strict',
+                sameSite: 'lax',
                 maxAge: 3600000
             })
 

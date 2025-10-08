@@ -18,7 +18,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://da46e8198308.ngrok-free.app'];
+const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://06bc792719bf.ngrok-free.app'];
 app.use(cors({
     origin:function(requestOrigin , callback){
 

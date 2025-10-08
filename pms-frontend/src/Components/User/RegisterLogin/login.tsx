@@ -6,8 +6,9 @@ import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
 import { Eye, EyeClosed, EyeClosedIcon, LucideEyeClosed } from "lucide-react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
+import makeNgrokRequest from "../../../ngrokRequesthook"
 
 const loginSchema = z.object({
     email: z.string()
@@ -24,12 +25,13 @@ type SubmitProps = z.infer<typeof loginSchema>
 const Login = () => {
     const { login } = useAuth()
     const navigate = useNavigate();
+    const [patientRecordId, setPatientRecordId] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
         resolver: zodResolver(loginSchema)
     })
 
-
+  
 
     const submitResult = async (data: SubmitProps) => {
         const toastId = toast.loading('Signing In..')
@@ -50,6 +52,11 @@ const Login = () => {
                 console.log("user role after login: ", role);
                 switch (role) {
                     case 'patient': {
+                        const patientId = loginResponse.userProfile.patientRecord;
+                        if(patientId){
+                            console.log("yses PatientId found: ", patientId)
+                            setPatientRecordId(patientId);
+                        };
                         navigate('/patient-dashboard');
                         break;
                     }
@@ -118,7 +125,7 @@ const Login = () => {
                             text-lg transition-colors duration-300
                             ${isSubmitting 
                                 ? '!bg-gray-400 cursor-not-allowed'
-                                : 'bg-purple-600 hover:bg-purple-700 text-white'
+                                : '!bg-purple-400 hover:!bg-purple-700 text-white'
                             }
                         `}
                     >

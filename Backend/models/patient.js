@@ -58,10 +58,26 @@ const patientSchema = new mongoose.Schema({
 })
 
 // patientSchema.index({phone:1,dateOfBirth:1}, {unique:true});
-
+// patientSchema.dropIndex('phone_1_dateOfBirth_1');
 const Patient = mongoose.model('patient', patientSchema);
 // Patient.syncIndexes();
 
+async function dropTheIndex() {
+  try {
+    // Drop the index by its name, which is 'phone_1_dateOfBirth_1'
+    await Patient.collection.dropIndex('phone_1_dateOfBirth_1');
+    console.log('Index dropped successfully.');
+  } catch (err) {
+    if (err.codeName === 'IndexNotFound') {
+      console.log('Index does not exist. No action needed.');
+    } else {
+      console.error('Error dropping index:', err);
+    }
+  }
+}
+
+// Call the function once to remove the index
+dropTheIndex();
 
 export default Patient
 

@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { act, useEffect, useState } from "react";
 
 import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, DeleteIcon, CircleX, CheckCircle, Trash } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
 import toast from "react-hot-toast";
+import AddNewDoctor from "../Admin/addNewDoctor";
+import PatientAddForm from "../Patient/addPatient";
 
 interface BookedSlot {
   isBooked: boolean,
@@ -25,7 +27,7 @@ interface BookedSlot {
 // Add Patient Tab Have to Be Added
 
 const DoctorHome = () => {
-  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile'>('Dashboard');
+  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile' | 'AddPatient'>('Dashboard');
   const { doctorProfile, bookedSlots, setBookedSlots, userRole } = useAuth();
   // const [myBookedSlots, setMyBookedSlots]= useState<BookedSlot[]|null>(null);
   const [bookingDetails, setBookingDetails] = useState([{
@@ -123,8 +125,10 @@ const DoctorHome = () => {
               <span className="font-medium text-gray-700">Appointments</span>
             </button>
             <button
-              aria-selected={activeTab === 'Dashboard'}
-              onClick={() => setActiveTab('Dashboard')}
+              aria-selected={activeTab === 'AddPatient'}
+              onClick={() => setActiveTab('AddPatient')}
+              // aria-selected={activeTab === 'Dashboard'}
+              // onClick={() => setActiveTab('Dashboard')}
               className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Dashboard' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
             >
               <LayoutDashboardIcon className="w-5 h-5 text-blue-600" />
@@ -320,6 +324,11 @@ const DoctorHome = () => {
                 </table>
               </div>
             </section>
+          </main>
+          {/* Add New Patient */}
+          <main className={` ${activeTab === 'AddPatient' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-event-none'}`}>
+            <PatientAddForm />
+                
           </main>
           {/* Profile */}
           <main className={`${stylingOfMain} ${activeTab === 'Profile' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>

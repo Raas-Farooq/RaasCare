@@ -11,7 +11,7 @@ export const patientRoutes = [{
   element: <PatientDashboard />,
   children:[
     { index: true, element: <Home /> },
-    { path: "profile/:patientId", element: <PatientProfile /> },
+    { path: "patientProfile/", element: <PatientProfile /> },
     {path: 'myAppointments', element :<MyAppointments />},
     { path: 'addPatient', element: <PatientAddForm /> },
     { path: "updatePatientProfile", element: <UpdatePatientProfile /> }

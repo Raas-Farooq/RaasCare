@@ -30,10 +30,6 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
         }
     }, [width])
 
-    useEffect(() => {
-
-        console.log("isPatienCatd: ", isPatientCard);
-    }, [isPatientCard])
 
     
 
@@ -58,6 +54,9 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
 
     }
 
+    const handleProfileClick = () => {
+        navigate('/patient-dashboard/patientProfile');
+    }
 
     function handleRegister() {
 
@@ -156,15 +155,6 @@ const navbarLinks = [
     { name: 'About', href: "#" },
 ]
 const buttonBase = "px-6 py-2 rounded-full shadow-md transition-all duration-300"
-
-    console.log(" navbar is ..working hard")
-    const startTime = performance.now();
-
-    while (performance.now() - startTime < 100) {
-
-    };
-    // console.log("i'm Also inside same boat")
-
 const underlineEffect = 'font-thin transition-all after:block after:h-[2px] after:w-0 after:bg-purple-500 after:transition-all hover:after:w-full hover:text-purple-600';
 
 
@@ -237,7 +227,7 @@ return (
                             : 
                         'absolute top-10 right-1 bg-white '}`}>
                         <div className={`${isShowMenu || isPatientCard ? 'transition-all duration-200 ease-in-out transform origin-top-right scale-100 flex flex-col' : 'shadow-none hidden'} ${isPatientCard && !isShowMenu && 'shadow-lg w-40 p-5 space-y-3'} `}>
-                            <button className={`${underlineEffect}`}>Profile</button>
+                            <button onClick={handleProfileClick} className={`${underlineEffect}`}>Profile</button>
                             <button className={`${underlineEffect}`} onClick={handleLogout}>logout</button>
                             <button className={`${underlineEffect}`} onClick={handleMyAppointments}>My Bookings</button>
                         </div>

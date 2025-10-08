@@ -18,6 +18,7 @@ function Home() {
   const [almonds, setAlmonds] = useState(0);
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
 //   class ListNode {
 //     val:number
@@ -93,134 +94,14 @@ function Home() {
 // // Call the setup and run function
 // setupAndRun();
 
-  useEffect(() => {
-    const userRole = localStorage.getItem('role');
-    console.log("this i sthe userRole ", userRole);
-  }, [])
+
 
   function sort(list:number[]){
       console.log(" list1: ", list);
       
     }
-  function learning(){
-    // console.log("LEARN More has been callsed")
-    // const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
-    // function bubbleSort(limit:number, data:number[], data2:number[]){
-
-    //   if(limit <= 1){
-    //     return 1
-    //   }
-    //   let mid = Math.floor(data.length / 2);
-    //   const leftSide = data.slice(0,mid);
-    //   const rightSide = data.slice(mid);
-    //   console.log("left half ", leftSide);
-    //   console.log("right half ", rightSide);
-    //   return bubbleSort(mid, sort(leftSide),sort(rightSide))
-    // }
-
-    
-    // const res = bubbleSort(binarydata.length, binarydata);
-    // console.log(" fact result ", res)
-
-
-
-
-
-    // function binarySearch(arr:number[], n:number){
-    //   let s = 0;
-    //   let e = arr.length - 1;
-    //   if(arr.length === 0){
-    //     return 'there is no data';
-    //   }
-    //   while(s <= e){
-    //     const mid = Math.floor((s+e) / 2);
-    //     console.log("mid: " ,mid);
-    //     if(arr[mid] === n){
-    //       console.log("number found ", arr[mid], " at index: ", mid);
-    //       return "number is Found"
-    //     }
-    //     if(arr[mid] < n){
-    //       console.log("mid: less than number  mid" ,arr[mid], " num ", n );
-    //       s = mid + 1;
-    //     }
-    //     if(arr[mid] > n){
-    //       console.log("mid: greater than number  mid" ,arr[mid], " num ", n );
-    //       e= mid - 1;
-    //     }
-    //   }
-
-    //   return " number not found";
-    // }
-    // const numberToFind = 20;
-    // binarySearch(binarydata, numberToFind)
-
-
-    // MERGED AREA
-//     const merge = (leftArr, rightArr) => {
-//     let sortedArr = [];
-//     let leftIndex = 0;
-//     let rightIndex = 0;
-
-//   // Compare elements from both arrays and add the smaller one
-//     while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
-//       if (leftArr[leftIndex] < rightArr[rightIndex]) {
-//         sortedArr.push(leftArr[leftIndex]);
-//         leftIndex++;
-//       } else {
-//         sortedArr.push(rightArr[rightIndex]);
-//         rightIndex++;
-//       }
-//     }
-
-//   // Add any remaining elements from either array
-//   return [...sortedArr, ...leftArr.slice(leftIndex), ...rightArr.slice(rightIndex)];
-// };
-
-// function mergeSort(dataArr:number[]) {
-//   // Base case: An array with 1 or 0 elements is already sorted
-//   if (dataArr.length <= 1) {
-//     return dataArr; // Return the array itself, not its length.
-//   }
-
-//   // Divide the array into two halves
-//   const half = Math.floor(dataArr.length / 2);
-//   const firstHalf = dataArr.slice(0, half);
-//   const lastHalf = dataArr.slice(half);
-
-//   // Recursively sort the two halves and then merge the result
-//   console.log("firstHalf ", firstHalf, " lastHalf ", lastHalf);
-//   return merge(mergeSort(firstHalf), mergeSort(lastHalf));
-//   }
-
-//   const binarydata = [3, 9, 12, 16, 20, 27, 28, 29, 30, 35, 66, 892];
-//   // const mySortedList = mergeSort(binarydata);
-//   console.log(" mySorted List: ", mySortedList);
-
-
-// MERGE SORT
-
-
-// const merge = (first:number[], sec:number[]) => {
-//   console.log(" inside Merge ", first, ' sec ', sec);
   
-
-// }
-//     const mergeSort = (myList:number[]):number[] => {
-//       let listLength = myList.length;
-
-//       if(listLength <= 1){
-//         return myList
-//       }
-//       const mid = Math.floor(listLength/2);
-//       const leftHalf= myList.slice(0, mid);
-//       const rightHalf = myList.slice(mid);
-//       console.log("inside mergeSort ", leftHalf , "rigthHalf ", rightHalf)
-//       return merge(mergeSort(leftHalf), mergeSort(rightHalf))
-//     }
-
-//     const numList = [7, 1, 4, 12];
-//     const result = mergeSort(numList);
-//     console.log("final result mergeSort ", result);
+ async function learning(){
 
 const text = 'Resilience And Blessings';
     let reversed = '';
@@ -243,19 +124,7 @@ const text = 'Resilience And Blessings';
 
 }
 
-const handleAlmonds = () => {
-    // console.log(" Alhamdulila. Allah(SWT) is the Source of All Energy", almonds)
-    setAlmonds(prev => prev+1)
-}
-  const handleAlmondsCallBack = useCallback(() => {
-    console.log("All the blessings belong To Almighty")
-    setAlmonds(prev => prev+1)
-  },[])
 
-  // const handleAlmondsCallback = useCallback(() => {
-  //   console.log("Almonds new value callback ",almonds )
-  // },[almonds])
-// first:'With your Nafs', second:'With your external environment'
  
   return (
     <>
