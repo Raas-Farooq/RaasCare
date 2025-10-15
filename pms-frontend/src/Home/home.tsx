@@ -1,25 +1,19 @@
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "../context/appContext";
+import { useEffect, useRef } from "react";
+
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight, Users } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
-import { ScrollRestoration, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
+import { useAuth } from "../context/appContext.tsx";
 
-import axios from "axios";
-import { number } from "zod";
-import TopFacilities from "./topFacilities.tsx";
 
 function Home() {
-  const { userRole } = useAuth();
-  const [chalgoza, setChalgoza] = useState(0);
   const navigate = useNavigate();
-  const [almonds, setAlmonds] = useState(0);
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+  const {allDoctors} = useAuth();
 //   class ListNode {
 //     val:number
 //     next:ListNode | null
@@ -94,17 +88,132 @@ function Home() {
 // // Call the setup and run function
 // setupAndRun();
 
+  useEffect(() => {
+    const userRole = localStorage.getItem('role');
+    console.log("this i sthe userRole ", userRole, " AllDoctors ", allDoctors);
+  }, [])
+
+  function learning(){
+    // console.log("LEARN More has been callsed")
+    // const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
+    // function bubbleSort(limit:number, data:number[], data2:number[]){
+
+    //   if(limit <= 1){
+    //     return 1
+    //   }
+    //   let mid = Math.floor(data.length / 2);
+    //   const leftSide = data.slice(0,mid);
+    //   const rightSide = data.slice(mid);
+    //   console.log("left half ", leftSide);
+    //   console.log("right half ", rightSide);
+    //   return bubbleSort(mid, sort(leftSide),sort(rightSide))
+    // }
+
+    
+    // const res = bubbleSort(binarydata.length, binarydata);
+    // console.log(" fact result ", res)
 
 
-  function sort(list:number[]){
-      console.log(" list1: ", list);
-      
-    }
+
+
+
+    // function binarySearch(arr:number[], n:number){
+    //   let s = 0;
+    //   let e = arr.length - 1;
+    //   if(arr.length === 0){
+    //     return 'there is no data';
+    //   }
+    //   while(s <= e){
+    //     const mid = Math.floor((s+e) / 2);
+    //     console.log("mid: " ,mid);
+    //     if(arr[mid] === n){
+    //       console.log("number found ", arr[mid], " at index: ", mid);
+    //       return "number is Found"
+    //     }
+    //     if(arr[mid] < n){
+    //       console.log("mid: less than number  mid" ,arr[mid], " num ", n );
+    //       s = mid + 1;
+    //     }
+    //     if(arr[mid] > n){
+    //       console.log("mid: greater than number  mid" ,arr[mid], " num ", n );
+    //       e= mid - 1;
+    //     }
+    //   }
+
+    //   return " number not found";
+    // }
+    // const numberToFind = 20;
+    // binarySearch(binarydata, numberToFind)
+
+
+    // MERGED AREA
+//     const merge = (leftArr, rightArr) => {
+//     let sortedArr = [];
+//     let leftIndex = 0;
+//     let rightIndex = 0;
+
+//   // Compare elements from both arrays and add the smaller one
+//     while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
+//       if (leftArr[leftIndex] < rightArr[rightIndex]) {
+//         sortedArr.push(leftArr[leftIndex]);
+//         leftIndex++;
+//       } else {
+//         sortedArr.push(rightArr[rightIndex]);
+//         rightIndex++;
+//       }
+//     }
+
+//   // Add any remaining elements from either array
+//   return [...sortedArr, ...leftArr.slice(leftIndex), ...rightArr.slice(rightIndex)];
+// };
+
+// function mergeSort(dataArr:number[]) {
+//   // Base case: An array with 1 or 0 elements is already sorted
+//   if (dataArr.length <= 1) {
+//     return dataArr; // Return the array itself, not its length.
+//   }
+
+//   // Divide the array into two halves
+//   const half = Math.floor(dataArr.length / 2);
+//   const firstHalf = dataArr.slice(0, half);
+//   const lastHalf = dataArr.slice(half);
+
+//   // Recursively sort the two halves and then merge the result
+//   console.log("firstHalf ", firstHalf, " lastHalf ", lastHalf);
+//   return merge(mergeSort(firstHalf), mergeSort(lastHalf));
+//   }
+
+//   const binarydata = [3, 9, 12, 16, 20, 27, 28, 29, 30, 35, 66, 892];
+//   // const mySortedList = mergeSort(binarydata);
+//   console.log(" mySorted List: ", mySortedList);
+
+
+// MERGE SORT
+
+
+// const merge = (first:number[], sec:number[]) => {
+//   console.log(" inside Merge ", first, ' sec ', sec);
   
- async function learning(){
+
+// }
+//     const mergeSort = (myList:number[]):number[] => {
+//       let listLength = myList.length;
+
+//       if(listLength <= 1){
+//         return myList
+//       }
+//       const mid = Math.floor(listLength/2);
+//       const leftHalf= myList.slice(0, mid);
+//       const rightHalf = myList.slice(mid);
+//       console.log("inside mergeSort ", leftHalf , "rigthHalf ", rightHalf)
+//       return merge(mergeSort(leftHalf), mergeSort(rightHalf))
+//     }
+
+//     const numList = [7, 1, 4, 12];
+//     const result = mergeSort(numList);
+//     console.log("final result mergeSort ", result);
 
 const text = 'Resilience And Blessings';
-    let reversed = '';
     function reverseString(text:string, index:number):string{
 
       if(index <= 0){
@@ -124,7 +233,18 @@ const text = 'Resilience And Blessings';
 
 }
 
+const handleSpecialityClick = (targetSpeciality:string) => {
+  
+  console.log("targetSpeciality ",targetSpeciality);
+  navigate('/doctorsBySpeciality', {state:{targetField:targetSpeciality}})
+}
 
+
+
+  // const handleAlmondsCallback = useCallback(() => {
+  //   console.log("Almonds new value callback ",almonds )
+  // },[almonds])
+// first:'With your Nafs', second:'With your external environment'
  
   return (
     <>
@@ -191,6 +311,7 @@ const text = 'Resilience And Blessings';
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 mt-6">
               {doctorsSpecialities.map((doctors, ind) => (
                 <button key={ind}
+                onClick={() => handleSpecialityClick(doctors.speciality)}
                   className="flex flex-col items-center justify-center cursor-pointer 
                 bg-white shadow-md px-5 py-6 min-h-[150px] transition-all
                 duration-300 rounded-2xl border-transparent hover:shadow-xl
@@ -321,57 +442,7 @@ export default Home
 
 // aga@gmail.com aga@3344
 // raas@gmail.com raas$0022
+// Attend 1 Lahore meetup (GDG, Colabs, Daftarkhwan, kickstart, the hive etc.).
+// LinkedIn Events Search:
 
-//has to ask about usage of curly braces with Route:- when using with object we don't use {} with 'element' but why use when then when Route is not sorrounded by object?
-
-// Linked List example:
-// class ListNode{
-//       val:number
-//       next:ListNode | null
-//       constructor(val?:number, next?:ListNode | null){
-//         this.val=(val === undefined ? 0 : val),
-//         this.next=(next === undefined ? null : next)
-//       }
-//     }
-
-//     class LinkedList<T>{
-//       head:Node | null
-//       length:number 
-//       constructor(){
-//         this.head=null,
-//         this.length=0
-//       }
-//     }
-
-//     function isPalindrome(head: ListNode | null): boolean {
-    
-//     let dummyNode = new ListNode(0);
-//     dummyNode.next= head;
-//     let reversed = dummyNode;
-//     let current = head;
-//     let count =0;
-//     while(current !== null){
-//         // dummyCopy.next = current.next
-//         count+= 1;
-//         current=current.next;
-//     }
-    
-//     let i=0;
-//     let mid = Math.floor(count/2)
-//     while(i < count){
-//         current = head;
-//         let j = 0;
-//         while(j< mid){
-            
-//             const nextNode = current?.next;
-//             // current.next= reversed;
-//             // reversed = current;
-//             // current = nextNode;
-//             j++;
-//         }
-        
-//         i++
-//     }
-//     console.log("dummy ", dummyNode, "reversed ", reversed);
-    
-//     return false
+// Search “Lahore developer meetup” or “React Lahore” — filter by Events.

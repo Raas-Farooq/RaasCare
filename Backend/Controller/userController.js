@@ -26,7 +26,7 @@ const registerPatient = async (req, res) => {
             })
             await patientAdded.save();
         } else {
-            const newPatient = await Patient.create({});
+            const newPatient = await Patient.create({phone:phone});
             // const {patientId, patientName, city, age, gender,medicalHistory} //if in case user is being sending all the detials then we have to made some changes but in simple case when generally user register for appointement booking then the intial details is enough;
             console.log("username; ", username, "email , password ", email, password);
             const hashedPassword =await bcrypt.hash(password, 10);
@@ -89,90 +89,6 @@ const registerPatient = async (req, res) => {
     }
 }
 
-const registerUser = async (req, res) => {
-    console.log("register User req.body: ", req.body);
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({
-            success: false,
-            message: 'got validation errors', errors
-
-        })
-    }
-
-    try {
-        const { username, email, password, role } = req.body;
-        console.log(`username ${username} email ${email} pass ${password} after deconstructing`);
-        const userExist = await Patient.findOne({ email });
-        if (userExist) {
-            return res.status(400).json({
-                success: false,
-                message: "user already exists",
-
-            })
-        }
-        const saltRounds = 10;
-
-
-        const securedPassword = await bcrypt.hash(password, saltRounds);
-        const newUser = new Patient({
-            username,
-            email,
-            password: securedPassword,
-            role: role || 'patient'
-        })
-        const savedUser = await newUser.save();
-        console.log("secret code: ", process.env.JWT_SECRET);
-        let createdToken;
-        try {
-            createdToken = jwt.sign({ user_id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        } catch (tokenErr) {
-            console.log("tokenErr: ", tokenErr);
-            return res.status(400).json({
-                success: false,
-                message: "got error while creating token",
-                error: tokenErr
-            })
-        }
-
-        try {
-            res.cookie('token', createdToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 3600000
-            })
-
-        } catch (cookieErr) {
-            console.log("cookieErr: ", cookieErr);
-            return res.status(400).json({
-                success: false,
-                message: "got error while creating token",
-                error: cookieErr.message
-            })
-        }
-        return res.status(201).json({
-            success: true,
-            message: "Successfully added new User",
-            user: {
-                id: savedUser._id,
-                email: savedUser.email,
-                username: savedUser.username,
-                role: savedUser.role
-            }
-        })
-
-    }
-    catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "server error while creating new user ",
-            error:err.message
-        })
-    }
-}
 
 const userLogin = async (req, res) => {
 

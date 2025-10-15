@@ -16,7 +16,7 @@ import {useEffect, useState } from 'react';
 
 import Home from './Home/home';
 import { useAuth } from './context/appContext';
-import AllDoctors from './features/Doctor/allDoctorsList';
+import AllDoctors from './features/Doctor/makeAppointment';
 import ScrollToTop from './Components/scrollToTop';
 
 

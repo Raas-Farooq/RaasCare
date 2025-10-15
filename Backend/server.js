@@ -10,12 +10,28 @@ import Patient from './models/patient.js';
 import fileUpload from 'express-fileupload';
 import doctorRoutes from './routes/doctorRoutes.js';
 import slotsRoutes from './routes/availableSlotRoutes.js';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import compression from 'compression';
+import rateLimit from 'express-rate-limit';
+
 config()
 
-
-
 const app = express();
+const Port = 2500;
+ConnectingToDatabase();
 
+
+app.use(helmet());
+app.use(morgan('dev'));
+app.use(compression());
+const limiter = rateLimit({
+    windowMs:15 * 60 * 1000,
+    max:100,
+    message:"Too many requests, please try again Later"
+})
+
+app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
 const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://06bc792719bf.ngrok-free.app'];
@@ -41,12 +57,12 @@ app.use('/pms', adminRouter);
 app.use('/pms', userRoutes)
 app.use('/pms', doctorRoutes);
 app.use('/pms', slotsRoutes);
-// app.get('/', (req, res) => {
-//   console.log('Received cookies:', req.cookies);
-//   res.send('Check your server logs');
-// });
-const Port = 2500;
-ConnectingToDatabase()
+
+app.use((err,req,res,next) => {
+    console.error(err.stack);
+    res.status(500).send('SomeThing Went Wrong')
+})
+
 app.listen(Port,() => console.log("port ", Port));
 
 

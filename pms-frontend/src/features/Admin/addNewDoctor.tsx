@@ -25,6 +25,7 @@ const AddNewDoctor = () => {
     
     async function handleDoctorSubmission(data: doctorProfileInfoType) {
         const toastId = toast.loading('Adding New Doctor');
+        console.log("doctor data before sending to backend ", data);
         try{
             const response = await axios.post(`http://localhost:2500/pms/createDoctor`, data, 
                 {
@@ -52,7 +53,7 @@ const AddNewDoctor = () => {
         <div className="w-full max-w-4xl mx-auto p-4 md:p-6">
             <h1 className="p-1 text-2xl md:text-3xl text-gray-800 text-center font-semibold mb-6"> Add a New Doctor</h1>
             
-            <div className="bg-white rounded-xl p-4 md:p-6">
+            <div className="bg-white rounded-xl p-6 md:p-2">
                 <DoctorFormComponent receiveUpdatedDetails={handleDoctorSubmission} />
             </div>
 

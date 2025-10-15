@@ -2,6 +2,7 @@ import axios, { type AxiosInstance } from "axios";
 import React, { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
 import toast from "react-hot-toast";
 import type { ZodEnum } from "zod";
+import useFetchAllDoctors from "../features/Doctor/fetchAllDoctors";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
@@ -88,11 +89,34 @@ interface DoctorProfile {
     profileImage: ProfileImage,
     availableDays?: AvailableDays[]
 }
+interface TimeSlots {
+    slotTime: string,
+    isBooked: boolean,
+    _id?: string,
+}
+interface ProfileImage {
+    imageUrl: string,
+    public_id: string
+}
+interface AllDoctorInterface {
+    _id: string,
+    username: string,
+    email: string,
+    password: string,
+    profileImage: ProfileImage,
+    education: string,
+    speciality: string,
+    about: string,
+    address: string,
+    consultationFee: number,
+    slots: TimeSlots[]
+}
 declare global {
     interface Window {
         axios: AxiosInstance
     }
 }
+
 interface AuthContextProps {
     bookedSlots: BookedSlots[] | null;
     setBookedSlots: React.Dispatch<React.SetStateAction<BookedSlots[] | null>>;
@@ -105,6 +129,8 @@ interface AuthContextProps {
     doctorProfile: DoctorProfile | null;
     isAuthenticated: boolean;
     loading: boolean,
+    allDoctors:AllDoctorInterface[] | null,
+    setAllDoctors:React.Dispatch<React.SetStateAction<AllDoctorInterface[] | null>>
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
     setUserRole: React.Dispatch<React.SetStateAction<string | ''>>;
@@ -125,6 +151,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(null);
     const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
+    const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[] | null> (null);
     const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [bookedSlots, setBookedSlots] = useState<BookedSlots[] | null>(null);
@@ -133,6 +160,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [userRole, setUserRole] = useState<string | ''>('');
     const [loading, setLoading] = useState<boolean>(true);
     let logoutTimer: NodeJS.Timeout | undefined;
+    const {isLoading, doctorsList, caughtError} = useFetchAllDoctors();
+
+      useEffect(() => {
+        if(doctorsList.length > 0){
+            setAllDoctors(doctorsList);
+        }
+    },[doctorsList.length>0])
+
 
     const logout = useCallback(async () => {
         // toast("Your Session Expired. Please Login Again!")
@@ -219,9 +254,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         scheduledLogout(expiryInSeconds)
     }
 
-
     useEffect(() => {
-
         const localSavedData = localStorage.getItem('auth');
         console.log("if you have refreshsed: ", localSavedData);
         if (localSavedData) {
@@ -300,7 +333,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     return (
-        <AuthContext.Provider value={{ patientProfile, setPatientProfile, bookedSlots, setBookedSlots, adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading, isAuthenticated, setIsAuthenticated, user, setUserRole, userRole, jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token }}>
+        <AuthContext.Provider value={{ patientProfile, setPatientProfile,allDoctors, setAllDoctors, bookedSlots, setBookedSlots, adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading, isAuthenticated, setIsAuthenticated, user, setUserRole, userRole, jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token }}>
             {children}
         </AuthContext.Provider>
     )

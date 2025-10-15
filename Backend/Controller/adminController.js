@@ -11,8 +11,8 @@ import { validationResult } from 'express-validator';
 const createDoctor = async (req, res) => {
 
     try {
-        const { role, speciality, profileImage, username, password, email, availableDays, education, experience, address, consultationFee, about, slots } = req.body;
-        // console.log("req Body ", req.body)
+        const { role, speciality, profileImage, username, password, email, availableDays, education, experience, address, consultationFee, about} = req.body;
+        console.log("req Body inside create Doctor", req.body)
 
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -31,38 +31,38 @@ const createDoctor = async (req, res) => {
         }
         const securedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
         let combinedSlots;
-        if (Array.isArray(availableDays) && availableDays.length > 0) {
-            combinedSlots = availableDays.map((day, index) => {
-                return {
-                    day,
-                    slots: slots.map(slot => slot.slotTime)
-                }
+        // if (Array.isArray(availableDays) && availableDays.length > 0) {
+        //     combinedSlots = availableDays.map((day, index) => {
+        //         return {
+        //             day,
+        //             slots: slots.map(slot => slot.slotTime)
+        //         }
+        //     })
+
+
+            // return res.status(200).json("i'm Inside create Doctor");
+            const addDoctor = new Doctor({
+                username,
+                email: email,
+                password: securedPassword,
+                profileImage,
+                speciality,
+                address,
+                consultationFee,
+                experience: experience,
+                education: education,
+                about,
+                role,
+                availableDays: availableDays
             })
 
-
-            return res.status(200).json("i'm Inside create Doctor");
-            // const addDoctor = new Doctor({
-            //     username,
-            //     email: email,
-            //     password: securedPassword,
-            //     profileImage,
-            //     speciality,
-            //     address,
-            //     consultationFee,
-            //     experience: experience,
-            //     education: education,
-            //     about,
-            //     role,
-            //     availableDays: combinedSlots
-            // })
-
-            // await addDoctor.save();
-            // return res.status(201).json({
-            //     success: true,
-            //     message: "Doctor Profile successfully Created",
-            //     doctor: addDoctor
-            // })
-        }
+            await addDoctor.save();
+            return res.status(201).json({
+                success: true,
+                message: "Doctor Profile Created",
+                doctor: addDoctor
+            })
+        
 
 
     } catch (err) {

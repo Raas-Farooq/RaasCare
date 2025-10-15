@@ -1,9 +1,8 @@
-import axios from "axios";
-import { ArrowRight, DollarSign, Star } from "lucide-react";
-import { useEffect, useRef, useState } from "react"
-import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
-import makeNgrokRequest from "../../ngrokRequesthook";
+import { ArrowRight, DollarSign } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import toast from "react-hot-toast"
+import { Link, useLocation } from "react-router-dom"
+import makeNgrokRequest from "../../ngrokRequesthook"
 
 interface TimeSlots {
     slotTime: string,
@@ -15,7 +14,7 @@ interface ProfileImage {
     public_id: string
 }
 interface AllDoctorInterface {
-    _id:string,
+    _id: string,
     username: string,
     email: string,
     password: string,
@@ -28,19 +27,28 @@ interface AllDoctorInterface {
     slots: TimeSlots[]
 }
 
-
-const AllDoctors = () => {
+const backend_url = import.meta.env.VITE_BACKEND_URL;
+interface ComponentProps {
+    targetField?: string
+}
+const DoctorsBySpeciality = ({ targetField = 'All Doctors' }: ComponentProps) => {
     const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]>([]);
-    const fetchRef = useRef(false);
-    const backend_url = import.meta.env.VITE_BACKEND_URL;
+    const [isLoading, setIsLoading ] = useState(true);
+    const [displaySpecialityDoctors, setDisplaySpecialityDoctors] = useState<AllDoctorInterface[]>([]);
+    const location = useLocation();
+
+    const targetFieldReceived = location.state as { targetField?: string } | null;
+
+    let fetchRef = useRef(false);
+
     useEffect(() => {
         if (fetchRef.current) return;
         fetchRef.current = true;
-        console.log(" backendUrl: all Doctors ", backend_url);
+        setIsLoading(true);
         const fetchDoctors = async () => {
             const toastId = toast.loading('Loading Doctors');
             try {
-                const fetchResponse = await makeNgrokRequest({url:'pms/fetchAllDoctors', method:'get'})
+                const fetchResponse = await makeNgrokRequest({ url: 'pms/fetchAllDoctors', method: 'get' })
                 if (fetchResponse.data.success) {
                     console.log('doctors fetchResponse ', fetchResponse);
                     setAllDoctors(fetchResponse.data.doctorsList);
@@ -51,17 +59,41 @@ const AllDoctors = () => {
                 toast.error("Error while fetching Doctors", { id: toastId })
                 console.error("Get Error while fetching all doctors", err);
             }
+            finally{
+                setIsLoading(false);
+            }
         }
         fetchDoctors()
-    }, [])
+    }, [targetField])
+
+    useEffect(() => {
+        console.log("2nd useEffect ", targetFieldReceived, "targetField: ", targetField);
+        if(!targetFieldReceived && !targetField){
+            setDisplaySpecialityDoctors(allDoctors);
+        }
+        else if(!targetFieldReceived && targetField !== 'All Doctors'){
+            const getTargetDoctors = allDoctors.filter(doctor => doctor.speciality === targetField);
+            setDisplaySpecialityDoctors(getTargetDoctors);
+        }
+        else if (targetFieldReceived?.targetField === 'All Doctors' || targetField === 'All Doctors') {
+            setDisplaySpecialityDoctors(allDoctors);
+        } else {
+            console.log("allDoctors before filter ", allDoctors);
+            const targetDoctors = allDoctors.filter(doc => doc.speciality === targetFieldReceived?.targetField);
+            console.log(" target doctos aftr filter ", targetDoctors);
+            setDisplaySpecialityDoctors(targetDoctors);
+        }
+
+        console.log("display: Doctors after target speciality ", displaySpecialityDoctors);
+    }, [allDoctors.length > 0, targetField])
 
 
     return (
-        <div className="relative min-h-screen bg-gray-50 mx-auto px-4 py-8">
-            <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl text-teal-700 mb-8 text-center">Our Experienced Team</h1>
-                <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-center">
-                    {allDoctors && allDoctors.length > 0 && allDoctors?.map((doctor, index) => (
+        <>
+            <h1 className="text-3xl text-center mx-auto my-6 border-b border-gray-500 w-fit "> {targetFieldReceived?.targetField}s</h1>
+            <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-center">
+                {displaySpecialityDoctors.length > 0 &&
+                    displaySpecialityDoctors?.map((doctor, index) => (
                         <Link
                             key={index}
                             to={`/doctorPublicProfile/${doctor._id}`}
@@ -69,10 +101,10 @@ const AllDoctors = () => {
                             px-4 py-8 flex-col rounded-2xl overflow-hidden hover:shadow-xl 
                             transition-all duration-300 hover:-translate-y-1"
                         >
-                            <div className="flex flex-col h-full">
+                            <div className="flex flex-col h-full max-w-sm md:max-w-auto">
                                 <div className="relative overflow-hidden">
                                     <img
-                                        className="w-full max-w-sm h-60 object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="w-full sm:h-auto md:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-500"
                                         src={doctor.profileImage.imageUrl}
                                         alt={`${doctor.username} Profile`}
                                     />
@@ -87,7 +119,7 @@ const AllDoctors = () => {
                                 <div className="p-5 flex flex-col flex-grow">
                                     <div className="text-center mb-3">
                                         <h2 className="font-bold text-xl text-gray-800 group-hover:text-teal-600 transition-colors duration-200">
-                                          {doctor.username}
+                                            {doctor.username}
                                         </h2>
                                         <p className="text-sm text-gray-500 mt-1">{doctor.education}</p>
                                     </div>
@@ -110,11 +142,18 @@ const AllDoctors = () => {
                                 </div>
                             </div>
                         </Link>
-                    ))}
-                </div>
-            </div >
-        </div >
+                    ))
+                    
+                }
+            </div>
+            {!isLoading && displaySpecialityDoctors.length === 0 &&
+                (
+                    <h1 className="text-3xl text-center"> No Doctor Found </h1>
+                )}
+        </>
     )
+
+
 }
 
-export default AllDoctors
+export default DoctorsBySpeciality

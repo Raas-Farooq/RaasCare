@@ -9,8 +9,8 @@ import toast from "react-hot-toast";
 
 
 interface NavbarProps {
-    servicesRef: React.RefObject<HTMLElement | null>;
-    contactRef: React.RefObject<HTMLDivElement | null>;
+    servicesRef?: React.RefObject<HTMLElement | null>;
+    contactRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
@@ -34,7 +34,7 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
     
 
     const handleServiceClick = () => {
-        if (servicesRef.current) {
+        if (servicesRef?.current) {
             servicesRef.current.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'
@@ -45,7 +45,7 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
 
     const handleContactClick = () => {
 
-        if (contactRef.current) {
+        if (contactRef?.current) {
             contactRef.current.scrollIntoView({
                 behavior: 'smooth',
                 block: 'start'

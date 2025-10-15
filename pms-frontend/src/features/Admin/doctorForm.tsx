@@ -22,10 +22,6 @@ const doctorSchema = z.object({
     speciality: z.string().nonempty("speciality is required"),
     address: z.string().nonempty("address of doctor is missing"),
     consultationFee: z.coerce.number().min(300, "consultation Fee should be atleast 300 "),
-    citiesWork: z.array(z.object({
-        city: z.string().nonempty("One city must be provided"),
-        id: z.string()
-    })),
     role: z.string().nonempty("Doctor role is required"),
     availableDays: DaysAndSlots
 })
@@ -75,7 +71,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         resolver: zodResolver(doctorSchema),
         defaultValues: initialData || {
             availableDays: [],
-            citiesWork: [{ city: '', id: '' }]
         }
     })
 
@@ -84,7 +79,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         name: 'availableDays'
     })
 
-    const watchCities = watch(`citiesWork`)
     const addSlot = () => {
         const slotData = { slotTime: '', isCompleted: false, isCancelled: false, isBooked: false, patientId: undefined };
         return slotData
@@ -92,9 +86,9 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
 
     const watchedDays = watch('availableDays');
 
-    useEffect(() => {
-        console.log("watched watchedDays: ", watchedDays)
-    }, [watchCities, watchedDays])
+    // useEffect(() => {
+    //     console.log("watched watchedDays: ", watchedDays)
+    // }, [watchCities, watchedDays])
 
 
     function getUploadedImage(imagePayload: ImagePayloadProps, imageUploading: boolean) {
@@ -165,17 +159,29 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
 
     function handleSaveSlots() {
         console.log(" day: ", chosenDay, "slots:", specialSlots);
-        if (specialSlots.length === 0) {
-            window.alert("Please select time slots before saving")
+        if (specialSlots.length === 0 && !chosenDay) {
+            toast.error("Please select the day and slots first", {
+                duration:3000
+            })
+            return null
         }
+         else if (!chosenDay) {
+            toast.error('Please Select the Day First', {
+                duration:3000
+            });
+            return null
+        }
+        else if(specialSlots.length === 0){
+             toast.error('Please Select the Slots', {
+                duration:3000
+            });
+            return null
+        }
+
         if (chosenDay) {
             append({ day: chosenDay as any, slots: specialSlots })
             setSpecialSlots([]);
             setChosenDay('');
-        }
-        else {
-            window.alert("Day is not selected. Please select day first");
-            return null
         }
         setCommonTimeSlots(COMMON_TIME_SLOTS);
         console.log("watched available days ", watchedDays)
@@ -183,8 +189,8 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
     }
 
     return (
-        <div className="min-h-screen flex justify-center items-start overflow-x-hidden bg-white px-2 py-3 md:px-4">
-            <main className="w-full max-w-2xl p-4 sm:p-6 bg-white rounded-lg shadow-sm">
+        <div className="min-h-screen flex justify-center items-start overflow-x-hidden bg-white px-2 py-3 sm:px-8 md:px-2">
+            <main className="w-full max-w-2xl md:p-2 sm:p-8 bg-white rounded-lg shadow-sm">
                 {/* flex-1 space-y-4 min-w-0  */}
                 <form onSubmit={handleSubmit(handleFormSubmission, (formErrors) => console.log('caught errors while submitting form', formErrors))}
                     className="flex flex-col md:flex-row gap-8">
@@ -253,7 +259,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                         </div>
 
                     </div>
-                    <div className="w-full flex-1 space-y-2">
+                    <div className="w-full flex-2 space-y-2">
                         <div>
                             <label
                                 className="text-gray-400 block"
@@ -308,7 +314,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                             <label htmlFor="about" className="text-gray-400 block">About Doctor</label>
                             <textarea
                                 rows={10} cols={30}
-                                className="border border-gray-800 focus:visible cursor-text w-full max-w-md"
+                                className="border border-gray-800 focus:outline-none focus:ring-2 focus:border-none focus:ring-blue-400 w-full max-w-md"
                                 {...register('about')}
                             />
                             {errors.about && <p className="text-red-500">{errors.about?.message?.toString()}</p>}
@@ -326,12 +332,14 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                                         className={`border border-gray-300 p-2 m-1 hover:bg-blue-100 ${chosenDay === (day) && '!bg-blue-300'}`}> {day}</button>
                                 ))}
 
-                                {daysSelected.length ? <p className="text-blue-500"> Selected Day: {daysSelected} </p> : <p className="text-yellow-500"> please Select the day first</p>}
+                                {!chosenDay && <p className="text-yellow-500"> please Select the day first</p>}
 
 
                             </div>
                             <div>
-                                <p> Select slots for {chosenDay} </p>
+                                {chosenDay && 
+                                <p className="my-1 border-b-2 border-gray-400"> Select slots for <span className="text-blue-700">{chosenDay} </span></p>
+                                }
                                 <div className="flex flex-wrap gap-2">
                                     {commonTimeSlots.map(time => {
                                         const isSelected = specialSlots.includes(time);
@@ -354,7 +362,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                                 <button
                                     type="button"
                                     onClick={handleSaveSlots}
-                                    className="border border-gray-300">
+                                    className="border border-gray-300 px-4 py-2 rounded-xl hover:text-white hover:border-white !bg-blue-400 mt-1">
                                     Save Slots for {chosenDay}
                                 </button>
                             </div>
