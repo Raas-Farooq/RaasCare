@@ -444,7 +444,7 @@ const updateSlotStatus = async (req, res) => {
             { new: true, lean: true }
         );
 
-        const latestSlots = await AvailableSlots.find(filterUpdatedSlots).lean();
+        const latestSlots = await AvailableSlots.find(filterUpdatedSlots).lean().limit(10);
         console.log("latest Slots: ", latestSlots)
         return res.status(200).json({
             success: true,

@@ -1,8 +1,8 @@
-import { ArrowRight, DollarSign } from "lucide-react"
-import { useState, useEffect, useRef } from "react"
-import toast from "react-hot-toast"
-import { Link, useLocation } from "react-router-dom"
-import makeNgrokRequest from "../../ngrokRequesthook"
+import { ArrowLeft, ArrowRight, DollarSign } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/appContext"
+
 
 interface TimeSlots {
     slotTime: string,
@@ -27,73 +27,46 @@ interface AllDoctorInterface {
     slots: TimeSlots[]
 }
 
-const backend_url = import.meta.env.VITE_BACKEND_URL;
 interface ComponentProps {
     targetField?: string
 }
-const DoctorsBySpeciality = ({ targetField = 'All Doctors' }: ComponentProps) => {
-    const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]>([]);
-    const [isLoading, setIsLoading ] = useState(true);
-    const [displaySpecialityDoctors, setDisplaySpecialityDoctors] = useState<AllDoctorInterface[]>([]);
+const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
+    const [displayDoctors, setDisplayDoctors] = useState<AllDoctorInterface[]>([]);
+    const [updatedDisplayDoctors, setUpdatedDisplayDoctors] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
+    const targetFieldReceived = propField ?? (location.state as { targetField?: string })?.targetField ?? 'All';
 
-    const targetFieldReceived = location.state as { targetField?: string } | null;
-
-    let fetchRef = useRef(false);
-
+    const { allDoctors, loadedAllDoctors } = useAuth();
     useEffect(() => {
-        if (fetchRef.current) return;
-        fetchRef.current = true;
-        setIsLoading(true);
-        const fetchDoctors = async () => {
-            const toastId = toast.loading('Loading Doctors');
-            try {
-                const fetchResponse = await makeNgrokRequest({ url: 'pms/fetchAllDoctors', method: 'get' })
-                if (fetchResponse.data.success) {
-                    console.log('doctors fetchResponse ', fetchResponse);
-                    setAllDoctors(fetchResponse.data.doctorsList);
-                    toast.success("loaded doctors successfully", { id: toastId })
-                }
-            }
-            catch (err) {
-                toast.error("Error while fetching Doctors", { id: toastId })
-                console.error("Get Error while fetching all doctors", err);
-            }
-            finally{
-                setIsLoading(false);
-            }
-        }
-        fetchDoctors()
-    }, [targetField])
+        setUpdatedDisplayDoctors(false);
+        console.log("targetFieldReceived: ", targetFieldReceived, " Prop Field: ", propField);
+        if (allDoctors.length === 0) return;
+        const sortedDoctors =
+            targetFieldReceived === 'All Doctors'
+                ? allDoctors
+                :
+                allDoctors.filter(doctor => doctor.speciality === targetFieldReceived);
+        setDisplayDoctors(sortedDoctors);
+        setUpdatedDisplayDoctors(true)
+    }, [allDoctors, targetFieldReceived])
 
-    useEffect(() => {
-        console.log("2nd useEffect ", targetFieldReceived, "targetField: ", targetField);
-        if(!targetFieldReceived && !targetField){
-            setDisplaySpecialityDoctors(allDoctors);
-        }
-        else if(!targetFieldReceived && targetField !== 'All Doctors'){
-            const getTargetDoctors = allDoctors.filter(doctor => doctor.speciality === targetField);
-            setDisplaySpecialityDoctors(getTargetDoctors);
-        }
-        else if (targetFieldReceived?.targetField === 'All Doctors' || targetField === 'All Doctors') {
-            setDisplaySpecialityDoctors(allDoctors);
-        } else {
-            console.log("allDoctors before filter ", allDoctors);
-            const targetDoctors = allDoctors.filter(doc => doc.speciality === targetFieldReceived?.targetField);
-            console.log(" target doctos aftr filter ", targetDoctors);
-            setDisplaySpecialityDoctors(targetDoctors);
-        }
-
-        console.log("display: Doctors after target speciality ", displaySpecialityDoctors);
-    }, [allDoctors.length > 0, targetField])
-
+    if (allDoctors.length === 0) {
+        return <h1 className="text-xl text-center">No Doctor Found</h1>
+    }
 
     return (
         <>
-            <h1 className="text-3xl text-center mx-auto my-6 border-b border-gray-500 w-fit "> {targetFieldReceived?.targetField}s</h1>
+            <h1 className="text-3xl text-center text-purple-600 mx-auto my-6 border-b border-gray-500 w-fit ">
+                {(targetFieldReceived && targetFieldReceived !== 'All Doctors')
+                    ?
+                    targetFieldReceived + 's'
+                    :
+                    targetFieldReceived}
+            </h1>
             <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-center">
-                {displaySpecialityDoctors.length > 0 &&
-                    displaySpecialityDoctors?.map((doctor, index) => (
+                {displayDoctors.length > 0 &&
+                    displayDoctors?.map((doctor, index) => (
                         <Link
                             key={index}
                             to={`/doctorPublicProfile/${doctor._id}`}
@@ -143,13 +116,20 @@ const DoctorsBySpeciality = ({ targetField = 'All Doctors' }: ComponentProps) =>
                             </div>
                         </Link>
                     ))
-                    
+
                 }
             </div>
-            {!isLoading && displaySpecialityDoctors.length === 0 &&
+            {(loadedAllDoctors && updatedDisplayDoctors) && displayDoctors.length === 0 &&
                 (
                     <h1 className="text-3xl text-center"> No Doctor Found </h1>
                 )}
+            <div className="w-full my-10 text-center flex flex-row justify-center items-center">
+                <button type="button"
+                    onClick={() => navigate(-1)}
+                >
+                    <span className="flex text-gray-500 hover:text-gray-800 transition-all hover:scale-105 duration-300"><ArrowLeft size={25} className="" /> Back</span>
+                </button>
+            </div>
         </>
     )
 

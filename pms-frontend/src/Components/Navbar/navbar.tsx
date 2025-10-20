@@ -150,7 +150,7 @@ function handleUserClick() {
 
 const navbarLinks = [
     { name: 'Services', onclick: handleServiceClick },
-    { name: 'Book Appointment', href: '/allDoctorsPublic' },
+    { name: 'Book Appointment', href: '/makeAppointment' },
     { name: 'Contact', onclick: handleContactClick },
     { name: 'About', href: "#" },
 ]

@@ -49,7 +49,7 @@ const MyAppointments = () => {
     }
     return (
         <div>
-            <h1> my appointments </h1>
+            <h1 className="text-center font-light text-3xl mb-5 mt-3"> My Appointments </h1>
             <div className="booking-item overflow-x-auto">
                 <table className="min-w-max w-full border border-gray-200 rounded-lg overflow-hidden" cellPadding="10" cellSpacing="0" >
                   <thead className="border border-gray-100 text-sm md:text-base">
