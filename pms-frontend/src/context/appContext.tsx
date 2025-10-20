@@ -52,6 +52,7 @@ interface BookedSlots {
     doctorId: string,
     slotTime: string,
     isBooked: boolean,
+    doctorName:string,
     isCancelled?: boolean,
     source: string,
     slotDate: {
@@ -129,8 +130,10 @@ interface AuthContextProps {
     doctorProfile: DoctorProfile | null;
     isAuthenticated: boolean;
     loading: boolean,
-    allDoctors:AllDoctorInterface[] | null,
-    setAllDoctors:React.Dispatch<React.SetStateAction<AllDoctorInterface[] | null>>
+    loadedAllDoctors:boolean,
+    setLoadedAllDoctors:React.Dispatch<SetStateAction<boolean>>,
+    allDoctors:AllDoctorInterface[],
+    setAllDoctors:React.Dispatch<React.SetStateAction<AllDoctorInterface[]>>
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
     setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
     setUserRole: React.Dispatch<React.SetStateAction<string | ''>>;
@@ -151,7 +154,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(null);
     const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
-    const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[] | null> (null);
+    const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]> ([]);
+    const [loadedAllDoctors, setLoadedAllDoctors] = useState<boolean>(false);
     const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [bookedSlots, setBookedSlots] = useState<BookedSlots[] | null>(null);
@@ -163,10 +167,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const {isLoading, doctorsList, caughtError} = useFetchAllDoctors();
 
       useEffect(() => {
+        console.log("doctorsList: App Context", doctorsList);
         if(doctorsList.length > 0){
             setAllDoctors(doctorsList);
+            setLoadedAllDoctors(true);
         }
-    },[doctorsList.length>0])
+    },[doctorsList])
 
 
     const logout = useCallback(async () => {
@@ -181,14 +187,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             toast.error("Error while logging Out");
             console.error("Error while clearing Cookie", err)
         }
+
         setExpiryTime(null);
         setJwt_token(null);
         setUser(null);
         setUserRole('');
         setIsAuthenticated(false);
+        setBookedSlots(null);
         localStorage.removeItem('auth');
         localStorage.removeItem('bookedSlots');
         localStorage.removeItem('profile');
+        localStorage.removeItem('ActiveTab');
         if (logoutTimer) {
             clearTimeout(logoutTimer)
         }
@@ -218,6 +227,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return parsedBookedSlots
     }
     const login = (user: User, token: string, expiresInSec: number, userProfile: DoctorProfile | AdminProfile, slotsBooked: BookedSlots[] | null) => {
+        console.log("booked slots while login app context ", slotsBooked, "user ", user);
         if (user.role === 'doctor') {
             setDoctorProfile(userProfile as DoctorProfile);
         }
@@ -230,7 +240,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             localStorage.setItem('profile', JSON.stringify(userProfile));
         } 
         if(user.role){
+            console.log("user role: ", user.role);
             if (slotsBooked && slotsBooked.length) {
+                console.log("booked slots on Login inside IFF: ", slotsBooked);
                 localStorage.setItem("bookedSlots", JSON.stringify(slotsBooked));
                 const updatedFormat = validSlotsFormat(slotsBooked)
                 setBookedSlots(updatedFormat);
@@ -278,6 +290,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     }
                 }
                 const localBookedSlots = localStorage.getItem('bookedSlots');
+                console.log("local booked slots: ", localBookedSlots)
                 if (localBookedSlots) {
                     try {
                         const parsedSlots = JSON.parse(localBookedSlots);
@@ -333,7 +346,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     return (
-        <AuthContext.Provider value={{ patientProfile, setPatientProfile,allDoctors, setAllDoctors, bookedSlots, setBookedSlots, adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading, isAuthenticated, setIsAuthenticated, user, setUserRole, userRole, jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token }}>
+        <AuthContext.Provider value={{ patientProfile, setPatientProfile,allDoctors,loadedAllDoctors,setLoadedAllDoctors, setAllDoctors, bookedSlots, setBookedSlots, adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading, isAuthenticated, setIsAuthenticated, user, setUserRole, userRole, jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token }}>
             {children}
         </AuthContext.Provider>
     )
@@ -347,3 +360,38 @@ export const useAuth = () => {
 
     return context
 }
+
+
+// const mapFun = new Map();
+// mapFun.set(')', '(');
+
+// mapFun.set('}', '{');
+// mapFun.set(']', '[');
+
+// const paren = '{([])}'
+// let stack = [];
+// console.log("summUn Bukmunn")
+// function checkValidParenthesis(){
+//     for (let i = 0; i < paren.length;i++){
+//         const char = paren[i];
+//         console.log('char : ', char);
+//         if(mapFun.has(char)){
+//             const lastElement = stack.pop();
+//             console.log("Last element: ", lastElement);
+//             const mapElement = mapFun.get(char);
+//             console.log("Last element: ", mapElement);
+//             if(mapElement !== lastElement){
+//                 return false
+//             }
+//         }
+//         else{
+//             stack.push(char)
+//         }
+
+//     }
+        
+//     return true
+
+// }
+
+// console.log(" result ",checkValidParenthesis())

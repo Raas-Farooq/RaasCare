@@ -6,6 +6,7 @@ import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { env } from 'process';
 import Patient from '../models/patient.js';
+import { isCancel } from 'axios';
 
 
 config()
@@ -115,11 +116,12 @@ const userLogin = async (req, res) => {
         let slotsBooked;
         const slotsFilter = {
              $or:[
-                        {isBooked:true},
-                        {isCancelled:false},
-                        {isCompleted:false}
-                    ]
+                {isBooked:true},
+                {isCancelled:true},
+                {isCompleted:true}
+             ]
         }
+        
         
         if(userExist.role === 'doctor'){
             slotsBooked = await AvailableSlots.find(
@@ -128,12 +130,15 @@ const userLogin = async (req, res) => {
         }
         if(userExist.role === 'admin'){
             slotsBooked = await AvailableSlots.find(
-                {...slotsFilter}
+                {
+                    isBooked:true,
+                }
             ).sort({createdAt:-1}).
             limit(10)
             .lean()
         }
         if(userExist.role === 'patient'){
+            console.log("userExist: ", userExist);
             slotsBooked = await AvailableSlots.find(
                 {
                     patientId:userExist._id,
@@ -141,7 +146,7 @@ const userLogin = async (req, res) => {
                 },
             ).sort({createdAt:-1}).limit(5).lean()
             // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
-            console.log("slots inside theuse controller ", slotsBooked);
+            console.log("slots inside the user controller ", slotsBooked);
         }
         const matchPassword = await bcrypt.compare(password, userExist.password);
         console.log("is password matched: ", matchPassword);

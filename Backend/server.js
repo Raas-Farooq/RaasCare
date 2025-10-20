@@ -14,6 +14,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
+import cron from 'node-cron';
+import { allDoctorsSlotsGenerator } from './Controller/slotsController.js';
+
 
 config()
 
@@ -57,6 +60,16 @@ app.use('/pms', adminRouter);
 app.use('/pms', userRoutes)
 app.use('/pms', doctorRoutes);
 app.use('/pms', slotsRoutes);
+
+cron.schedule('0 0 * * *', async() => {
+    console.log("Automatic slots generator Running ");
+    try{
+        await allDoctorsSlotsGenerator();
+    }
+    catch(err){
+        console.error("Error while generating automatic slots")
+    }
+})
 
 app.use((err,req,res,next) => {
     console.error(err.stack);

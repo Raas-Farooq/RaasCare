@@ -30,8 +30,8 @@ type DoctorSchemaType = z.infer<typeof doctorSchema>;
 
 const COMMON_TIME_SLOTS = [
     '9:00-9:30 AM', '9:30-10:00 AM', '10:00-10:30 AM', '10:30-11:00 AM',
-    '11:00-11:30 AM', '11:30-12:00 AM', '04:00 PM', '05:00 PM',
-    '06:00 PM', '07:00 PM'
+    '11:00-11:30 AM', '11:30-12:00 PM', '04:00 PM', '05:00 PM',
+    '06:00 PM', '07:00 PM', '7:30-8:00 PM', '8:00-8:30 PM', '8:30-9:00 PM'
 ];
 
 interface ImagePayloadProps {
@@ -53,6 +53,7 @@ interface AvailableDaysSlots {
 }
 function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormProps) {
     const [commonTimeSlots, setCommonTimeSlots] = useState(COMMON_TIME_SLOTS);
+    const [allottedDays, setAllottedDays] = useState(['']);
     const [chosenDay, setChosenDay] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [qualityTime, setQualityTime] = useState({
@@ -67,7 +68,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         public_id: ''
     });
     const [isUploading, setIsUploading] = useState(false);
-    const { register, control, handleSubmit, formState: { errors }, watch, reset, setValue, getValues } = useForm({
+    const { register, control, handleSubmit, formState: { errors }, watch } = useForm({
         resolver: zodResolver(doctorSchema),
         defaultValues: initialData || {
             availableDays: [],
@@ -128,11 +129,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         }
     }
 
-    useEffect(() => {
-        console.log("commonTimeSlots ", commonTimeSlots);
-        console.log("special Slots ", specialSlots);
-    }, [commonTimeSlots, specialSlots])
-
 
     const handleSlotsSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedSlots = Array.from(e.target.selectedOptions, option => option.value);
@@ -161,19 +157,19 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         console.log(" day: ", chosenDay, "slots:", specialSlots);
         if (specialSlots.length === 0 && !chosenDay) {
             toast.error("Please select the day and slots first", {
-                duration:3000
+                duration: 3000
             })
             return null
         }
-         else if (!chosenDay) {
+        else if (!chosenDay) {
             toast.error('Please Select the Day First', {
-                duration:3000
+                duration: 3000
             });
             return null
         }
-        else if(specialSlots.length === 0){
-             toast.error('Please Select the Slots', {
-                duration:3000
+        else if (specialSlots.length === 0) {
+            toast.error('Please Select the Slots', {
+                duration: 3000
             });
             return null
         }
@@ -181,20 +177,30 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         if (chosenDay) {
             append({ day: chosenDay as any, slots: specialSlots })
             setSpecialSlots([]);
+            setAllottedDays((prev) => {
+                if (prev.includes(chosenDay)) {
+                    return prev
+                } else {
+                    return [...prev, chosenDay]
+                }
+            })
             setChosenDay('');
         }
         setCommonTimeSlots(COMMON_TIME_SLOTS);
-        console.log("watched available days ", watchedDays)
+        console.log("watched available days ", watchedDays, "allotted Days: ", allottedDays);
 
     }
 
+    const handleRemoveSlot = (day: string) => {
+        setAllottedDays(prev => prev.filter(storedDay => storedDay != day))
+    }
     return (
         <div className="min-h-screen flex justify-center items-start overflow-x-hidden bg-white px-2 py-3 sm:px-8 md:px-2">
             <main className="w-full max-w-2xl md:p-2 sm:p-8 bg-white rounded-lg shadow-sm">
                 {/* flex-1 space-y-4 min-w-0  */}
                 <form onSubmit={handleSubmit(handleFormSubmission, (formErrors) => console.log('caught errors while submitting form', formErrors))}
                     className="flex flex-col md:flex-row gap-8">
-                    <div className="grid grid-cols-1 gap-5">
+                    <div className="w-full grid grid-cols-1 gap-5">
                         <div className="max-w-xs">
                             <UploadProfileImage imageUpload={getUploadedImage} />
                         </div>
@@ -329,58 +335,82 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                                     <button
                                         type="button"
                                         onClick={() => handleDayClicked(day)}
-                                        className={`border border-gray-300 p-2 m-1 hover:bg-blue-100 ${chosenDay === (day) && '!bg-blue-300'}`}> {day}</button>
+                                        disabled={allottedDays.includes(day)}
+                                        className={`border border-gray-300 p-2 m-1 
+                                        ${chosenDay === (day) && '!bg-blue-300'} 
+                                        ${allottedDays.includes(day) ? 'disabled:bg-gray-400 disabled:cursor-not-allowed pointer-events-none' : 'hover:bg-blue-100'}`}> {day}</button>
                                 ))}
 
                                 {!chosenDay && <p className="text-yellow-500"> please Select the day first</p>}
 
 
                             </div>
-                            <div>
-                                {chosenDay && 
-                                <p className="my-1 border-b-2 border-gray-400"> Select slots for <span className="text-blue-700">{chosenDay} </span></p>
-                                }
-                                <div className="flex flex-wrap gap-2">
-                                    {commonTimeSlots.map(time => {
+                            <div >
+                                
+                                
+                                    {chosenDay &&
+                                    <p className="my-1 border-b-2 border-gray-400"> Select slots for <span className="text-blue-700">{chosenDay} </span></p>
+                                    }
+                                    <div className="grid grid-1 gap-2">
+                                    <div>
+                                        {commonTimeSlots.map(time => {
                                         const isSelected = specialSlots.includes(time);
                                         return (
-                                            <button
-                                                key={time}
-                                                type="button"
-                                                onClick={() => handleSlotToggle(time)}
-                                                className={`px-3 py-1 rounded-md border 
+                                            <>
+                                                <button
+                                                    key={time}
+                                                    type="button"
+                                                    onClick={() => handleSlotToggle(time)}
+                                                    className={`px-3 py-1 rounded-md border 
                                                         ${isSelected
-                                                        ? "!bg-blue-500 text-white border-blue-600"
-                                                        : "bg-gray-100 hover:bg-gray-200 border-gray-300"
-                                                    }`}
-                                            >
-                                                {time}
-                                            </button>
+                                                            ? "!bg-blue-500 text-white border-blue-600"
+                                                            : "bg-gray-100 hover:bg-gray-200 border-gray-300"
+                                                        }`}
+                                                >
+                                                    {time}
+                                                </button>
+                                            </>
+
                                         );
                                     })}
+                                    </div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={handleSaveSlots}
+                                        className="border border-gray-300 px-4 py-2 rounded-xl hover:text-white hover:border-white !bg-blue-400 mt-1">
+                                        Save Slots for {chosenDay}
+                                    </button>
+                                
+                            </div>
+                             <div className="flex flex-wrap mt-4 border-t pt-4">
+                                    <h4 className="text-md font-semibold">Saved Slots</h4>
+                                    {fields.map((field, index) => (
+                                        <>
+                                            <div key={field.id}>
+
+                                                <h2 className="italic underline text-gray-800"> {field.day} Slots</h2>
+                                                <select>
+                                                    <div className="flex gap-2">
+                                                        {field.slots.map((timeSlot, uni) => (
+                                                            <option value={timeSlot}>
+                                                                <p key={uni} className="border border-gray-200 p-2">{timeSlot}</p>
+                                                            </option>
+                                                        ))}
+                                                    </div>
+                                                </select>
+                                            </div>
+                                            <button type="button" className="text-red-500" onClick={() => {
+                                                handleRemoveSlot(field.day);
+                                                remove(index)
+                                            }
+                                            }>
+                                                <Trash2 />
+                                            </button>
+                                        </>
+
+                                    ))}
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={handleSaveSlots}
-                                    className="border border-gray-300 px-4 py-2 rounded-xl hover:text-white hover:border-white !bg-blue-400 mt-1">
-                                    Save Slots for {chosenDay}
-                                </button>
-                            </div>
-                            <div className="mt-4 border-t pt-4">
-                                <h4 className="text-md font-semibold">Saved Slots</h4>
-                                {fields.map((field, index) => (
-                                    <>
-                                        <div key={field.id}>
-
-                                            <h2 className=""> {field.day}</h2>
-                                            <p> {field.slots.join(' ')}</p>
-
-                                        </div>
-                                        <button type="button" className="text-red-500" onClick={() => remove(index)}><Trash2 /></button>
-                                    </>
-
-                                ))}
-                            </div>
                             {errors.availableDays?.root?.message && <p className="text-red-500">{errors.availableDays?.root?.message}</p>}
 
                             <button type="submit" className="px-5 py-2 !bg-red-400 rounded-2xl hover:shadow-md hover:!bg-red-500">Submit</button>
@@ -394,3 +424,14 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
 
 export default DoctorFormComponent
 
+//  {daysOfWeek.map((day, ind) => (
+//                                     <button
+//                                         type="button"
+//                                         onClick={() => handleDayClicked(day)}
+//                                         disabled={allottedDays.includes(day)}
+//                                         className={`border border-gray-300 p-2 m-1 
+//                                         ${chosenDay === (day) && '!bg-blue-300'} 
+//                                         ${allottedDays.includes(day) ? 'disabled:bg-gray-400 disabled:cursor-not-allowed pointer-events-none' : 'hover:bg-blue-100'}`}> {day}</button>
+//                                 ))}
+
+//  disabled={allottedDays.includes(day)} will not the disable work if i dont set this inside button

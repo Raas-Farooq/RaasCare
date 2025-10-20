@@ -5,8 +5,10 @@ import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight, Users } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
-import {  useNavigate } from "react-router-dom";
+import {  Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/appContext.tsx";
+import { flushSync } from "react-dom";
+import NavigationDiagnostic from "./services/navigationDiagnostic.tsx";
 
 
 function Home() {
@@ -239,8 +241,31 @@ const handleSpecialityClick = (targetSpeciality:string) => {
   navigate('/doctorsBySpeciality', {state:{targetField:targetSpeciality}})
 }
 
+  const handleServicesClick = (service:{title:string}) => {
+    console.log("clicked service: ", service);
+    if(service.title === 'Nursing Care'){
+      navigate('/nursingCare');
+    }
+    else if(service.title === 'Diagnostic Center'){
+      navigate('/diagnosticCenter');
+    }
+    else if(service.title === 'Our Doctors'){
+      navigate('/ourDoctors');
+    }
+  }
 
-
+   const handleDoctorsClick = (service:{title:string}) => {
+    console.log("clicked service: ", service);
+    if(service.title === 'Nursing Care'){
+      navigate('/nursingCare');
+    }
+  }
+   const handleDiagnosticClick = (service:{title:string}) => {
+    console.log("clicked service: ", service);
+    if(service.title === 'Nursing Care'){
+      navigate('/nursingCare');
+    }
+  }
   // const handleAlmondsCallback = useCallback(() => {
   //   console.log("Almonds new value callback ",almonds )
   // },[almonds])
@@ -262,7 +287,7 @@ const handleSpecialityClick = (targetSpeciality:string) => {
             Book appointments with trusted healthcare professionals in just few clicks
           </p>
           <div className="mt-6 flex justify-center gap-5">
-            <button onClick={function(){navigate('/allDoctorsPublic')}}
+            <button onClick={function(){navigate('/MakeAppointment')}}
               className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
@@ -346,7 +371,8 @@ const handleSpecialityClick = (targetSpeciality:string) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center ">
             {servicesImages.map((service, index) => (
               <div key={index} className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-md
-                ${servicesImages.length % 2 !== 0 && index === servicesImages.length - 1 ? 'md:col-span-2 md:flex md:justify-center lg:col-span-1' : ''}`} >
+                ${servicesImages.length % 2 !== 0 && index === servicesImages.length - 1 ? 'md:col-span-2 md:flex md:justify-center lg:col-span-1' : ''}`} 
+               >
                 <div className="aspect-w-4 aspect-h-3">
                   <img
                     src={service.path}
@@ -360,7 +386,9 @@ const handleSpecialityClick = (targetSpeciality:string) => {
                   <button className="w-full py-3 px-6 bg-white text-purple-700 font-medium rounded-full 
                          hover:bg-purple-50 transition-all duration-300 
                          translate-y-2 group-hover:translate-y-0 
-                         opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                         opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                          onClick={() => handleServicesClick(service)}
+                          >
                     {service.title}
                     <ArrowRight className="text-blue-500 inline ml-2 h-4 w-4" />
                   </button>

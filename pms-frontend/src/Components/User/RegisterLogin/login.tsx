@@ -75,7 +75,7 @@ const Login = () => {
             }
 
         } catch (err) {
-            toast.error("Error while logging In", { id: toastId });
+            toast.error("Error while logging In. Please Try Again Later", { id: toastId });
             console.log("error while logging the user", err)
         }
     }
