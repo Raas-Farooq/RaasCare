@@ -1,9 +1,8 @@
-import axios from "axios";
-import { ArrowRight, DollarSign, Star } from "lucide-react";
-import { useEffect, useRef, useState } from "react"
-import toast from "react-hot-toast";
-import { Link } from "react-router-dom";
-import makeNgrokRequest from "../../ngrokRequesthook";
+import { ArrowLeft, ArrowRight, DollarSign } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/appContext"
+
 
 interface TimeSlots {
     slotTime: string,
@@ -15,7 +14,7 @@ interface ProfileImage {
     public_id: string
 }
 interface AllDoctorInterface {
-    _id:string,
+    _id: string,
     username: string,
     email: string,
     password: string,
@@ -28,40 +27,46 @@ interface AllDoctorInterface {
     slots: TimeSlots[]
 }
 
+interface ComponentProps {
+    targetField?: string
+}
+const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
+    const [displayDoctors, setDisplayDoctors] = useState<AllDoctorInterface[]>([]);
+    const [updatedDisplayDoctors, setUpdatedDisplayDoctors] = useState(false);
+    const location = useLocation();
+    const navigate = useNavigate();
+    const targetFieldReceived = propField ?? (location.state as { targetField?: string })?.targetField ?? 'All';
 
-const AllDoctors = () => {
-    const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]>([]);
-    const fetchRef = useRef(false);
-    const backend_url = import.meta.env.VITE_BACKEND_URL;
+    const { allDoctors, loadedAllDoctors } = useAuth();
     useEffect(() => {
-        if (fetchRef.current) return;
-        fetchRef.current = true;
-        console.log(" backendUrl: all Doctors ", backend_url);
-        const fetchDoctors = async () => {
-            const toastId = toast.loading('Loading Doctors');
-            try {
-                const fetchResponse = await makeNgrokRequest({url:'pms/fetchAllDoctors', method:'get'})
-                if (fetchResponse.data.success) {
-                    console.log('doctors fetchResponse ', fetchResponse);
-                    setAllDoctors(fetchResponse.data.doctorsList);
-                    toast.success("loaded doctors successfully", { id: toastId })
-                }
-            }
-            catch (err) {
-                toast.error("Error while fetching Doctors", { id: toastId })
-                console.error("Get Error while fetching all doctors", err);
-            }
-        }
-        fetchDoctors()
-    }, [])
+        setUpdatedDisplayDoctors(false);
+        console.log("targetFieldReceived: ", targetFieldReceived, " Prop Field: ", propField);
+        if (allDoctors.length === 0) return;
+        const sortedDoctors =
+            targetFieldReceived === 'All Doctors'
+                ? allDoctors
+                :
+                allDoctors.filter(doctor => doctor.speciality === targetFieldReceived);
+        setDisplayDoctors(sortedDoctors);
+        setUpdatedDisplayDoctors(true)
+    }, [allDoctors, targetFieldReceived])
 
+    if (allDoctors.length === 0) {
+        return <h1 className="text-xl text-center">No Doctor Found</h1>
+    }
 
     return (
-        <div className="relative min-h-screen bg-gray-50 mx-auto px-4 py-8">
-            <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl text-teal-700 mb-8 text-center">Our Experienced Team</h1>
-                <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-center">
-                    {allDoctors && allDoctors.length > 0 && allDoctors?.map((doctor, index) => (
+        <>
+            <h1 className="text-3xl text-center text-purple-600 mx-auto my-6 border-b border-gray-500 w-fit ">
+                {(targetFieldReceived && targetFieldReceived !== 'All Doctors')
+                    ?
+                    targetFieldReceived + 's'
+                    :
+                    targetFieldReceived}
+            </h1>
+            <div className="w-full mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-center">
+                {displayDoctors.length > 0 &&
+                    displayDoctors?.map((doctor, index) => (
                         <Link
                             key={index}
                             to={`/doctorPublicProfile/${doctor._id}`}
@@ -69,10 +74,10 @@ const AllDoctors = () => {
                             px-4 py-8 flex-col rounded-2xl overflow-hidden hover:shadow-xl 
                             transition-all duration-300 hover:-translate-y-1"
                         >
-                            <div className="flex flex-col h-full">
+                            <div className="flex flex-col h-full max-w-sm md:max-w-auto">
                                 <div className="relative overflow-hidden">
                                     <img
-                                        className="w-full max-w-sm h-60 object-cover group-hover:scale-105 transition-transform duration-500"
+                                        className="w-full sm:h-auto md:h-80 object-cover object-top group-hover:scale-105 transition-transform duration-500"
                                         src={doctor.profileImage.imageUrl}
                                         alt={`${doctor.username} Profile`}
                                     />
@@ -87,7 +92,7 @@ const AllDoctors = () => {
                                 <div className="p-5 flex flex-col flex-grow">
                                     <div className="text-center mb-3">
                                         <h2 className="font-bold text-xl text-gray-800 group-hover:text-teal-600 transition-colors duration-200">
-                                          {doctor.username}
+                                            {doctor.username}
                                         </h2>
                                         <p className="text-sm text-gray-500 mt-1">{doctor.education}</p>
                                     </div>
@@ -110,11 +115,25 @@ const AllDoctors = () => {
                                 </div>
                             </div>
                         </Link>
-                    ))}
-                </div>
-            </div >
-        </div >
+                    ))
+
+                }
+            </div>
+            {(loadedAllDoctors && updatedDisplayDoctors) && displayDoctors.length === 0 &&
+                (
+                    <h1 className="text-3xl text-center"> No Doctor Found </h1>
+                )}
+            <div className="w-full my-10 text-center flex flex-row justify-center items-center">
+                <button type="button"
+                    onClick={() => navigate(-1)}
+                >
+                    <span className="flex text-gray-500 hover:text-gray-800 transition-all hover:scale-105 duration-300"><ArrowLeft size={25} className="" /> Back</span>
+                </button>
+            </div>
+        </>
     )
+
+
 }
 
-export default AllDoctors
+export default DoctorsBySpeciality

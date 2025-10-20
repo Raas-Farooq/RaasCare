@@ -1,25 +1,21 @@
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "../context/appContext";
+import { useEffect, useRef } from "react";
+
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight, Users } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
-import { ScrollRestoration, useNavigate } from "react-router-dom";
+import {  Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/appContext.tsx";
+import { flushSync } from "react-dom";
+import NavigationDiagnostic from "./services/navigationDiagnostic.tsx";
 
-import axios from "axios";
-import { number } from "zod";
-import TopFacilities from "./topFacilities.tsx";
 
 function Home() {
-  const { userRole } = useAuth();
-  const [chalgoza, setChalgoza] = useState(0);
   const navigate = useNavigate();
-  const [almonds, setAlmonds] = useState(0);
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+  const {allDoctors} = useAuth();
 //   class ListNode {
 //     val:number
 //     next:ListNode | null
@@ -94,17 +90,132 @@ function Home() {
 // // Call the setup and run function
 // setupAndRun();
 
+  useEffect(() => {
+    const userRole = localStorage.getItem('role');
+    console.log("this i sthe userRole ", userRole, " AllDoctors ", allDoctors);
+  }, [])
+
+  function learning(){
+    // console.log("LEARN More has been callsed")
+    // const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
+    // function bubbleSort(limit:number, data:number[], data2:number[]){
+
+    //   if(limit <= 1){
+    //     return 1
+    //   }
+    //   let mid = Math.floor(data.length / 2);
+    //   const leftSide = data.slice(0,mid);
+    //   const rightSide = data.slice(mid);
+    //   console.log("left half ", leftSide);
+    //   console.log("right half ", rightSide);
+    //   return bubbleSort(mid, sort(leftSide),sort(rightSide))
+    // }
+
+    
+    // const res = bubbleSort(binarydata.length, binarydata);
+    // console.log(" fact result ", res)
 
 
-  function sort(list:number[]){
-      console.log(" list1: ", list);
-      
-    }
+
+
+
+    // function binarySearch(arr:number[], n:number){
+    //   let s = 0;
+    //   let e = arr.length - 1;
+    //   if(arr.length === 0){
+    //     return 'there is no data';
+    //   }
+    //   while(s <= e){
+    //     const mid = Math.floor((s+e) / 2);
+    //     console.log("mid: " ,mid);
+    //     if(arr[mid] === n){
+    //       console.log("number found ", arr[mid], " at index: ", mid);
+    //       return "number is Found"
+    //     }
+    //     if(arr[mid] < n){
+    //       console.log("mid: less than number  mid" ,arr[mid], " num ", n );
+    //       s = mid + 1;
+    //     }
+    //     if(arr[mid] > n){
+    //       console.log("mid: greater than number  mid" ,arr[mid], " num ", n );
+    //       e= mid - 1;
+    //     }
+    //   }
+
+    //   return " number not found";
+    // }
+    // const numberToFind = 20;
+    // binarySearch(binarydata, numberToFind)
+
+
+    // MERGED AREA
+//     const merge = (leftArr, rightArr) => {
+//     let sortedArr = [];
+//     let leftIndex = 0;
+//     let rightIndex = 0;
+
+//   // Compare elements from both arrays and add the smaller one
+//     while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
+//       if (leftArr[leftIndex] < rightArr[rightIndex]) {
+//         sortedArr.push(leftArr[leftIndex]);
+//         leftIndex++;
+//       } else {
+//         sortedArr.push(rightArr[rightIndex]);
+//         rightIndex++;
+//       }
+//     }
+
+//   // Add any remaining elements from either array
+//   return [...sortedArr, ...leftArr.slice(leftIndex), ...rightArr.slice(rightIndex)];
+// };
+
+// function mergeSort(dataArr:number[]) {
+//   // Base case: An array with 1 or 0 elements is already sorted
+//   if (dataArr.length <= 1) {
+//     return dataArr; // Return the array itself, not its length.
+//   }
+
+//   // Divide the array into two halves
+//   const half = Math.floor(dataArr.length / 2);
+//   const firstHalf = dataArr.slice(0, half);
+//   const lastHalf = dataArr.slice(half);
+
+//   // Recursively sort the two halves and then merge the result
+//   console.log("firstHalf ", firstHalf, " lastHalf ", lastHalf);
+//   return merge(mergeSort(firstHalf), mergeSort(lastHalf));
+//   }
+
+//   const binarydata = [3, 9, 12, 16, 20, 27, 28, 29, 30, 35, 66, 892];
+//   // const mySortedList = mergeSort(binarydata);
+//   console.log(" mySorted List: ", mySortedList);
+
+
+// MERGE SORT
+
+
+// const merge = (first:number[], sec:number[]) => {
+//   console.log(" inside Merge ", first, ' sec ', sec);
   
- async function learning(){
+
+// }
+//     const mergeSort = (myList:number[]):number[] => {
+//       let listLength = myList.length;
+
+//       if(listLength <= 1){
+//         return myList
+//       }
+//       const mid = Math.floor(listLength/2);
+//       const leftHalf= myList.slice(0, mid);
+//       const rightHalf = myList.slice(mid);
+//       console.log("inside mergeSort ", leftHalf , "rigthHalf ", rightHalf)
+//       return merge(mergeSort(leftHalf), mergeSort(rightHalf))
+//     }
+
+//     const numList = [7, 1, 4, 12];
+//     const result = mergeSort(numList);
+//     console.log("final result mergeSort ", result);
 
 const text = 'Resilience And Blessings';
-    let reversed = '';
     function reverseString(text:string, index:number):string{
 
       if(index <= 0){
@@ -124,7 +235,41 @@ const text = 'Resilience And Blessings';
 
 }
 
+const handleSpecialityClick = (targetSpeciality:string) => {
+  
+  console.log("targetSpeciality ",targetSpeciality);
+  navigate('/doctorsBySpeciality', {state:{targetField:targetSpeciality}})
+}
 
+  const handleServicesClick = (service:{title:string}) => {
+    console.log("clicked service: ", service);
+    if(service.title === 'Nursing Care'){
+      navigate('/nursingCare');
+    }
+    else if(service.title === 'Diagnostic Center'){
+      navigate('/diagnosticCenter');
+    }
+    else if(service.title === 'Our Doctors'){
+      navigate('/ourDoctors');
+    }
+  }
+
+   const handleDoctorsClick = (service:{title:string}) => {
+    console.log("clicked service: ", service);
+    if(service.title === 'Nursing Care'){
+      navigate('/nursingCare');
+    }
+  }
+   const handleDiagnosticClick = (service:{title:string}) => {
+    console.log("clicked service: ", service);
+    if(service.title === 'Nursing Care'){
+      navigate('/nursingCare');
+    }
+  }
+  // const handleAlmondsCallback = useCallback(() => {
+  //   console.log("Almonds new value callback ",almonds )
+  // },[almonds])
+// first:'With your Nafs', second:'With your external environment'
  
   return (
     <>
@@ -142,7 +287,7 @@ const text = 'Resilience And Blessings';
             Book appointments with trusted healthcare professionals in just few clicks
           </p>
           <div className="mt-6 flex justify-center gap-5">
-            <button onClick={function(){navigate('/allDoctorsPublic')}}
+            <button onClick={function(){navigate('/MakeAppointment')}}
               className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
@@ -191,6 +336,7 @@ const text = 'Resilience And Blessings';
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 mt-6">
               {doctorsSpecialities.map((doctors, ind) => (
                 <button key={ind}
+                onClick={() => handleSpecialityClick(doctors.speciality)}
                   className="flex flex-col items-center justify-center cursor-pointer 
                 bg-white shadow-md px-5 py-6 min-h-[150px] transition-all
                 duration-300 rounded-2xl border-transparent hover:shadow-xl
@@ -225,7 +371,8 @@ const text = 'Resilience And Blessings';
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center ">
             {servicesImages.map((service, index) => (
               <div key={index} className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-md
-                ${servicesImages.length % 2 !== 0 && index === servicesImages.length - 1 ? 'md:col-span-2 md:flex md:justify-center lg:col-span-1' : ''}`} >
+                ${servicesImages.length % 2 !== 0 && index === servicesImages.length - 1 ? 'md:col-span-2 md:flex md:justify-center lg:col-span-1' : ''}`} 
+               >
                 <div className="aspect-w-4 aspect-h-3">
                   <img
                     src={service.path}
@@ -239,7 +386,9 @@ const text = 'Resilience And Blessings';
                   <button className="w-full py-3 px-6 bg-white text-purple-700 font-medium rounded-full 
                          hover:bg-purple-50 transition-all duration-300 
                          translate-y-2 group-hover:translate-y-0 
-                         opacity-0 group-hover:opacity-100 flex items-center justify-center">
+                         opacity-0 group-hover:opacity-100 flex items-center justify-center"
+                          onClick={() => handleServicesClick(service)}
+                          >
                     {service.title}
                     <ArrowRight className="text-blue-500 inline ml-2 h-4 w-4" />
                   </button>
@@ -321,7 +470,10 @@ export default Home
 
 // aga@gmail.com aga@3344
 // raas@gmail.com raas$0022
+// Attend 1 Lahore meetup (GDG, Colabs, Daftarkhwan, kickstart, the hive etc.).
+// LinkedIn Events Search:
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 //has to ask about usage of curly braces with Route:- when using with object we don't use {} with 'element' but why use when then when Route is not sorrounded by object?
 
@@ -399,3 +551,6 @@ export default Home
 // bash
 // git push -u origin feature/patientProfile
 >>>>>>> Stashed changes
+=======
+// Search “Lahore developer meetup” or “React Lahore” — filter by Events.
+>>>>>>> f5e24fc767b7e96a736c020d0a874142eab8d6a1

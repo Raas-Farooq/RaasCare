@@ -75,7 +75,7 @@ const Login = () => {
             }
 
         } catch (err) {
-            toast.error("Error while logging In", { id: toastId });
+            toast.error("Error while logging In. Please Try Again Later", { id: toastId });
             console.log("error while logging the user", err)
         }
     }
@@ -136,14 +136,16 @@ const Login = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/register')}
-                            className="w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none"
+                            className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
+                                ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >
                             Create Account
                         </button>
                         <button
                             type="button"
   
-                            className="w-full text-sm transition-colors duration-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none"
+                            className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
+                                ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >
                             Forget Password?
                         </button>

@@ -5,12 +5,15 @@ import axios from "axios";
 const AdminNavbar = () => {
 
     const { logout } = useAuth();
-
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const handleLogoutClick = async () => {
         alert("Logout Clicked! ");
         async function loggingOut() {
-            const response = await axios.get('http://localhost:2500/pms/logout', {
-                withCredentials: true
+            const response = await axios.get(`${backendUrl}/pms/logout`, {
+                withCredentials: true,
+                headers:{
+                    "ngrok-skip-browser-warning":"true"
+                }
             });
             if (response.data.success) {
                 logout();

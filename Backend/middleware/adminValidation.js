@@ -27,14 +27,21 @@ const createDoctorValidation = [
     body('consultationFee').isNumeric().notEmpty().withMessage("consultationFee is required"),
     body('availableDays')
     .isArray({min:1})
-    .withMessage("There must be one day of the week")
-    .custom((days) => {
-        const acceptableDays= ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        return days.every(day => acceptableDays.includes(day));
-    }).withMessage("Day must be valid and from this list (Mon, Tue, Wed, Thu, Fri, Sat, Sun)"),
-    body('slots.*.slotTime').isString().notEmpty().withMessage("Slot time must be mentioned"),
-    body('slots.*.isBooked').isBoolean().withMessage("Slot booking status required"),
-    body('slots.*.patientId').optional().isMongoId().withMessage("Patient ID must be valid"),
+    .withMessage("There must be one day of the week"),
+
+    body('availableDays.*.day')
+    .isIn(["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
+    .withMessage("Day must be valid and from this list (Mon, Tue, Wed, Thu, Fri, Sat, Sun)"),
+    body('availableDays.*.slots')
+    .isArray({min:1})
+    .withMessage("You must select atleast 1 slot"),
+
+    body('availableDays.*.slots.*')
+    .isString()
+    .withMessage("slots must be in string format")
+    // body('slots.*.slotTime').isString().notEmpty().withMessage("Slot time must be mentioned"),
+    // body('slots.*.isBooked').isBoolean().withMessage("Slot booking status required"),
+    // body('slots.*.patientId').optional().isMongoId().withMessage("Patient ID must be valid"),
 
 ];
 

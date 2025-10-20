@@ -1,16 +1,24 @@
 import Register from "../User/RegisterLogin/register.tsx"
 import Login from "../User/RegisterLogin/login.tsx"
 import DoctorPublicProfile from "../../features/Doctor/doctorProfile.tsx"
-import AllDoctors from "../../features/Doctor/allDoctorsList.tsx"
 import TopFacilities from "../../Home/topFacilities.tsx"
+import DoctorsBySpeciality from "../../features/Doctor/DoctorsBySpeciality.tsx"
+import MakeAppointment from "../../features/Doctor/makeAppointment.tsx"
+import NursingCare from "../../Home/services/nursingCare.tsx"
+import OurDoctors from "../../Home/services/ourDoctors.tsx"
+import DiagnosticCenter from "../../Home/services/diagnosticCenter.tsx"
 
 
 const userRoutes = [
      {path:"/register", element:<Register />,public:true },
      {path:'/topFacilities', element:<TopFacilities />, public:true},
      {path:"/login", element:<Login />,public:true },
-     {path:"/allDoctorsPublic", element:<AllDoctors />,public:true },
-     {path:"/doctorPublicProfile/:doctorId", element:<DoctorPublicProfile />,public:true }
+     {path:"/MakeAppointment", element:<MakeAppointment />,public:true },
+     {path:"/doctorPublicProfile/:doctorId", element:<DoctorPublicProfile />,public:true },
+     {path:'/doctorsBySpeciality', element:<DoctorsBySpeciality />, public:true},
+     {path:'/nursingCare', element:<NursingCare />, public:true},
+     {path:'/ourDoctors', element:<OurDoctors />, public:true},
+     {path:'/diagnosticCenter', element:<DiagnosticCenter />, public:true}
 ]
    
 

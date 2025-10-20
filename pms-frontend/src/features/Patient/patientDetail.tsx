@@ -178,7 +178,7 @@ const PatientProfile = () => {
                     onClick={() => navigate(-1)}
                     className="text-gray-600 hover:text-blue-500 transition-colors duration-200"
                 >
-                    &larr; Back to List
+                    &larr; Back
                 </button>
             </div>
         </div>
