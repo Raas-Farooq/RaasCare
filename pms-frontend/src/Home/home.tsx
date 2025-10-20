@@ -322,6 +322,7 @@ export default Home
 // aga@gmail.com aga@3344
 // raas@gmail.com raas$0022
 
+<<<<<<< Updated upstream
 //has to ask about usage of curly braces with Route:- when using with object we don't use {} with 'element' but why use when then when Route is not sorrounded by object?
 
 // Linked List example:
@@ -375,3 +376,26 @@ export default Home
 //     console.log("dummy ", dummyNode, "reversed ", reversed);
     
 //     return false
+=======
+// Search “Lahore developer meetup” or “React Lahore” — filter by Events.
+
+// bash
+// git checkout main
+// git pull origin main
+// Use code with caution.
+
+// Create your feature branch. Create and switch to a new branch for your task.
+// bash
+// git checkout -b feature/patientProfile
+// Use code with caution.
+
+// Work and commit locally. Make your changes, add and commit them. Continue to do this as you make progress on the feature.
+// bash
+// git add .
+// git commit -m "feat: Add patient profile interface"
+// Use code with caution.
+
+// Push your feature branch. When you are ready to share your work or are finished with the feature, push your branch to the remote repository.
+// bash
+// git push -u origin feature/patientProfile
+>>>>>>> Stashed changes
