@@ -294,6 +294,11 @@ const handleSpecialityClick = (targetSpeciality:string) => {
             <button onClick = {() => learning() } className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
             </button>
+             <button 
+             onClick={() => navigate('/portfolioPage')}
+             className="px-5 py-2 border border-gray-300 rounded-md hover:text-green-600 hover:border-green-700">
+              Portfolio
+            </button>
           </div>
         </div>
       </section>
@@ -401,6 +406,7 @@ const handleSpecialityClick = (targetSpeciality:string) => {
               </div>
             ))}
           </div>
+         
         </div>
       </section>
       <footer className="Footer relative bg-gradient-to-r from-purple-50 to-white border-t border-gray-200 mt-16">
@@ -473,62 +479,7 @@ export default Home
 // Attend 1 Lahore meetup (GDG, Colabs, Daftarkhwan, kickstart, the hive etc.).
 // LinkedIn Events Search:
 
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-//has to ask about usage of curly braces with Route:- when using with object we don't use {} with 'element' but why use when then when Route is not sorrounded by object?
 
-// Linked List example:
-// class ListNode{
-//       val:number
-//       next:ListNode | null
-//       constructor(val?:number, next?:ListNode | null){
-//         this.val=(val === undefined ? 0 : val),
-//         this.next=(next === undefined ? null : next)
-//       }
-//     }
-
-//     class LinkedList<T>{
-//       head:Node | null
-//       length:number 
-//       constructor(){
-//         this.head=null,
-//         this.length=0
-//       }
-//     }
-
-//     function isPalindrome(head: ListNode | null): boolean {
-    
-//     let dummyNode = new ListNode(0);
-//     dummyNode.next= head;
-//     let reversed = dummyNode;
-//     let current = head;
-//     let count =0;
-//     while(current !== null){
-//         // dummyCopy.next = current.next
-//         count+= 1;
-//         current=current.next;
-//     }
-    
-//     let i=0;
-//     let mid = Math.floor(count/2)
-//     while(i < count){
-//         current = head;
-//         let j = 0;
-//         while(j< mid){
-            
-//             const nextNode = current?.next;
-//             // current.next= reversed;
-//             // reversed = current;
-//             // current = nextNode;
-//             j++;
-//         }
-        
-//         i++
-//     }
-//     console.log("dummy ", dummyNode, "reversed ", reversed);
-    
-//     return false
-=======
 // Search “Lahore developer meetup” or “React Lahore” — filter by Events.
 
 // bash
@@ -550,7 +501,5 @@ export default Home
 // Push your feature branch. When you are ready to share your work or are finished with the feature, push your branch to the remote repository.
 // bash
 // git push -u origin feature/patientProfile
->>>>>>> Stashed changes
-=======
 // Search “Lahore developer meetup” or “React Lahore” — filter by Events.
->>>>>>> f5e24fc767b7e96a736c020d0a874142eab8d6a1
+

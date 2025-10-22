@@ -67,10 +67,9 @@ const makeSlotDate = (onlyDate, timeString) => {
     return { startDate: date, endDate: null };
 };
 
-async function allDoctorsSlotsGenerator(req, res) {
+const generateAllSlotsStartUp= async() => {
     const forDays = 14;
     const doctors = await Doctor.find({}).lean();
-    try {
         let ops = [];
         doctors.forEach(doctor => {
             const availableDays = doctor.availableDays;
@@ -110,33 +109,31 @@ async function allDoctorsSlotsGenerator(req, res) {
             }
         })
         if (ops.length > 0) {
+            await AvailableSlots.deleteMany({"slotDate.endDate": {$lt: new Date()}});
+
             const bulkResult = await AvailableSlots.bulkWrite(ops, { ordered: false });
             if (bulkResult.mongoose && bulkResult.mongoose.validationErrors?.length) {
                 console.error('got validationErrors during bulkWrite ', bulkResult.mongoose.validationErrors);
-                return res.status(400).json(
-                    {
-                        success: false,
-                        message: "Validation errors occurred while generating slots",
-                        errors: bulkResult.mongoose.validationErrors.map(e => e.message)
-                    }
-                )
+                throw new Error("Validation errors occurred while generating slots")        
             }
-
-            return res.status(200).json({
-                success: true,
-                message: "Available Slots generated sucessfully",
-
-            })
         }
-        else {
-            return res.status(400).json(
-                {
-                    success: false,
-                    message: "not able to generate slots",
-                }
-            )
+        else{
+            console.error("Error while generating slots operations")
         }
-    }
+}
+
+async function allDoctorsSlotsGenerator(req, res) {
+
+            try{
+                 await generateAllSlotsStartUp();
+            
+                return res.status(200).json({
+                    success: true,
+                    message: "Available Slots generated sucessfully",
+
+                })
+            }
+      
     catch (err) {
         console.error("error while getting the 2 week schedule of doctor", err);
 
@@ -464,5 +461,5 @@ const updateSlotStatus = async (req, res) => {
 }
 
 
-export { getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, allDoctorsSlotsGenerator, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
+export { generateAllSlotsStartUp, getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, allDoctorsSlotsGenerator, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
 

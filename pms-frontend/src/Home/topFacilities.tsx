@@ -32,32 +32,6 @@ const TopFacilities = () => {
             }
         ))
     }
-    // function stackMastery(){
-    //     class Stack{
-     
-    //         private items:any[] = [];
-            
-    //         push(item:any){
-    //             this.items.push(item);
-    //         }
-
-    //         pop(item:any | undefined){
-    //             if(this.items.length === 0){
-    //                 return 'Stack underflow'
-    //             }
-
-    //             return this.items.pop();
-    //         }
-
-    //         peek(){
-    //             return this.items[this.items.length-1]
-    //         }
-
-    //         isEmpty(){
-    //             return this.items.length === 0
-    //         }
-    //     }
-    // }
     useEffect(() => {
         console.log("Top facilities are there! believe that ", imageLoaded);
 
@@ -109,7 +83,7 @@ const TopFacilities = () => {
                               <p className={`${paragraphStyles}`}>Good patient care involves a comprehensive approach that considers the patient's physical, emotional, and mental well-being. It involves clear communication, building trust, and personalized treatment plans that take into account the patient's unique needs and preferences</p>
                         </div>
                         <div className={`relative w-full max-h-[600px] flex justify-center items-center`}>
-                            {!imageLoaded && 
+                            {!imageLoaded.care && 
                                 <div className="w-full h-64 bg-gray-200 animate-pulse rounded-lg"> </div>
                             }
                             <img 

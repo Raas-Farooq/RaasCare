@@ -7,6 +7,7 @@ import MakeAppointment from "../../features/Doctor/makeAppointment.tsx"
 import NursingCare from "../../Home/services/nursingCare.tsx"
 import OurDoctors from "../../Home/services/ourDoctors.tsx"
 import DiagnosticCenter from "../../Home/services/diagnosticCenter.tsx"
+import PortfolioSite from "../../Home/services/portfolio.tsx"
 
 
 const userRoutes = [
@@ -18,7 +19,8 @@ const userRoutes = [
      {path:'/doctorsBySpeciality', element:<DoctorsBySpeciality />, public:true},
      {path:'/nursingCare', element:<NursingCare />, public:true},
      {path:'/ourDoctors', element:<OurDoctors />, public:true},
-     {path:'/diagnosticCenter', element:<DiagnosticCenter />, public:true}
+     {path:'/diagnosticCenter', element:<DiagnosticCenter />, public:true},
+     {path:'/portfolioPage', element:<PortfolioSite />, public:true}
 ]
    
 

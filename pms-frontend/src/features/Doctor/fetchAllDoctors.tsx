@@ -11,13 +11,20 @@ interface ProfileImage {
     imageUrl: string,
     public_id: string
 }
-interface AllDoctorInterface {
+interface AvailableDays{
+    day:string,
+    slots:[string]
+}
+interface DoctorsInterface {
     _id: string,
     username: string,
     email: string,
     password: string,
     profileImage: ProfileImage,
     education: string,
+    available:boolean,
+    experience:number,
+    availableDays:AvailableDays[],
     speciality: string,
     about: string,
     address: string,
@@ -28,7 +35,7 @@ interface AllDoctorInterface {
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const useFetchAllDoctors = () => {
-    const [doctorsList, setDoctorsList] = useState<AllDoctorInterface[]>([]);
+    const [doctorsList, setDoctorsList] = useState<DoctorsInterface[]>([]);
     const [caughtError, setCaughtError] = useState<string | ''>('');
     const [isLoading, setIsLoading ] = useState(true);
 
