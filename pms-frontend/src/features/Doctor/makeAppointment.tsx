@@ -48,7 +48,7 @@ const MakeAppointment = () => {
     return (
         <div className="relative min-h-screen bg-gray-50 mx-auto px-4 py-8">
             <div className="max-w-6xl mx-auto">
-                <h1 className="text-3xl text-teal-700 mb-8 text-center">Our Experienced Team</h1>
+                <h1 className="text-3xl text-purple-600 mb-8 text-center font-bold">Our Experienced Team</h1>
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-8 mb-3 p-2 border-b border-gray-300 ">
                     {(loadedAllDoctors && specialities.length > 1) && specialities.map(speciality => (
                         <button 

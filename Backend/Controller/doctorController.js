@@ -89,7 +89,6 @@ const fetchAllDoctors = async (req, res) => {
 
     try {
         const doctorsList = await Doctor.find({});
-        console.log("doctor list; ", doctorsList);
         if (doctorsList.length === 0) {
             return res.status(404).json({
                 success: false,
