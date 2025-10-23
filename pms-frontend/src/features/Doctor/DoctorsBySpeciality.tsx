@@ -57,7 +57,7 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
 
     return (
         <>
-            <h1 className="text-3xl text-center text-purple-600 mx-auto my-6 border-b border-gray-500 w-fit ">
+            <h1 className="text-3xl text-center text-teal-700 font-bold mx-auto my-6 border-b border-gray-500 w-fit ">
                 {(targetFieldReceived && targetFieldReceived !== 'All Doctors')
                     ?
                     targetFieldReceived + 's'
