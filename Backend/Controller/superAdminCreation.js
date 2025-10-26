@@ -36,7 +36,7 @@ const superAdmin = async(req, res) => {
         process.exit(0);
     }
     catch(err){
-        console.log("error while creating super Admin ", err);
+         next(err)
         process.exit(1);
  
     }

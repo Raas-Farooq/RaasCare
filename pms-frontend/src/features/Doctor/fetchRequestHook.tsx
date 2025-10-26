@@ -2,6 +2,7 @@ import axios from "axios";
 import {useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import makeNgrokRequest from "../../ngrokRequesthook";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 // interface IdInterface{
 //     type:string | null
@@ -59,9 +60,8 @@ function useFetchApi(url: string, id: string | null) {
                 }
             }
             catch (err: any) {
-                toast.error("Error while fetching Doctors", { id: toastId });
-                setFetchError(err);
-                console.error("Get Error while fetching doctor", err);
+                let errorMessage = HandleAxiosError(err);
+                toast.error(errorMessage, { id: toastId });
             }
         }
         makingApiRequest();

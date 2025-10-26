@@ -310,6 +310,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                             <div>
                                 {daysOfWeek.map((day, ind) => (
                                     <button
+                                        key={ind}
                                         type="button"
                                         onClick={() => handleDayClicked(day)}
                                         disabled={allottedDays.includes(day)}

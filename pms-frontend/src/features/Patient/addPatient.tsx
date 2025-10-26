@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
 import toast from 'react-hot-toast';
 import { ImDatabase } from "react-icons/im";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface PatientHistory
 {
@@ -39,19 +40,20 @@ const PatientAddForm = () => {
            
         }
         const toastId = toast.loading("Ading Patient..")
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         console.log("data has been reached inside Add Patient : ", patientPayload);
         try{
             setAddingNewPatient(true);
             
-            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, patientPayload);
+            const response = await axios.post(`${backendUrl}/pms/addPatientProfile`, patientPayload);
             console.log("response: ",response);
             if(response.data.success){
                 toast.success('Success Response received by Backend', {id:toastId})
             }
         }
         catch(err){
-            console.log("err ", err)
-            toast.error("Error Adding A Patient", {id:toastId})
+            let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId });
         }
         finally{
             setAddingNewPatient(false);

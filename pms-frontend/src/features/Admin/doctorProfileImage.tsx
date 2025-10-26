@@ -2,6 +2,7 @@ import toast from "react-hot-toast";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "axios";
 import { useState, type ChangeEvent } from "react";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface ImageUploadProps{
     imageUpload :
@@ -13,6 +14,7 @@ interface ImageUploadProps{
             imageUploading:boolean
         ) => void
 }
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
     const [choosenImage, setChoosenImage] = useState('');
     const [imageUploading, setImageUploading] = useState(false);
@@ -27,7 +29,7 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
                 setChoosenImage(url);
                 const formData = new FormData();
                 formData.append('image', image);
-                const cloudinaryResult = await axios.post(`http://localhost:2500/pms/uploadOnCloudinary`, formData,
+                const cloudinaryResult = await axios.post(`${backend_url}/pms/uploadOnCloudinary`, formData,
                     {
                         headers: {
                             "Content-Type": "multipart/form-data"
@@ -44,10 +46,9 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
                 }
             }
             catch (err) {
-                console.log("Got error while uploading on cloudinary ", err);
-                toast.dismiss(toastId);
+                 let errorMessage = HandleAxiosError(err);
+                toast.error(errorMessage, { id: toastId });
                 imageUpload({imageUrl:'', public_id:''}, false)
-                toast.error("Something went wrong")
             }
             finally{
                 setImageUploading(false);

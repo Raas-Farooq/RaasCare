@@ -4,7 +4,6 @@
 
 import AddNewDoctor from "../../features/Admin/addNewDoctor";
 import AdminHome from "../../features/Admin/AdminHome";
-import Test from "../../features/Admin/test";
 import UpdateDoctorPrfoile from "../../features/Admin/updateDoctorProfile";
 import AdminDashboard from "../dashboards/adminDashboard";
 
@@ -16,7 +15,6 @@ const adminRoutes = [{
         {index:true, element:<AdminHome />},
         {path:"addDoctor", element:<AddNewDoctor />},
         {path:"updateDoctor", element:<UpdateDoctorPrfoile />},
-        {path:'manageBookings', element:<Test />}
     ]
 }]
 

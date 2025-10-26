@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         enum: ['patient', 'doctor', 'admin'],
-        default: 'patient'
+        default: 'patient',
+        index:true
     },
     patientRecord: { type: mongoose.Schema.Types.ObjectId, ref: 'Patient' }
 },
