@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
 import toast from 'react-hot-toast';
 import { ImDatabase } from "react-icons/im";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface PatientHistory
 {
@@ -50,25 +51,9 @@ const PatientAddForm = () => {
                 toast.success('Success Response received by Backend', {id:toastId})
             }
         }
-        catch(err:string | any){
-            let errorMessage = 'caught error while adding patient';
-            if(err.response) {
-                const serverMessage = err.response.data.message;
-                if(serverMessage){
-                    errorMessage = serverMessage;
-                }
-                else if(err.response.status === 409){
-                    errorMessage = "Already exist"
-                }
-                else if(err.response.data.error && err.response.data.error.includes("duplicate key error")){
-                       errorMessage = 'A user with this email already exists. Please try another email or log in.';
-                }
-            }
-            else if(err.request){
-                errorMessage= "Network error. Please check your internet connection"
-            }
-            console.log("err ", err)
-            toast.error("Error Adding A Patient", {id:toastId})
+        catch(err){
+            let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId });
         }
         finally{
             setAddingNewPatient(false);

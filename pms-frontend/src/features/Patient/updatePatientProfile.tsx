@@ -7,6 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { FaSpinner } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 
  interface PatientHistory
@@ -28,7 +29,7 @@ interface PatientData{
     medicalHistory:PatientHistory[]
 }
 // type PatientDataType=z.infer<typeof patientSchema>
-
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 function UpdatePatientProfile(){
     const [updatingPatientLoading, setUpdatingPatientLoading] = useState(false);
     const navigate = useNavigate();
@@ -94,7 +95,7 @@ function UpdatePatientProfile(){
     patchPatientDetail.append('updatedDetail', JSON.stringify(userUpdatedFields));
     try{
         setUpdatingPatientLoading(true);
-        const response = await axios.put(`http://localhost:2500/pms/updatePatientProfile/${objectId}`,
+        const response = await axios.put(`${backend_url}/pms/updatePatientProfile/${objectId}`,
             patchPatientDetail
         )
 
@@ -106,8 +107,9 @@ function UpdatePatientProfile(){
             }
     }
     catch(err){
-        console.log("error got while updating: ", err);
-        toast.error('Failed to Update Data', {id:toastId})    }
+         let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId });
+          }
     finally{
         setUpdatingPatientLoading(false);
     }

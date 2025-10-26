@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react"
 import makeNgrokRequest from "../../ngrokRequesthook"
-import toast from "react-hot-toast";
-
 interface TimeSlots {
     slotTime: string,
     isBooked: boolean,
@@ -32,7 +30,6 @@ interface DoctorsInterface {
     slots: TimeSlots[]
 }
 
-const backend_url = import.meta.env.VITE_BACKEND_URL;
 
 const useFetchAllDoctors = () => {
     const [doctorsList, setDoctorsList] = useState<DoctorsInterface[]>([]);

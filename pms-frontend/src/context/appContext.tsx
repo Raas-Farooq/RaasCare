@@ -185,12 +185,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 { withCredentials: true }
             );
 
-        } catch (err) {
-            toast.dismiss();
-            toast.error("Error while logging Out");
+        } catch (err) {    
             console.error("Error while clearing Cookie", err)
         }
-
         setExpiryTime(null);
         setJwt_token(null);
         setUser(null);

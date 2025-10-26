@@ -1,11 +1,10 @@
-import { act, useEffect, useState } from "react";
+import { useState } from "react";
 
-import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, DeleteIcon, CircleX, CheckCircle, Trash } from "lucide-react";
+import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
 import toast from "react-hot-toast";
-import AddNewDoctor from "../Admin/addNewDoctor";
 import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
 
@@ -71,7 +70,6 @@ const DoctorHome = () => {
           if(updatedSlots.length > 0){
              localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
              localStorage.setItem('bookedSlots', JSON.stringify([]));
-             const local = localStorage.getItem('bookedSlots');
              syncUpdatedSlots(updatedSlots)
           }          
         }

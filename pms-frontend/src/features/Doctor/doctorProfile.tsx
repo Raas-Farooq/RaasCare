@@ -8,6 +8,7 @@ import { useAuth } from "../../context/appContext";
 import makeNgrokRequest from "../../ngrokRequesthook";
 import { FaSpinner } from "react-icons/fa";
 import useConfirmNavigation from "./useCustomLoginConfirm";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface Slots {
     slotTime: string,
@@ -265,9 +266,8 @@ function DoctorPublicProfile() {
             }
         }
         catch (err) {
-            toast.error('Error while booking appointment. Please try again later', { id: toastId });
-
-            console.error('Got Error :', err);
+           let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId });
         }
         finally {
             setIsSubmitting(false);

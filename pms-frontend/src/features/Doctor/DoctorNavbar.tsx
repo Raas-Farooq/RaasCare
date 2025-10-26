@@ -2,6 +2,8 @@ import { Heart } from "lucide-react"
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
 
+const backend_url = import.meta.env.VITE_BACKEND_URL;
+
 const DoctorNavbar = () => {
 
     const { logout } = useAuth();
@@ -9,7 +11,7 @@ const DoctorNavbar = () => {
     const handleLogoutClick = async () => {
         alert("Logout Clicked! ");
         async function loggingOut() {
-            const response = await axios.get('http://localhost:2500/pms/logout', {
+            const response = await axios.get(`${backend_url}/pms/logout`, {
                 withCredentials: true
             });
             if (response.data.success) {

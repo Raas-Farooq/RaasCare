@@ -1,10 +1,10 @@
-import axios from "axios";
+
 import { useEffect, useState } from "react";
-import { FaEdit, FaSpinner, FaTimes } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router-dom"
 import makeNgrokRequest from "../../ngrokRequesthook";
 import toast from "react-hot-toast";
 import { User } from "lucide-react";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface MedicalHistory{
     diagnosis?:string,
@@ -69,7 +69,8 @@ const PatientProfile = () => {
                     
                 }
                 catch(err){
-                    toast.error("Error while fetching Patient Detail ", {id:toastId})
+                    let errorMessage = HandleAxiosError(err);
+                    toast.error(errorMessage, { id: toastId });
                 }
             }
             fetchPatientRecord()

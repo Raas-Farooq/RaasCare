@@ -2,9 +2,7 @@ import {z} from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from 'react-hook-form';
-import { FaSpinner } from 'react-icons/fa';
-import { initial } from 'lodash';
-import parsePhoneNumberFromString, { PhoneNumber } from 'libphonenumber-js';
+import parsePhoneNumberFromString from 'libphonenumber-js';
 import toast from 'react-hot-toast';
 
 
@@ -43,8 +41,6 @@ type FormComponentProps = {
 // Patient Form Component
 const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
     const [submitting, setSubmitting] = useState(false);
-    const [correctedPhoneNumber, setCorrectedPhoneNumber] = useState('');
-    let processedInitialData;
 
     // useForm with Resolver definition
     const {register, control,handleSubmit, formState:{errors}, reset} = useForm<AddPatientFormData>({
@@ -54,7 +50,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
             medicalHistory:[{date:'', diagnosis:'', treatment:''}]
         }
     })
-    const {fields, append, remove} = useFieldArray(
+    const {fields} = useFieldArray(
         {
             control,
             name:'medicalHistory'
