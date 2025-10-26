@@ -10,7 +10,7 @@ const useConfirmNavigation = () => {
 
         return new Promise(resolve => {
             toast((t) => (
-                <div className="flex flex-col items-center shadow-2xl">
+                <div className="flex flex-col items-center">
                     <span>Please log in to confirm your appointment.</span>
                     <div className="mt-4">
                         <button
@@ -19,7 +19,7 @@ const useConfirmNavigation = () => {
                                 toast.dismiss(t.id);
                                 resolve(true)
                             }}
-                            className="bg-red-500 text-white px-4 py-2 rounded mr-2"
+                            className="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:!bg-red-600 "
                         >
                             Login
                         </button>
@@ -29,7 +29,7 @@ const useConfirmNavigation = () => {
                                 resolve(false);
                                 }
                             }
-                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
+                            className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:!bg-gray-400"
                         >
                             Cancel
                         </button>

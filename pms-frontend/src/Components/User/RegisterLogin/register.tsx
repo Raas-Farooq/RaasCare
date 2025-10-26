@@ -1,38 +1,28 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
-import parsePhoneNumberFromString, { ParseError, parsePhoneNumberWithError } from "libphonenumber-js"
-import { useEffect, useState } from "react"
+import parsePhoneNumberFromString from "libphonenumber-js"
+import { useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
-import makeNgrokRequest from "../../../ngrokRequesthook"
+import HandleAxiosError from "../../../utils/handleAxiosError"
+
 
 
 interface SubmitProps {
     username: string,
     email: string,
     password: string,
-    phoneNum:string,
+    phoneNum: string,
 }
 function Register() {
     const navigate = useNavigate();
     const [revealPassword, setRevealPassword] = useState(false);
     const [patientRecordId, setPatientRecordId] = useState('');
-    const {login} = useAuth();
-
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-    useEffect(() => {
-        
-        async function fetchPatientRecord(){
-            const response = await makeNgrokRequest({url:`/pms/getPatient/${patientRecordId}`, method:"get"}); 
-
-            console.log("response of getting Patient Record ", response);
-        }
-    }, [patientRecordId])
+    const { login } = useAuth();
     const registerSchema = z.object({
         username: z.string()
             .min(2, 'Username must not be less than 2 characters')
@@ -45,7 +35,7 @@ function Register() {
         // .regex(/[A-Z]/, 'Password should contains atleast one UpperCase letter')
         // .regex(/[!@#$%&*]/, 'Password should contains atleast one Special Case Letter')
         ,
-        phoneNum:z.string()
+        phoneNum: z.string()
         // .min(11, 'Phone number must contains atleast 11 digits')
         // .max(12, "Phone Number digits can't exceed 12")
 
@@ -56,22 +46,26 @@ function Register() {
     })
 
     const submitResult = async (data: SubmitProps) => {
-        console.log("Submit clicked ,",data)
-       const phoneNumber = parsePhoneNumberFromString(data.phoneNum, 'PK');
+        console.log("Submit clicked ,", data);
+        let normalizedPhone;
+        if (data.phoneNum) {
+            const phoneNumber = parsePhoneNumberFromString(data.phoneNum, 'PK');
 
-        if (!phoneNumber || !phoneNumber.isValid()) {
-            toast.error("Phone Number is not Valid");
-            return;
+            if (!phoneNumber || !phoneNumber.isValid()) {
+                toast.error("Phone Number is not Valid");
+                return;
+            }
+            if (!phoneNumber.number.startsWith('+923')) {
+                toast.error("Pakistani number Must start from +923 or 03");
+                return;
+            }
+            normalizedPhone = phoneNumber.number;
+            console.log("normalized Phone number ", normalizedPhone);
         }
-        if(!phoneNumber.number.startsWith('+923')){
-            toast.error("Pakistani number Must start from +923 or 03");
-            return;
-        }
-        const normalizedPhone = phoneNumber.number;
-        console.log("normalized Phone number ", normalizedPhone);
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         const toastId = toast.loading('Signing Up. Wait..')
         try {
-            const response = await axios.post('http://localhost:2500/pms/createNewUser', {
+            const response = await axios.post(`${backendUrl}/pms/createNewUser`, {
                 username: data.username,
                 email: data.email,
                 password: data.password,
@@ -81,18 +75,18 @@ function Register() {
             if (response.data.success) {
                 console.log("Success! respone data ", response.data);
                 const patientReceived = response.data;
-                login(patientReceived.user, patientReceived.jwt_token, patientReceived.expiresIn, patientReceived.userProfile,[]);
+                login(patientReceived.user, patientReceived.jwt_token, patientReceived.expiresIn, patientReceived.userProfile, []);
                 const patientRecord = patientReceived.userProfile.patientRecord;
-                if(patientRecord){
+                if (patientRecord) {
                     setPatientRecordId(patientRecord)
                 }
                 toast.success('You have Successfully Registered ', { id: toastId })
                 navigate('/patient-dashboard')
             }
 
-        } catch (err) {
-            toast.error('Error while Signing Up. Try Again later', { id: toastId })
-            console.error("error while registering user and sending Post request ", err)
+        } catch (err: string | any) {
+            let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId });
         }
     }
 
@@ -117,7 +111,7 @@ function Register() {
                             {...register('username')}
                         />
                         {errors.username && <p className="text-red-500 mt-1 text-sm "> {errors.username.message?.toString()} </p>}
-                        <label htmlFor="email" className="block text-gray-600 font-medium">Email</label>
+                        <label htmlFor="email" className="block text-gray-600 font-medium">Email *</label>
                         <input
                             type="email"
                             id="email"
@@ -126,14 +120,14 @@ function Register() {
                         />
                         {errors.email && <p className="text-red-500 mt-1 text-sm"> {errors.email.message?.toString()} </p>}
                         <div className="relative">
-                            <label htmlFor="password" className="block text-gray-600 font-medium"> Password</label>
+                            <label htmlFor="password" className="block text-gray-600 font-medium"> Password *</label>
                             <input
-                                type={ revealPassword ? 'text' : "password"}
+                                type={revealPassword ? 'text' : "password"}
                                 id="password"
                                 className={`w-full border-b-2 rounded-none transition-colors p-2 focus:outline-none focus:border-purple-600 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
                                 {...register('password')}
                             />
-                            
+
                             {errors.password && <p className="text-red-500 mt-1 text-sm"> {errors.password.message?.toString()} </p>}
                             <div className="absolute bottom-3 right-8">
                                 <button
@@ -144,12 +138,12 @@ function Register() {
                                 </button>
                             </div>
                         </div>
-                        <label aria-label="Phone Number" className="block text-gray-600 mb-1 font-medium"> Phone Number </label>
-                        <input 
-                        type="text" 
-                        className="border-b-2 border-gray-500 w-full focus:outline-none focus:border-purple-600 "
-                        placeholder="03xxx/923xxx. Digits must be 11 or 12"
-                        {...register('phoneNum')} />
+                        <label aria-label="Phone Number" className="block text-gray-600 mb-1 font-medium"> Phone Number *</label>
+                        <input
+                            type="text"
+                            className="border-b-2 border-gray-500 w-full focus:outline-none focus:border-purple-600"
+                            placeholder="03xxx/923xxx. Digits must be 11 or 12"
+                            {...register('phoneNum')} />
                         {errors.phoneNum && <p className="text-red-500 mt-1 text-sm">{errors.phoneNum.message?.toString()}</p>}
 
                         <button
@@ -163,15 +157,15 @@ function Register() {
                         </button>
                         <div className="flex gap-2">
                             <p>Already Have Account?</p>
-                            <button 
-                            type="button"
-                            aria-label="login"
-                            onClick={() => navigate('/login')}
-                            className="text-gray-500 hover:text-purple-700 hover:underline"> 
-                            Login Here
+                            <button
+                                type="button"
+                                aria-label="login"
+                                onClick={() => navigate('/login')}
+                                className="text-gray-500 hover:text-purple-700 hover:underline">
+                                Login Here
                             </button>
                         </div>
-                        
+
                     </form>
                 </section>
             </main>

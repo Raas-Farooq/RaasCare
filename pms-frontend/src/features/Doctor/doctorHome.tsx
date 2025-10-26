@@ -7,6 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import AddNewDoctor from "../Admin/addNewDoctor";
 import PatientAddForm from "../Patient/addPatient";
+import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface BookedSlot {
   isBooked: boolean,
@@ -14,6 +15,7 @@ interface BookedSlot {
   isCompleted: boolean,
   doctorId: string,
   patientId: string,
+  doctorName:string,
   patientName: string,
   source: string,
   slotDate: {
@@ -25,25 +27,10 @@ interface BookedSlot {
 }
 
 // Add Patient Tab Have to Be Added
-
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 const DoctorHome = () => {
   const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile' | 'AddPatient'>('Dashboard');
   const { doctorProfile, bookedSlots, setBookedSlots, userRole } = useAuth();
-  // const [myBookedSlots, setMyBookedSlots]= useState<BookedSlot[]|null>(null);
-  const [bookingDetails, setBookingDetails] = useState([{
-    patientName: 'Ali',
-    paymentMethod: 'cash',
-    date: '8 July 09-10 AM',
-    age: '29',
-    fee: '$30',
-    status: 'Completed',
-    action: 'Done'
-  }]);
-
-
-  useEffect(() => {
-    console.log("booked slots doctoHome ", bookedSlots);
-  }, [])
 
   function syncUpdatedSlots(updatedSlots: BookedSlot[]){
     console.log("sync Updated slots runs: ", updatedSlots);
@@ -62,9 +49,10 @@ const DoctorHome = () => {
       
   }
   async function handleAppointment(action: string, slotId: string) {
+    const toastId = toast.loading('updating slot Status') 
     try {
       let response;
-      response = await axios.post(`http://localhost:2500/pms/updateSlotStatus/${slotId}`,
+      response = await axios.post(`${backend_url}/pms/updateSlotStatus/${slotId}`,
         {
           action,
           docId: doctorProfile?._id,
@@ -75,7 +63,7 @@ const DoctorHome = () => {
       console.log("response: ", response);
       if (response.data.success) {
         toast.dismiss();
-        toast.success(`successfully ${action}ed the Slot`)
+        toast.success(`successfully ${action}ed the Slot`, {id:toastId})
         console.log("response after deletion: ", response);
         if (response.data.updatedSlots.length) {
           const updatedSlots = response.data.updatedSlots;
@@ -85,18 +73,14 @@ const DoctorHome = () => {
              localStorage.setItem('bookedSlots', JSON.stringify([]));
              const local = localStorage.getItem('bookedSlots');
              syncUpdatedSlots(updatedSlots)
-             console.log("local stored items: ", local)
           }          
-         
-          
-          //storing globally
-          
         }
       }
 
     }
     catch (err) {
-      console.error(`got error while making an appointment ${action} request`, err);
+       let errorMessage = HandleAxiosError(err);
+       toast.error(errorMessage, { id: toastId });
     }
   }
 
@@ -129,7 +113,7 @@ const DoctorHome = () => {
               onClick={() => setActiveTab('AddPatient')}
               // aria-selected={activeTab === 'Dashboard'}
               // onClick={() => setActiveTab('Dashboard')}
-              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Dashboard' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'AddPatient' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
             >
               <LayoutDashboardIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Add Patient</span>

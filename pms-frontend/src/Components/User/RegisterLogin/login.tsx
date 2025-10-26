@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
-import { Eye, EyeClosed, EyeClosedIcon, LucideEyeClosed } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-import makeNgrokRequest from "../../../ngrokRequesthook"
+
+import HandleAxiosError from "../../../utils/handleAxiosError"
 
 const loginSchema = z.object({
     email: z.string()
@@ -20,7 +20,7 @@ const loginSchema = z.object({
     // .regex(/[!@#$%&*]/, 'Password should contains atleast one Special Case Letter')
 })
 
-const backend_url = import.meta.env.VITE_BACKEND_URL
+const backend_url = import.meta.env.VITE_BACKEND_URL;
 type SubmitProps = z.infer<typeof loginSchema>
 const Login = () => {
     const { login } = useAuth()
@@ -36,8 +36,6 @@ const Login = () => {
     const submitResult = async (data: SubmitProps) => {
         const toastId = toast.loading('Signing In..')
         try {
-
-            console.log(" vite backend url: ", backend_url);
             const response = await axios.post(`${backend_url}/pms/loginUser`,
                 { email: data.email, password: data.password },
                 {
@@ -75,8 +73,8 @@ const Login = () => {
             }
 
         } catch (err) {
-            toast.error("Error while logging In. Please Try Again Later", { id: toastId });
-            console.log("error while logging the user", err)
+           let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId });
         }
     }
     return (

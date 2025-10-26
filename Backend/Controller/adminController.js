@@ -8,7 +8,7 @@ import { validationResult } from 'express-validator';
 
 
 
-const createDoctor = async (req, res) => {
+const createDoctor = async (req, res, next) => {
 
     try {
         const { role, speciality, profileImage, username, password, email, availableDays, education, experience, address, consultationFee, about} = req.body;
@@ -66,11 +66,7 @@ const createDoctor = async (req, res) => {
 
 
     } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Got server error while Adding New Doctor",
-            err: err.message
-        })
+        next(err)
     }
 
 }
@@ -89,7 +85,7 @@ const checkSlotsFields = (fields1, fields2) => {
 }
 
 
-const updateDoctor = async (req, res) => {
+const updateDoctor = async (req, res, next) => {
     const { id } = req.params;
     const updatedInfo = req.body;
     const changedValues = {};
@@ -132,18 +128,14 @@ const updateDoctor = async (req, res) => {
         })
 
     } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Got server error while creating adding Doctor",
-            err: err.message
-        })
+       next(err)
     }
 
 }
 
 // manage Bookings like cancel or change the timings
 
-const manageAppointments = async (req, res) => {
+const manageAppointments = async (req, res, next) => {
 
     const { id } = req.params;
     const updatedInfo = req.body;
@@ -164,16 +156,12 @@ const manageAppointments = async (req, res) => {
             message: "Doctor Profile successfully Created",
         })
     } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Got server error while creating adding Doctor",
-            err: err.message
-        })
+        next(err)
     }
 
 }
 
-const fetchAllAdmins = async (req, res) => {
+const fetchAllAdmins = async (req, res, next) => {
 
     try {
         const allAdmins = await Admin.find({});
@@ -189,11 +177,7 @@ const fetchAllAdmins = async (req, res) => {
             allAdmins
         })
     } catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Got server error while fetching all Admins",
-            err: err.message
-        })
+        next(err)
     }
 
 }

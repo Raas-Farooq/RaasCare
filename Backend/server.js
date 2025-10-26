@@ -16,6 +16,7 @@ import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { schedule } from 'node-cron';
 import { allDoctorsSlotsGenerator, generateAllSlotsStartUp } from './Controller/slotsController.js';
+import errorHandler from './middleware/errorHandler.js';
 
 
 config()
@@ -30,7 +31,9 @@ app.use(morgan('dev'));
 app.use(compression());
 const limiter = rateLimit({
     windowMs:15 * 60 * 1000,
-    max:100,
+    max:300,
+    standardHeaders:true,
+    legacyHeaders:false,
     message:"Too many requests, please try again Later"
 })
 
@@ -83,12 +86,17 @@ schedule('0 0 * * *', async() => {
     }
 })
 
-
+app.use(errorHandler);
 
 app.use((err,req,res,next) => {
-    console.error(err.stack);
-    res.status(500).send('SomeThing Went Wrong')
+    console.error("Global Error ",err.stack);
+    res.status(err.status||500)
+    .json({
+        success:false,
+        message: err.message || 'Internal server error'
+    })
 })
+
 
 app.listen(Port,() => console.log("port ", Port));
 

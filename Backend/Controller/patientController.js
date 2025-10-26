@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import {User} from '../models/user.js'
 import Patient from "../models/patient.js";
+import { nextTick } from "process";
 
 
 const checkRedundantData = async(req,res) => {
@@ -56,7 +57,7 @@ const checkPatientExistence = async(req, res) => {
         })
     }
 }
-const AddNewPatient= async(req,res) =>
+const AddNewPatient= async(req,res, next) =>
     {
     let isPatientExist;
     console.log("req body NeW Neural Network: ", req.body);
@@ -98,15 +99,11 @@ const AddNewPatient= async(req,res) =>
             patient:newPatient
         })
     }catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"server error while creating new Patient",
-            error:err.message
-        })
+       next(err)
     }
 }
 
-const getPatient= async(req,res) =>
+const getPatient= async(req,res, next) =>
     {
         try{
             console.log("Single Patient Runs")
@@ -127,15 +124,11 @@ const getPatient= async(req,res) =>
             patient
         })
     }catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"server error while creating new Patient",
-            error:err.message
-        })
+        next(err)
     }
 }
 
-const getAllPatients= async(req,res) =>
+const getAllPatients= async(req,res, next) =>
     {
         console.log("all Patients Has been Called");
         try{
@@ -161,11 +154,7 @@ const getAllPatients= async(req,res) =>
             allPatients: patients
         })
     }catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"server error while creating new Patient",
-            error:err.message
-        })
+         next(err)
     }
 }
 
@@ -231,7 +220,7 @@ const paymentFailure = (req,res) => {
 }
 
 
-const getSearchPatient = async(req,res) =>{
+const getSearchPatient = async(req,res, next) =>{
     try{
         const searchTerm = req.query.search?.trim() || "";
         console.log(": Type", typeof(searchTerm), "length of searchTerm: ", searchTerm.length, "searchTerm ", searchTerm);
@@ -267,14 +256,10 @@ const getSearchPatient = async(req,res) =>{
                 patients: searchedPatients
             })
     }catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"server error while finding Patient",
-            error:err.message
-        })
+         next(err)
     }
 }
-async function deletePatientProfile(req,res)
+async function deletePatientProfile(req,res, next)
     {
         try{
             console.log("delte PATIENT PROFILE IS BEING RUN")
@@ -294,11 +279,7 @@ async function deletePatientProfile(req,res)
                 deletedPatient: patientProfile
             })
     }catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"server error while deleting Patient",
-            error:err.message
-        })
+         next(err)
     }
 }
 
@@ -327,7 +308,7 @@ async function deletePatientProfile(req,res)
     }
 
 
- async function updatePatientProfile(req, res){
+ async function updatePatientProfile(req, res, next){
     const {id} = req.params;
     console.log("new info inside update backend ", req.body, "And Id ", id);
     const receivedUserData = JSON.parse(req.body.updatedDetail);
@@ -387,11 +368,7 @@ async function deletePatientProfile(req,res)
             patient:updateProfile
         })
     }catch(err){
-        return res.status(500).json({
-            success:false,
-            message:"server error while updating Patient Profile",
-            err: err.message
-        })
+         next(err)
     }
  }
 

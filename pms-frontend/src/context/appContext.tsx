@@ -177,11 +177,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     },[doctorsList])
 
-
+    const backend_url = import.meta.env.VITE_BACKEND_URL;
     const logout = useCallback(async () => {
         // toast("Your Session Expired. Please Login Again!")
         try {
-            await axios.get('http://localhost:2500/pms/logout',
+            await axios.get(`${backend_url}/pms/logout`,
                 { withCredentials: true }
             );
 
@@ -271,7 +271,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         const localSavedData = localStorage.getItem('auth');
-        console.log("if you have refreshsed: ", localSavedData);
         if (localSavedData) {
             const { user, expiryTime, jwt_token, userRole, isAuthenticated } = JSON.parse(localSavedData);
                 const localStoredProfile = localStorage.getItem('profile');

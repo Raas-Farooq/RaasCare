@@ -39,17 +39,34 @@ const PatientAddForm = () => {
            
         }
         const toastId = toast.loading("Ading Patient..")
+        const backendUrl = import.meta.env.VITE_BACKEND_URL;
         console.log("data has been reached inside Add Patient : ", patientPayload);
         try{
             setAddingNewPatient(true);
             
-            const response = await axios.post(`http://localhost:2500/pms/addPatientProfile`, patientPayload);
+            const response = await axios.post(`${backendUrl}/pms/addPatientProfile`, patientPayload);
             console.log("response: ",response);
             if(response.data.success){
                 toast.success('Success Response received by Backend', {id:toastId})
             }
         }
-        catch(err){
+        catch(err:string | any){
+            let errorMessage = 'caught error while adding patient';
+            if(err.response) {
+                const serverMessage = err.response.data.message;
+                if(serverMessage){
+                    errorMessage = serverMessage;
+                }
+                else if(err.response.status === 409){
+                    errorMessage = "Already exist"
+                }
+                else if(err.response.data.error && err.response.data.error.includes("duplicate key error")){
+                       errorMessage = 'A user with this email already exists. Please try another email or log in.';
+                }
+            }
+            else if(err.request){
+                errorMessage= "Network error. Please check your internet connection"
+            }
             console.log("err ", err)
             toast.error("Error Adding A Patient", {id:toastId})
         }

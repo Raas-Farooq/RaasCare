@@ -3,7 +3,7 @@ import './cssTransition.css';
 import { ArrowLeft } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import axios, { all } from "axios";
+import axios from "axios";
 import { useAuth } from "../../context/appContext";
 import makeNgrokRequest from "../../ngrokRequesthook";
 import { FaSpinner } from "react-icons/fa";
@@ -29,10 +29,6 @@ interface BookedSlots {
     doctorName: string,
     patientName: string,
     _id: string,
-}
-interface ReceiveAvailableSlots {
-    date: string,
-    slots: Slots[]
 }
 interface AllAvailableSlots {
     _id: string,
@@ -74,23 +70,15 @@ function DoctorPublicProfile() {
     const [slotsLoading, setSlotsLoading] = useState(false);
     const [localStoredDoctorId, setLocalStoredDoctorId] = useState('');
     const [selectedSlot_id, setSelectedSlot_id] = useState('');
-    const { user, userRole, bookedSlots, setBookedSlots } = useAuth();
+    const { userRole, bookedSlots, setBookedSlots } = useAuth();
     const navigate = useNavigate();
     const effectLoaded = useRef(false);
     const { doctorId:doctorParamsId } = useParams();
-    
-    const urlLink = 'http://localhost:2500/pms/fetchDoctorProfile';
+
     const backendUrl = import.meta.env.VITE_BACKEND_URL
     const confirmLogin = useConfirmNavigation();
 
     const { allDoctors } = useAuth();
-    // const { fetchLoading, fetchResult, fetchError } = useFetchApi(backendUrl, doctorId || null);
-    const gain = { gain: 'No pain No gain' };
-
-    // useEffect(() => {
-    //     console.log("Day index of clicked day", dayIndex);
-    // }, [dayIndex]);
-
 
         function updateDateFormat(slotsReceived: AllAvailableSlots[]) {
         const updatedSlots = slotsReceived.map(slots => {
@@ -105,6 +93,7 @@ function DoctorPublicProfile() {
     }
 
     useEffect(() => {
+        setIsProfileLoading(true);
         const currentDoctorId = doctorParamsId || localStorage.getItem('doctorId');
         console.log("currentDoctorId ", currentDoctorId)
         if (!currentDoctorId || allDoctors.length === 0) {
@@ -114,11 +103,12 @@ function DoctorPublicProfile() {
         setLocalStoredDoctorId(currentDoctorId);
         effectLoaded.current = true;
         
-        setIsProfileLoading(true);
+        
+        
         
         const fetchDoctorProfile = async () => {
             setSlotsLoading(true);
-            const toastId = toast.loading("Loading Doctor Profile..")
+            // const toastId = toast.loading("Loading Doctor Profile..")
 
             try {
                 const fetchdoctorAvailableDays = await makeNgrokRequest({ url: `pms/getDoctorAvailableDays/${currentDoctorId}`, method: 'get' });
@@ -132,27 +122,21 @@ function DoctorPublicProfile() {
             catch (err) {
                 console.error("Get Error while generating all doctors slots", err);
             } finally {
-
-                toast.dismiss(toastId)
             }
         }
         if(allDoctors.length > 0){
-            fetchDoctorProfile();
+            const filteredDoctor = allDoctors.find(doctor => doctor._id === currentDoctorId);
+            if(filteredDoctor){
+                setDoctorProfile(filteredDoctor);
+                fetchDoctorProfile();
+                setIsProfileLoading(false);
+            }
+            else{
+                console.error("Doctor not Found")
+            }
         }
 
     }, [doctorParamsId, allDoctors])
-
-
-    // useEffect(()=> {
-    //     if(!allDoctors.length){
-    //         return;
-    //     }
-    //     if(allDoctors.length>0){
-            
-    //     }
-        
-    // },[allDoctors])
-
 
     const handleSlotSelection = (id: string, time: string) => {
         console.log("time received: ", time, " id of slot: ", id, "selected Time slot: ", selectedTimeSlot, "doctorSlots available: ", doctorSlotsAvailable);
@@ -171,17 +155,19 @@ function DoctorPublicProfile() {
 
     }
 
-    // useEffect(() => {
-    //     if(doctorSlotsAvailable.length === 0) 
-    // }, [doctorSlotsAvailable]);
+    function updateSingleSlotDate(slot:BookedSlots){
+        const updateNewSlot = {
+                ...slot,
+                slotDate:{
+                    startDate:new Date(slot.slotDate.startDate),
+                    endDate: slot.slotDate.endDate ? new Date(slot.slotDate.endDate) : undefined
+                }
+            }
+        return updateNewSlot;
+    }
 
     function syncSlots(bookedSlots: BookedSlots[] | null, newSlot: BookedSlots) {
-        console.log("newSlot booked: ", newSlot);
-        console.log("doctorSlots Available: ", doctorSlotsAvailable);
-        // setDoctorSlotsAvailable(prev => (
-        //     prev.filter(prev => prev.)
-        // ))
-        if (bookedSlots && bookedSlots.length > 0) {
+        if (bookedSlots && bookedSlots.length > 0) {   
             const validDateSlots = bookedSlots.map((slots: BookedSlots) => {
                 return {
                     ...slots,
@@ -191,12 +177,14 @@ function DoctorPublicProfile() {
                     }
                 }
             })
-            const formattedSlots = [...validDateSlots, newSlot];
+            const updateSingleSlot = updateSingleSlotDate(newSlot);
+            const formattedSlots = [...validDateSlots, updateSingleSlot];
             setBookedSlots(formattedSlots);
-            // setDoctorSlotsAvailable(formattedSlots);
-            console.log("using new Techninqueee....", formattedSlots);
+            localStorage.setItem("bookedSlots", JSON.stringify(formattedSlots));
         } else {
-            const newSlotArr = [newSlot];
+            const updateSingleSlot = updateSingleSlotDate(newSlot);
+            localStorage.setItem("bookedSlots", JSON.stringify(updateSingleSlot));
+            const newSlotArr = [updateSingleSlot];
             setBookedSlots(newSlotArr)
         }
 
@@ -205,8 +193,6 @@ function DoctorPublicProfile() {
     const handleMakeAppointment = async () => {
 
         if (!userRole) {
-            console.log("YESS INDEEE D ");
-            confirmLogin
             const confirmResponse = await confirmLogin();
             if (confirmResponse) {
                 return
@@ -221,7 +207,7 @@ function DoctorPublicProfile() {
         }
 
         else if (!selectedSlot_id) {
-            alert('You must select the time slot and day to confirm booking');
+             alert('Please select a time slot to confirm booking');
             return;
         }
         let storedUser;
@@ -272,7 +258,10 @@ function DoctorPublicProfile() {
                     })
                 })
                 toast.success('Booked Successfully!', { id: toastId })
-                console.log("Success")
+                
+                setTimeout(() => {
+                    navigate('/patient-dashboard/myAppointments');
+                }, 1500)
             }
         }
         catch (err) {
@@ -286,25 +275,17 @@ function DoctorPublicProfile() {
         }
     }
 
-    if (!isProfileLoading && !doctorProfile) {
+    if (isProfileLoading || allDoctors.length === 0) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="text-center py-12">
-                    <h2 className="text-2xl font-bold text-gray-800">Doctor not found</h2>
-                    <Link to="/doctors" className="text-blue-500 hover:underline mt-4 inline-block">
-                        Back to Doctors List
-                    </Link>
+                <div className="text-center flex gap-3">
+                    <span className="text-2xl font-bold text-gray-800">Loading Doctor Profile..</span>
+                    <FaSpinner className="animate-spin text-2xl" />
                 </div>
             </div>
         );
     }
 
-    // if (fetchLoading) return <h2> Loading..</h2>
-    // if (fetchError) console.error('error while fetching the doctor profile: ', fetchError);
-    // if(Object.keys(fetchResult).length ){
-    //     alert('Got fetchResult')
-    //     console.log("Fetch result " ,fetchResult);
-    // }
 
     return (
 
@@ -353,7 +334,11 @@ function DoctorPublicProfile() {
                                 <div className="flex flex-col gap-2">
                                     <div className="flex flex-wrap gap-5">
 
-                                        {slotsLoading && <FaSpinner className="animate-spin " />}
+                                        {slotsLoading && <div>
+                                                 Loading Slots..
+                                                <FaSpinner className="animate-spin " />
+                                                    </div>
+                                            }
                                         {(!slotsLoading && doctorSlotsAvailable?.length) && doctorSlotsAvailable.map((day, index) => (
                                             <div key={index}>
 
@@ -391,9 +376,10 @@ function DoctorPublicProfile() {
                                                 ))}
                                             </div>
 
-                                        )) :
-                                            <h2 className="text-yellow-500">Slots Not Found </h2>
+                                        )) : 
+                                        ''
                                         }
+                                        {(!slotsLoading && doctorSlotsAvailable.length === 0)&& <h2 className="text-yellow-500">Slots Not Found </h2>}
                                     </div>
                                 </div>
                             </div>
@@ -402,7 +388,7 @@ function DoctorPublicProfile() {
                                 <button
                                     disabled={isSubmitting}
                                     onClick={handleMakeAppointment}
-                                    className={` rounded-full max-w-fit ${isSubmitting ? '!bg-gray-400 cursor-not-allowed' : 'bg-purple-400 px-2 py-3 hover:shadow-md hover:bg-purple-500 '}`}
+                                    className={` rounded-full max-w-fit ${isSubmitting ? '!bg-gray-400 cursor-not-allowed px-2 py-3' : 'bg-purple-300 transition-colors duration-300 px-2 py-3 hover:shadow-md hover:bg-purple-500 '}`}
                                 > Book Appointment
                                 </button>
                             </div>
@@ -429,5 +415,4 @@ function DoctorPublicProfile() {
 }
 
 export default DoctorPublicProfile
-
 

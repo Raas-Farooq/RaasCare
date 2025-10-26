@@ -122,7 +122,7 @@ const generateAllSlotsStartUp= async() => {
         }
 }
 
-async function allDoctorsSlotsGenerator(req, res) {
+async function allDoctorsSlotsGenerator(req, res,next) {
 
             try{
                  await generateAllSlotsStartUp();
@@ -135,20 +135,14 @@ async function allDoctorsSlotsGenerator(req, res) {
             }
       
     catch (err) {
-        console.error("error while getting the 2 week schedule of doctor", err);
-
-        return res.status(500).json({
-            success: false,
-            message: "Got server error while getting the 2 week schedule of doctor",
-            err: err.message
-        })
+       next(err)
     }
 
 }
 
 // booking a slot and also add it to appointments
 // future use sessions to work with both methods adding slot and Appointment
-const bookSlot = async (req, res) => {
+const bookSlot = async (req, res, next) => {
     const { slotId } = req.params;
     const { patientName, docId, patientId } = req.body;
     console.log("slotId inside bookSlot ", slotId, "patientId ", patientId, "patineName ", patientName);
@@ -190,19 +184,14 @@ const bookSlot = async (req, res) => {
         })
     }
     catch (err) {
-        console.error("server error while booking slot", err);
 
-        return res.status(500).json({
-            success: false,
-            message: "server error while booking slot",
-            err: err.message
-        })
+        next(err)
     }
 }
 const ObjectId = mongoose.Types.ObjectId;
 
 
-const getDoctorAvailableDays = async (req, res) => {
+const getDoctorAvailableDays = async (req, res, next) => {
 
     const { docId } = req.params;
     const startDate = new Date();
@@ -235,12 +224,7 @@ const getDoctorAvailableDays = async (req, res) => {
         res.status(200).json({ success: true, remainingSlots })
     }
     catch (err) {
-        console.error("got error while aggregating the Doctor Available days");
-        return res.status(500).json({
-            success: false,
-            message: "internal server error while getting the Doctor Available days",
-            err: err.message
-        })
+        next(err)
     }
 }
 
@@ -278,7 +262,7 @@ const getDoctorsAndAverageSalary = async(req,res) => {
     return res.status(500).json({err: err.message})
    }
 }
-const getDoctorSlots = async (req, res) => {
+const getDoctorSlots = async (req, res, next) => {
 
     const { docId } = req.params;
     const startDate = new Date();
@@ -290,16 +274,11 @@ const getDoctorSlots = async (req, res) => {
         res.status(200).json({ success: true, updatedSlots })
     }
     catch (err) {
-        console.error("got error while getting Doctor updated Slots");
-        return res.status(500).json({
-            success: false,
-            message: "internal server error while getting the Doctor updated Slots",
-            err: err.message
-        })
+        next(err)
     }
 }
 
-const getDoctorBookedSlots = async (req, res) => {
+const getDoctorBookedSlots = async (req, res,next) => {
     const { docId } = req.params;
     try {
         const bookedSlots = await AvailableSlots.find({ doctorId: docId,
@@ -323,17 +302,11 @@ const getDoctorBookedSlots = async (req, res) => {
             bookedSlots
         })
     } catch (err) {
-        console.error("got error while getting booked Slots");
-        return res.status(500).json({
-            success: false,
-            message: "internal server error while getting booked Slots",
-            err: err.message
-
-        })
+         next(err)
     }
 }
 
-const getPatientBookedSlots = async (req, res) => {
+const getPatientBookedSlots = async (req, res, next) => {
     const { patientId } = req.params;
     try {
         const bookedSlots = await AvailableSlots.find({ patientId, 
@@ -357,18 +330,12 @@ const getPatientBookedSlots = async (req, res) => {
             bookedSlots
         })
     } catch (err) {
-        console.error("got error while getting booked Slots");
-        return res.status(500).json({
-            success: false,
-            message: "internal server error while getting booked Slots",
-            err: err.message
-
-        })
+         next(err)
     }
 }
 
 
-const updateSlotStatus = async (req, res) => {
+const updateSlotStatus = async (req, res, next) => {
 
     const { slotId } = req.params;
     const { action, docId, role } = req.body;
@@ -450,13 +417,7 @@ const updateSlotStatus = async (req, res) => {
         })
 
     } catch (err) {
-        console.error("got error while Updating the Slot status");
-        return res.status(500).json({
-            success: false,
-            message: "internal server error while Updating the Slot status",
-            err: err.message
-
-        })
+         next(err)
     }
 }
 

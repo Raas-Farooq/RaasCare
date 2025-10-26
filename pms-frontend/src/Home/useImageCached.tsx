@@ -10,7 +10,7 @@ const useImageCached = (src:string) => {
     useEffect(() => {
 
         if(!src) return;
-        const image = new Image();
+        const image = new Image();                                                                                                                                                                                                                                   
         image.src= src;
             if(image.complete && image.naturalWidth > 0){
                 setImageLoaded('loaded')

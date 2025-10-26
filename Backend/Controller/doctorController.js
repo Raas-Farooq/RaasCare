@@ -84,7 +84,7 @@ const DoctorAddPatient = async (req, res) => {
     }
 }
 
-const fetchAllDoctors = async (req, res) => {
+const fetchAllDoctors = async (req, res, next) => {
 
 
     try {
@@ -103,14 +103,11 @@ const fetchAllDoctors = async (req, res) => {
         })
     }
     catch (err) {
-        res.status(500).json({
-            success: false,
-            message: "Server error while getting Doctors list", err
-        })
+       next(err)
     }
 }
 
-const onlinePaymentRequest = async (req, res) => {
+const onlinePaymentRequest = async (req, res, next) => {
     const { slotId } = req.params;
     const { doctorId, amount } = req.body;
     // console.log(" secret key ", process.env.SAFEPAY_SECRET_KEY)
@@ -164,16 +161,12 @@ const onlinePaymentRequest = async (req, res) => {
         res.status(200).json({ success: true, redirectUrl });
 
     } catch (err) {
-        console.error("Error while making payment requests:", err.response ? err.response.data : err.message);
-        res.status(500).json({
-            success: false,
-            message: "Internal server error while making payment request",
-            err: err.response ? err.response.data : err.message
-        });
+       
+        next(err)
     }
 };
 
-const fetchDoctorProfile = async (req, res) => {
+const fetchDoctorProfile = async (req, res, next) => {
 
     const { id } = req.params;
     try {
@@ -193,10 +186,7 @@ const fetchDoctorProfile = async (req, res) => {
         })
     }
     catch (err) {
-        res.status(500).json({
-            success: false,
-            message: "Server error while getting Doctor Profile", err
-        })
+      next(err)
     }
 }
 
@@ -305,7 +295,7 @@ const doctorAvailablity = async (req, res) => {
 
 }
 
-const bookAppointment = async (req, res) => {
+const bookAppointment = async (req, res, next) => {
 
     const { id } = req.params;
     console.log("make Appointment Runs")
@@ -351,16 +341,11 @@ const bookAppointment = async (req, res) => {
         })
     }
     catch (err) {
-        console.error(`error while adding appointment`, err);
-        res.status(500).json({
-            success: false,
-            message: `Server error while adding an Appointment`,
-            err: err.message
-        })
+        next(err)
     }
 }
 
-const handleAppointmentAction = async (req, res) => {
+const handleAppointmentAction = async (req, res, next) => {
 
     const { id } = req.params;
     console.log("cancel Appointment Runs ", id)
@@ -446,12 +431,7 @@ const handleAppointmentAction = async (req, res) => {
 
     }
     catch (err) {
-        console.error(`error while ${action}ing appointment`, err);
-        res.status(500).json({
-            success: false,
-            message: `Server error while ${action}ing an Appointment`,
-            err: err.message
-        })
+         next(err)
     }
 }
 

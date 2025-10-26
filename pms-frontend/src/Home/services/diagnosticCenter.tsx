@@ -1,11 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/navbar"
+import { useEffect } from "react";
+import makeNgrokRequest from "../../ngrokRequesthook";
 
 
 
 
 const DiagnosticCenter = () => {
 
+     const backendUrl = import.meta.env.VITE_BACKEND_URL
+    useEffect(() => {
+        // const toastId = toast.loading("loading patein")
+        async function fetchPatients(){
+
+            try{
+                const patientList = await makeNgrokRequest({url:'pms/getAllUsers', method:'get'});
+
+                console.log("patientLIst ", patientList);
+            }
+            catch(err){
+                console.error("error while fetching patients ", err);
+            }
+        }
+        fetchPatients();
+    },[])
     const navigate = useNavigate();
 
     const headingStyle = "text-xl m-5 px-2 border-b w-full object-contain border-gray-300";

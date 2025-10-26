@@ -11,9 +11,10 @@ import { isCancel } from 'axios';
 
 config()
 
-const registerPatient = async (req, res) => {
+const registerPatient = async (req, res, next) => {
     const { username, email,password, phone} = req.body;
     const patientExist= await Patient.findOne({phone:phone});
+    console.log("yes patient exist ", patientExist)
     let patientAdded;
     try {
         if (patientExist) {
@@ -27,6 +28,9 @@ const registerPatient = async (req, res) => {
             })
             await patientAdded.save();
         } else {
+            console.log(
+                "no patient doessn't exist "
+            )
             const newPatient = await Patient.create({phone:phone});
             // const {patientId, patientName, city, age, gender,medicalHistory} //if in case user is being sending all the detials then we have to made some changes but in simple case when generally user register for appointement booking then the intial details is enough;
             console.log("username; ", username, "email , password ", email, password);
@@ -82,16 +86,12 @@ const registerPatient = async (req, res) => {
             })
     }
     catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "server error while creating new Patient",
-            error: err.message
-        })
+           next(err);
     }
 }
 
 
-const userLogin = async (req, res) => {
+const userLogin = async (req, res,next) => {
 
     const { email, password } = req.body;
 
@@ -112,6 +112,8 @@ const userLogin = async (req, res) => {
                 message: "User didn't exist, Email id not found"
             })
         }
+        const today = new Date();
+        today.setHours(0,0,0,0);
         console.log("userExist value: ", userExist);
         let slotsBooked;
         const slotsFilter = {
@@ -125,13 +127,17 @@ const userLogin = async (req, res) => {
         
         if(userExist.role === 'doctor'){
             slotsBooked = await AvailableSlots.find(
-                {doctorId:userExist._id, ...slotsFilter}
+                {
+                    doctorId:userExist._id,
+                     ...slotsFilter,
+                    'slotDate.startDate':{$gte:today}}
             ).lean();
         }
         if(userExist.role === 'admin'){
             slotsBooked = await AvailableSlots.find(
                 {
-                    isBooked:true,
+                    ...slotsFilter,
+                    'slotDate.startDate':{$gte:today}
                 }
             ).sort({createdAt:-1}).
             limit(10)
@@ -142,7 +148,8 @@ const userLogin = async (req, res) => {
             slotsBooked = await AvailableSlots.find(
                 {
                     patientId:userExist._id,
-                    ...slotsFilter
+                    ...slotsFilter,
+                    'slotDate.startDate':{$gte:today}
                 },
             ).sort({createdAt:-1}).limit(5).lean()
             // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
@@ -198,18 +205,14 @@ const userLogin = async (req, res) => {
         })
     }
     catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: `Server error while logging the User ${err}`,
-            error: err.messasge
-        })
+        next(err)
     }
 }
 // process.env.NODE_ENV === 'production'
-const getAllUsers = async (req, res) => {
+const getAllUsers = async (req, res, next) => {
 
     try {
-        const allUsers = await User.find({});
+        const allUsers = await User.find({role:'patient', patientRecord:{$exists:true}});
         if (allUsers.length === 0) {
             return res.status(404).json({
                 success: false,
@@ -224,14 +227,10 @@ const getAllUsers = async (req, res) => {
         })
     }
     catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Got Server error while accessing all blogs",
-            error: err.message
-        })
+         next(err)
     }
 }
-const logout = (req, res) => {
+const logout = (req, res, next) => {
 
     try {
         res.clearCookie('token', {
@@ -245,11 +244,7 @@ const logout = (req, res) => {
         });
     }
     catch (err) {
-        return res.status(500).json({
-            success: false,
-            message: "Error while logging out",
-            error: err.message
-        })
+         next(err)
     }
 
 }

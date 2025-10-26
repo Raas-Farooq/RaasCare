@@ -51,8 +51,8 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
         setUpdatedDisplayDoctors(true)
     }, [allDoctors, targetFieldReceived])
 
-    if (allDoctors.length === 0) {
-        return <h1 className="text-xl text-center">No Doctor Found</h1>
+    if (!loadedAllDoctors || !updatedDisplayDoctors) {
+        return <h1 className="text-xl text-center">Loading Doctors..</h1>
     }
 
     return (
@@ -73,7 +73,7 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
                             className="group block shadow-md bg-white 
                             px-4 py-8 flex-col rounded-2xl overflow-hidden hover:shadow-xl 
                             transition-all duration-300 hover:-translate-y-1"
-                        >
+                            >
                             <div className="flex flex-col h-full max-w-sm md:max-w-auto">
                                 <div className="relative overflow-hidden">
                                     <img
