@@ -3,33 +3,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
 import toast from 'react-hot-toast';
-import { ImDatabase } from "react-icons/im";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import type { PatientFormType } from "./patient.types";
+import type { UseFormReset } from "react-hook-form";
 
-interface PatientHistory
-{
-    date:string,
-    diagnosis:string,
-    treatment:string,
-}
 
-interface PatientData{
-    // age:number,
-    patientName:string,
-    patientId?:string,
-    phone:string,
-    dateOfBirth:string,
-    gender?:string,
-    city:string,
-    medicalHistory:PatientHistory[]
-}
- 
+
 // Patient Form Component
 const PatientAddForm = () => {
     const [addingNewPatient, setAddingNewPatient] = useState(false);
     const navigate = useNavigate();
 // Form submit function 
-    async function formSubmit(data:PatientData){
+    async function formSubmit(data:PatientFormType, resetForm:UseFormReset<PatientFormType>){
         
         const patientId = `${Date.now()}`;
         const mongoId = '_9343289472335'
@@ -48,7 +33,8 @@ const PatientAddForm = () => {
             const response = await axios.post(`${backendUrl}/pms/addPatientProfile`, patientPayload);
             console.log("response: ",response);
             if(response.data.success){
-                toast.success('Success Response received by Backend', {id:toastId})
+                toast.success('Success Response received by Backend', {id:toastId});
+                resetForm()
             }
         }
         catch(err){

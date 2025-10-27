@@ -17,6 +17,9 @@ const DoctorNavbar = () => {
             if (response.data.success) {
                 logout();
             }
+
+            localStorage.removeItem(`storedTab`);
+            
         }
 
         loggingOut()

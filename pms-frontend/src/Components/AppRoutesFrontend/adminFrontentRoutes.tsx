@@ -2,9 +2,11 @@
 
 // add Doctor, update Doctor, manage bookings, s
 
-import AddNewDoctor from "../../features/Admin/addNewDoctor";
-import AdminHome from "../../features/Admin/AdminHome";
-import UpdateDoctorPrfoile from "../../features/Admin/updateDoctorProfile";
+import AddNewDoctor from "../../features/Admin/components/addNewDoctor";
+import AdminHome from "../../features/Admin/components/AdminHome";
+import UpdateDoctorPrfoile from "../../features/Admin/components/updateDoctorProfile";
+// import AdminHome from "../../features/Admin/AdminHome";
+// import UpdateDoctorPrfoile from "../../features/Admin/updateDoctorProfile";
 import AdminDashboard from "../dashboards/adminDashboard";
 
 

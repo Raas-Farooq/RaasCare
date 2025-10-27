@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
@@ -24,11 +24,11 @@ interface BookedSlot {
   slotTime: string,
   _id: string
 }
-
+type ActiveTabType = 'Dashboard' | 'Appointments' | 'Profile' | 'AddPatient'
 // Add Patient Tab Have to Be Added
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 const DoctorHome = () => {
-  const [activeTab, setActiveTab] = useState<'Dashboard' | 'Appointments' | 'Profile' | 'AddPatient'>('Dashboard');
+  const [activeTab, setActiveTab] = useState<ActiveTabType>('Dashboard');
   const { doctorProfile, bookedSlots, setBookedSlots, userRole } = useAuth();
 
   function syncUpdatedSlots(updatedSlots: BookedSlot[]){
@@ -47,6 +47,18 @@ const DoctorHome = () => {
       return updated;
       
   }
+
+  const storeTabLocally = (tab:ActiveTabType) => {
+    localStorage.setItem(`storedTab`,tab);
+  }
+  useEffect(() => {
+
+    const storedTab = localStorage.getItem('storedTab');
+    if(storedTab){
+       setActiveTab(storedTab as ActiveTabType)
+    }
+  },[])
+
   async function handleAppointment(action: string, slotId: string) {
     const toastId = toast.loading('updating slot Status') 
     try {
@@ -92,34 +104,51 @@ const DoctorHome = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             <button
               aria-selected={activeTab === 'Dashboard'}
-              onClick={() => setActiveTab('Dashboard')}
-              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Dashboard' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+              onClick={() => {
+                setActiveTab('Dashboard');
+                storeTabLocally('Dashboard')
+              }}
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none
+                 ${activeTab === 'Dashboard' ? 'bg-blue-50 border border-blue-500 shadow-md scale-[1.02]' : 'bg-white border border-gray-200'}`}
             >
               <LayoutDashboardIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Dashboard</span>
             </button>
             <button
-              onClick={() => setActiveTab('Appointments')}
+              onClick={() => {
+                storeTabLocally('Appointments')
+                setActiveTab('Appointments')}
+              }
               aria-selected={activeTab === 'Appointments'}
-              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Appointments' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none
+                 ${activeTab === 'Appointments' ? 'bg-blue-50 border border-blue-500 shadow-md scale-[1.02]' : 'bg-white border border-gray-200'}`}
             >
               <BookAIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Appointments</span>
             </button>
             <button
               aria-selected={activeTab === 'AddPatient'}
-              onClick={() => setActiveTab('AddPatient')}
+              onClick={() =>  {
+                storeTabLocally('AddPatient')
+                setActiveTab('AddPatient')
+               }
+              }
               // aria-selected={activeTab === 'Dashboard'}
               // onClick={() => setActiveTab('Dashboard')}
-              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'AddPatient' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                ${activeTab === 'AddPatient' ? 'bg-blue-50 border border-blue-500 shadow-md scale-[1.02]' : 'bg-white border border-gray-200'}`}
             >
               <LayoutDashboardIcon className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">Add Patient</span>
             </button>
             <button
-              onClick={() => setActiveTab('Profile')}
+              onClick={() => {
+                storeTabLocally('Profile')
+                setActiveTab('Profile')
+               }}
               aria-selected={activeTab === 'Profile'}
-              className={`flex items-center justify-center gap-2 p-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none ${activeTab === 'Profile' && 'bg-blue-50 border-blue-500 shadow-md scale-[1.02]'}`}>
+              className={`flex items-center justify-center gap-2 p-3 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none 
+              ${activeTab === 'Profile' ? 'bg-blue-50 border border-blue-500 shadow-md scale-[1.02]' : 'bg-white border border-gray-200'}`}>
               <User className="w-5 h-5 text-blue-600" />
               <span className="font-medium text-gray-700">
                 Profile

@@ -1,11 +1,14 @@
 
 import { BookAIcon, Check, Delete, DollarSignIcon, LayoutDashboardIcon, Trash, User, Users } from "lucide-react";
 import { act, useEffect, useState } from "react";
-import DashboardCharts from "./charts/dashboardCharts";
-import AddNewDoctor from "./addNewDoctor";
-import { useAuth } from "../../context/appContext";
+// import DashboardCharts from "./charts/dashboardCharts";
+// import AddNewDoctor from "./components/addNewDoctor";
+// import { useAuth } from "../../context/appContext";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useAuth } from "../../../context/appContext";
+import DashboardCharts from "../charts/dashboardCharts";
+import AddNewDoctor from "./addNewDoctor";
 
 interface BookedSlot {
   isBooked: boolean,
@@ -43,12 +46,7 @@ const AdminHome = () => {
         return 'Dashboard'
     });
 
-    useEffect(() => {
-        console.log("ACtive Tab ", activeTab);
-    },[activeTab])
-    const handleGenerate = () => {
-        
-    }
+   
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const stylingOfMain = `w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`;
     async function handleAppointment(action: string, slotId: string, docId: string) {
@@ -92,24 +90,6 @@ const AdminHome = () => {
             console.error(`got error while making an appointment ${action} request`, err);
         }
     }
-
-
-    // useEffect(() => {
-
-        
-    //     try{
-    //         const currentTab = localStorage.getItem('ActiveTab') || 'Dashboard';
-    //         console.log("currentTab fro localStorag ", currentTab);
-    //         if(currentTab && tabsList.includes(currentTab as Tabs)){
-    //             console.log("iffffff is Runnnnnn ", currentTab)
-    //             setActiveTab(currentTab as Tabs)
-    //         }
-    //     }
-    //     catch(err){
-    //         console.error("error while fetching localStored active Tab ", err);   
-    //     }
-    //     console.log(" Active Tab " ,activeTab);
-    // },[])
 
     return (
         <>
@@ -313,7 +293,6 @@ const AdminHome = () => {
                             <p>Generate doctor slots for the next 14 days</p>
                             <button 
                             type="button" 
-                            onClick={handleGenerate}
                             className="border border-gray-400 px-4 py-2 rounded-lg hover:border-purple-700 hover:text-purple-800">
                                 Generate
                             </button>

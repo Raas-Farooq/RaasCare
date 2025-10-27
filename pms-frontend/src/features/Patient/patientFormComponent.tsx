@@ -1,9 +1,9 @@
-import {z} from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, type UseFormReset } from 'react-hook-form';
 import parsePhoneNumberFromString from 'libphonenumber-js';
 import toast from 'react-hot-toast';
+import { patientSchema, type PatientFormType } from './patient.types';
 
 
 // Date Defintion
@@ -12,29 +12,15 @@ import toast from 'react-hot-toast';
 //             message:"Date of birth can't be in future"
 //         }).optional())
 
- const patientSchema=z.object({
-        patientId:z.string().optional(),
-        patientName:z.string().min(2),
-        phone:z.string().nonempty("Phone Must be valid 9 digit pakistani mobile number"),
-        gender:z.string().min(1, "Please Select Your Gender").optional(),
-        city:z.string().min(2),
-        dateOfBirth:z.string().nonempty("Date Of Birth is required"),
-        medicalHistory:z.array(z.object({
-        treatment:z.string().min(5, "you should write meaningful statement here"),
-        diagnosis:z.string().min(3).nonempty('Diagnosis details must be mentioned'),
-        date:z.string().nonempty('treatment Start date must be mentioned'),
-        _id:z.string().optional()
-        // mongoDb _id will be assigned later when you add roles and other setup
-         }))
-        })
+ 
 
 // defining the type of Patient Data
-    type AddPatientFormData = z.infer<typeof patientSchema>
 
 type FormComponentProps = {
     updating?:boolean,
-    initialData?: AddPatientFormData,
-    receiveSubmitData:(data: AddPatientFormData)=>Promise<void>;
+    initialData?: PatientFormType,
+    receiveSubmitData:(data: PatientFormType, resetForm:UseFormReset<PatientFormType>)=>Promise<void>,
+    
 }
 
 
@@ -43,7 +29,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
     const [submitting, setSubmitting] = useState(false);
 
     // useForm with Resolver definition
-    const {register, control,handleSubmit, formState:{errors}, reset} = useForm<AddPatientFormData>({
+    const {register, control,handleSubmit, formState:{errors, isSubmitting}, reset} = useForm<PatientFormType>({
         resolver: zodResolver(patientSchema),
         defaultValues: initialData || 
         {
@@ -74,7 +60,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
 }, [initialData, reset]);
     
 // Form submit function 
-    async function handleSubmitPatientForm(data:AddPatientFormData){
+    async function handleSubmitPatientForm(data:PatientFormType){
         const phoneNumber = parsePhoneNumberFromString(data.phone, 'PK');
 
         if (!phoneNumber || !phoneNumber.isValid()) {
@@ -95,7 +81,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
             }
             setSubmitting(true);
             try{
-                await receiveSubmitData(updatedPatientData);
+                await receiveSubmitData(updatedPatientData, reset);
                 // if(!initialData) reset();
             }
             finally{
@@ -136,14 +122,16 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                         </select>
                         {errors.gender && <p className='text-red-500'> {errors.gender.message?.toString()}</p>}
                     </div>
-                    <div>
+                    <div className='relative'>
                         <label className='block text-gray-700' htmlFor='DOB'> Date Of Birth *</label>
                         <input 
                         type="date"
                         id="DOB"
                         {...register('dateOfBirth')}
+                        
                        className="w-full px-3 py-2 border-b border-gray-400 focus:outline-none"
                          />
+                         <span className='absolute right-10 bottom-3 text-gray-700 text-sm' >Select here</span>
                          {errors.dateOfBirth && <p className="text-red-500">{errors.dateOfBirth.message}</p>}
                     </div>
                     <div>
@@ -233,8 +221,12 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                         />
                         {errors.city && <p className="text-red-500">{errors.city.message}</p>}
                     </div>
-                    <button type="submit" className="border border-gray-800 p-2 bg-red-500 rounded-lg">
-                        Submit
+                    <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="border border-gray-800 p-2 bg-red-500 rounded-lg hover:border-purple-800 hover:text-purple-800"
+                    >
+                        {isSubmitting ? 'Submitting..' : 'Submit'}
                     </button>
                 
                 </form>

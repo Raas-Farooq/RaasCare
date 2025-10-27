@@ -2,31 +2,32 @@ import toast from "react-hot-toast";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "axios";
 import { useState, type ChangeEvent } from "react";
-import HandleAxiosError from "../../utils/handleAxiosError";
+import HandleAxiosError from "../../../utils/handleAxiosError";
+import { type ProfileImageProps } from "../admin.types";
+// import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface ImageUploadProps{
-    imageUpload :
-        (
-            imagePayload:{
-                imageUrl:string,
-                public_id:string
-            },
-            imageUploading:boolean
-        ) => void
+        uploadingStatus:(
+            isUploading:boolean
+        )=>void,
+        imgSrc:string,
+        setImgSrc:React.Dispatch<React.SetStateAction<string>>,
+        profileImageData:ProfileImageProps,
+        setProfileImageData:React.Dispatch<React.SetStateAction<ProfileImageProps>>
 }
+
 const backend_url = import.meta.env.VITE_BACKEND_URL;
-const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
-    const [choosenImage, setChoosenImage] = useState('');
+const UploadProfileImage :React.FC<ImageUploadProps> = ({uploadingStatus, imgSrc, setImgSrc, setProfileImageData}) => {
     const [imageUploading, setImageUploading] = useState(false);
     async function handleImageInsertion(e: ChangeEvent<HTMLInputElement>) {
         setImageUploading(true);
-        imageUpload({imageUrl:'', public_id:""}, true);
+        uploadingStatus(true);
         const toastId = toast.loading('Uploading on Cloudinary')
         if (e.target.files) {
             try {
                 const image = e.target.files[0];
                 const url = URL.createObjectURL(image);
-                setChoosenImage(url);
+                setImgSrc(url);
                 const formData = new FormData();
                 formData.append('image', image);
                 const cloudinaryResult = await axios.post(`${backend_url}/pms/uploadOnCloudinary`, formData,
@@ -40,7 +41,12 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
                 if (cloudinaryResult.data.success) {
                     localStorage.setItem("doctorProfileImage", response.url);
                     localStorage.setItem("doctorProfilePublic_id", response.public_id);
-                    imageUpload({imageUrl:response.url, public_id:response.public_id}, false);
+                    setProfileImageData(prev => ({
+                        ...prev,
+                        imageUrl:response.url,
+                        public_id: response.public_id
+                    }))
+                    uploadingStatus(false);
                     toast.dismiss(toastId);
                     toast.success("Success!")
                 }
@@ -48,11 +54,13 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
             catch (err) {
                  let errorMessage = HandleAxiosError(err);
                 toast.error(errorMessage, { id: toastId });
-                imageUpload({imageUrl:'', public_id:''}, false)
+                setProfileImageData({imageUrl:'', public_id:''})
             }
             finally{
                 setImageUploading(false);
+                uploadingStatus(false)
             }
+         
         }
     }
 
@@ -76,9 +84,9 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
                 htmlFor="docProfileImg"
                 className="cursor-pointer inline-flex flex-col items-center gap-2 p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-500 transition-colors"
             >
-                {choosenImage ? (
+                {imgSrc ? (
                     <img
-                        src={choosenImage}
+                        src={imgSrc}
                         alt="Preview"
                         className="w-20 h-20 rounded-full object-cover"
                     />
@@ -86,7 +94,7 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({imageUpload}) => {
                     <FaUserCircle size={64} className="text-gray-400" />
                 )}
                 <span className="text-sm text-gray-600">
-                    {choosenImage ? "Change Image" : "Click to upload image"}
+                    {imgSrc ? "Change Image" : "Click to upload image"}
                 </span>
             </label>
         </div>

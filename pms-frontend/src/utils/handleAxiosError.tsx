@@ -1,9 +1,7 @@
-import toast from "react-hot-toast";
+
 
 
 const HandleAxiosError = (err:string | any ) => {
-    toast("Handle Acios frontend");
-    console.log("handle Axios is running")
     if (err.response) {
         const { status, data } = err.response;
         if (status.code === 409) {
