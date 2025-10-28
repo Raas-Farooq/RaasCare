@@ -1,10 +1,8 @@
 import axios, { type AxiosInstance } from "axios";
 import React, { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
-import toast from "react-hot-toast";
-import type { ZodEnum } from "zod";
+
 import useFetchAllDoctors from "../features/Doctor/fetchAllDoctors";
 
-const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 interface User {
     username: string,
@@ -179,7 +177,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const backend_url = import.meta.env.VITE_BACKEND_URL;
     const logout = useCallback(async () => {
-        // toast("Your Session Expired. Please Login Again!")
         try {
             await axios.get(`${backend_url}/pms/logout`,
                 { withCredentials: true }
@@ -223,13 +220,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                 }
             }
         ))
-
         return parsedBookedSlots
     }
     const login = (user: User, token: string, expiresInSec: number, userProfile: DoctorProfile | AdminProfile, slotsBooked: BookedSlots[] | null) => {
         console.log("booked slots while login app context ", slotsBooked, "user ", user);
         if (user.role === 'doctor') {
             setDoctorProfile(userProfile as DoctorProfile);
+            localStorage.setItem('profile', JSON.stringify(userProfile));
         }
         if (user.role === 'admin') {
             setAdminProfile(userProfile as AdminProfile);
@@ -240,9 +237,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             localStorage.setItem('profile', JSON.stringify(userProfile));
         } 
         if(user.role){
-            console.log("user role: ", user.role);
             if (slotsBooked && slotsBooked.length) {
-                console.log("booked slots on Login inside IFF: ", slotsBooked);
                 localStorage.setItem("bookedSlots", JSON.stringify(slotsBooked));
                 const updatedFormat = validSlotsFormat(slotsBooked)
                 setBookedSlots(updatedFormat);
@@ -360,37 +355,3 @@ export const useAuth = () => {
     return context
 }
 
-
-// const mapFun = new Map();
-// mapFun.set(')', '(');
-
-// mapFun.set('}', '{');
-// mapFun.set(']', '[');
-
-// const paren = '{([])}'
-// let stack = [];
-// console.log("summUn Bukmunn")
-// function checkValidParenthesis(){
-//     for (let i = 0; i < paren.length;i++){
-//         const char = paren[i];
-//         console.log('char : ', char);
-//         if(mapFun.has(char)){
-//             const lastElement = stack.pop();
-//             console.log("Last element: ", lastElement);
-//             const mapElement = mapFun.get(char);
-//             console.log("Last element: ", mapElement);
-//             if(mapElement !== lastElement){
-//                 return false
-//             }
-//         }
-//         else{
-//             stack.push(char)
-//         }
-
-//     }
-        
-//     return true
-
-// }
-
-// console.log(" result ",checkValidParenthesis())

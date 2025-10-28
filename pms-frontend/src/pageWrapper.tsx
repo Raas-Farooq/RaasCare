@@ -34,3 +34,10 @@ export default function PageWrapper({children, variant="fade"}: PageWrapperProps
 
     )
 }
+
+// standard file structure: https://share.google/aimode/z41aLgWfkj84nFPxr
+// interview prep for Mern 
+// https://share.google/aimode/rb3zADzj0eyszOO6q
+
+// 15 Day LeetCode Plan
+// https://share.google/aimode/vUp9Skvgxg22yb1hK

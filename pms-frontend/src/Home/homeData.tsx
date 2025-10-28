@@ -3,6 +3,7 @@ import { FaBaby, FaHeartbeat, FaInstagram, FaLinkedin, FaSnapchat, FaTooth, FaTw
 
 
 const doctorsSpecialities = [
+    { speciality: 'All Doctors', logo: <Stethoscope size={40} className="text-purple-500" />, strength: 7 },
     { speciality: 'Physician', logo: <Stethoscope size={40} className="text-purple-500" />, strength: 7 },
     { speciality: 'Cardialogist', logo: <FaHeartbeat size={40} className="text-purple-500" />, strength: 7 },
     { speciality: 'Surgeon', logo: <Scissors size={40} className="text-purple-500" />, strength: 6 },
@@ -11,6 +12,9 @@ const doctorsSpecialities = [
     { speciality: 'Oncologist', logo: <FaTooth size={40} className="text-purple-500" />, strength: 6 },
     { speciality: 'Dermatologist', logo: <Droplet size={40} className="text-purple-500" />, strength: 3 },
     { speciality: 'Psychologist', logo: <Brain size={40} className="text-purple-500" />, strength: 4 },
+    { speciality: 'Dentist', logo: <Brain size={40} className="text-purple-500" />, strength: 4 },
+    { speciality: 'Orthopaedics', logo: <Brain size={40} className="text-purple-500" />, strength: 4 },
+    { speciality: 'Neurologist', logo: <Brain size={40} className="text-purple-500" />, strength: 4 },
 ]
 
 const servicesImages = [

@@ -1,7 +1,8 @@
 // import Navbar from "../Navbar/navbar"
 
 import { Outlet, ScrollRestoration } from "react-router-dom"
-import AdminNavbar from "../../features/Admin/AdminNavbar"
+import AdminNavbar from "../../features/Admin/components/AdminNavbar"
+
 
 
 

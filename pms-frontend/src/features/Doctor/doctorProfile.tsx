@@ -332,7 +332,7 @@ function DoctorPublicProfile() {
                             <div className="mb-4 border shadow-xl bg-white border-gray-300 px-8 py-6 rounded-lg">
 
                                 <div className="flex flex-col gap-2">
-                                    <div className="flex flex-wrap gap-5">
+                                    <div className="flex flex-wrap gap-4">
 
                                         {slotsLoading && <div>
                                                  Loading Slots..
@@ -345,7 +345,7 @@ function DoctorPublicProfile() {
                                                 <button
                                                     onClick={() => { handleDayId(day._id) }}
                                                     key={index} className={` ${dayId === day._id && 'border-b border-b-purple-700 border-b-8 !bg-blue-200'} 
-                                                 text-xs sm:text-base  bg-white border border-gray-200 rounded-lg p-4 hover:bg-blue-200 shadow-sm ring-2 focus:ring-2 focus:ring-purple-500 focus:bg-blue-200`}>
+                                                 text-xs sm:text-base bg-white border border-gray-200 rounded-lg p-4 hover:bg-blue-200 shadow-sm ring-2 focus:ring-2 focus:ring-purple-500 focus:bg-blue-200`}>
                                                     <span className="hover:bg-blue-200">
                                                         {day.date.toLocaleDateString('en-Us', { weekday: 'short', day: "numeric" })}
                                                     </span>
@@ -356,7 +356,7 @@ function DoctorPublicProfile() {
                                     <div>
                                         {(!slotsLoading && doctorSlotsAvailable?.length) ? doctorSlotsAvailable.map((day, index) => (
 
-                                            <div className="flex" key={index}>
+                                            <div className="flex flex-wrap" key={index}>
                                                 {dayId === day._id && day.slots?.map((slot, slotIndex) => (
                                                     <button key={slotIndex} onClick={() => handleSlotSelection(slot.slotId, slot.slotTime)}
                                                         className={`

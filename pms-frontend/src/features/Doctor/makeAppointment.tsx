@@ -4,6 +4,7 @@ import DoctorsBySpeciality from "./DoctorsBySpeciality";
 import { useAuth } from "../../context/appContext";
 import { FaSpinner } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { doctorsSpecialities } from "../../Home/homeData";
 
 
 
@@ -49,13 +50,17 @@ const MakeAppointment = () => {
         <div className="relative min-h-screen bg-gray-50 mx-auto px-4 py-8">
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-3xl text-purple-600 mb-8 text-center font-bold">Our Experienced Team</h1>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-8 mb-3 p-2 border-b border-gray-300 ">
-                    {(loadedAllDoctors && specialities.length > 1) && specialities.map(speciality => (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-3 p-2 border-b border-gray-300 ">
+                    {loadedAllDoctors &&  doctorsSpecialities.map((doctor,ind) => (
                         <button 
-                        key={speciality}
-                        onClick={(e) => handleSpecialityClick(e, speciality)}
+                        key={ind}                                                        
+                        onClick={(e) => handleSpecialityClick(e, doctor.speciality)}
+                        title={doctor.speciality}
                         type="button" 
-                        className="text-sm px-4 py-2 border border-gray-500 rounded-xl hover:text-purple-600 hover:border-purple-700 transition-colors duration-200">{speciality}</button>
+                        className="text-xs sm:text-sm px-4 py-2 border border-gray-500 
+                        truncate overflow-hidden whitespace-nowrap
+                        rounded-xl hover:text-purple-600 hover:border-purple-700 transition-colors 
+                        duration-200">{doctor.speciality}</button>
                     ))}
                 </div>
                <DoctorsBySpeciality targetField={target} />

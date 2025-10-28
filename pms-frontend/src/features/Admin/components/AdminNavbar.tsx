@@ -1,6 +1,6 @@
 import { Heart } from "lucide-react"
-import { useAuth } from "../../context/appContext";
 import axios from "axios";
+import { useAuth } from "../../../context/appContext";
 
 const AdminNavbar = () => {
 
@@ -16,6 +16,7 @@ const AdminNavbar = () => {
                 }
             });
             if (response.data.success) {
+                localStorage.removeItem('ActiveTab')
                 logout();
             }
         }

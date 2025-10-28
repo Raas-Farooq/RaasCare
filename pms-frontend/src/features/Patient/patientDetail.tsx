@@ -24,9 +24,6 @@ interface Patient{
 }
 
 const PatientProfile = () => {
-
-    const {patientId} = useParams();
-    const [loadingPatient, setLoadingPatient] = useState<boolean>(false);
     const [username, setUsername] = useState('');
     const [currentPatient, setCurrentPatient] = useState<Patient | null>(null);
     const navigate = useNavigate();
@@ -147,9 +144,25 @@ const PatientProfile = () => {
                             <span className="text-gray-800 text-lg">{currentPatient?.patientId}</span>
                         </div>
                         <div className="flex flex-col">
+                            <span className="text-gray-500 text-sm uppercase font-semibold">Gender</span>
+                            <span className="text-gray-800 text-lg">{currentPatient?.gender || 'N/A'}</span>
+                        </div>
+                         <div className="flex flex-col">
                             <span className="text-gray-500 text-sm uppercase font-semibold">Diagnosis</span>
                             <span className="text-gray-800 text-lg">
                                 {currentPatient?.medicalHistory?.[0]?.diagnosis || 'N/A'}
+                            </span>
+                        </div>
+                         <div className="flex flex-col">
+                            <span className="text-gray-500 text-sm uppercase font-semibold">Treatment Initiated</span>
+                            <span className="text-gray-800 text-lg">
+                                {currentPatient?.medicalHistory?.[0]?.treatment || 'N/A'}
+                            </span>
+                        </div>
+                         <div className="flex flex-col">
+                            <span className="text-gray-500 text-sm uppercase font-semibold">Treatment Started</span>
+                            <span className="text-gray-800 text-lg">
+                                {currentPatient?.medicalHistory?.[0]?.date || 'N/A'}
                             </span>
                         </div>
                         <div className="flex flex-col">
@@ -157,16 +170,12 @@ const PatientProfile = () => {
                             <span className="text-gray-800 text-lg">{currentPatient?.phone}</span>
                         </div>
                         <div className="flex flex-col">
-                            <span className="text-gray-500 text-sm uppercase font-semibold">Gender</span>
-                            <span className="text-gray-800 text-lg">{currentPatient?.gender || 'N/A'}</span>
-                        </div>
-                        <div className="flex flex-col">
                             <span className="text-gray-500 text-sm uppercase font-semibold">City</span>
                             <span className="text-gray-800 text-lg">{currentPatient?.city || 'N/A'}</span>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-gray-500 text-sm uppercase font-semibold">Date of Birth</span>
-                            <span className="text-gray-800 text-lg">{currentPatient?.dateOfBirth || 'N/A'}</span>
+                            <span className="text-gray-800 text-lg">{currentPatient?.dateOfBirth && currentPatient?.dateOfBirth.split('T')[0] || 'N/A'}</span>
                         </div>
                     </div>
                 </div>
@@ -187,3 +196,14 @@ const PatientProfile = () => {
 }
 
 export default PatientProfile
+
+// [0] ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users. See https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/ for more information.
+// [0]     at Object.xForwardedForHeader (file:///home/raas/Programming/ProFull-StackDev/PatientManagementSystem/node_modules/express-rate-limit/dist/index.mjs:337:13)
+// [0]     at wrappedValidations.<computed> [as xForwardedForHeader] (file:///home/raas/Programming/ProFull-StackDev/PatientManagementSystem/node_modules/express-rate-limit/dist/index.mjs:609:22)
+// [0]     at Object.keyGenerator (file:///home/raas/Programming/ProFull-StackDev/PatientManagementSystem/node_modules/express-rate-limit/dist/index.mjs:711:20)
+// [0]     at file:///home/raas/Programming/ProFull-StackDev/PatientManagementSystem/node_modules/express-rate-limit/dist/index.mjs:772:32
+// [0]     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+// [0]     at async file:///home/raas/Programming/ProFull-StackDev/PatientManagementSystem/node_modules/express-rate-limit/dist/index.mjs:753:5 {
+// [0]   code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
+// [0]   help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
+// [0] }

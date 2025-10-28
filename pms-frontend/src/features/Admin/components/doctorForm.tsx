@@ -1,32 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import {useEffect, useState } from "react";
+import { useFieldArray, useForm, type UseFormReset } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Calendar,  Trash2 } from 'lucide-react';
-import {  z } from "zod";
 import UploadProfileImage from "./doctorProfileImage";
+import { doctorFormSchema, type DoctorSchemaType, type ProfileImageProps } from "../admin.types";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
-const daysEnum = z.enum(daysOfWeek);
-const DaysAndSlots = z.array(z.object({
-    day: daysEnum,
-    slots: z.array(z.string()).min(1, "Atleast 1 slot must be selected")
-}))
-const doctorSchema = z.object({
-    username: z.string().min(2, "doctor name must contains atleast 2 characters"),
-    email: z.string().email().nonempty("Email should be valid "),
-    password: z.string().min(6, "password must contains atleast 6 characters"),
-    education: z.string().nonempty("Education of Doctor is required"),
-    experience: z.coerce.number().min(0, "Experience of Doctor is required"),
-    about: z.string().min(15, "About Details must not less than 15 characters"),
-    speciality: z.string().nonempty("speciality is required"),
-    address: z.string().nonempty("address of doctor is missing"),
-    consultationFee: z.coerce.number().min(300, "consultation Fee should be atleast 300 "),
-    role: z.string().nonempty("Doctor role is required"),
-    availableDays: DaysAndSlots
-})
-
-type DoctorSchemaType = z.infer<typeof doctorSchema>;
 
 const COMMON_TIME_SLOTS = [
     '09:00-09:30 AM', '09:30-10:00 AM', '10:00-10:30 AM', '10:30-11:00 AM',
@@ -34,30 +14,34 @@ const COMMON_TIME_SLOTS = [
     '07:00-07:30 PM', '07:30-08:00 PM', '08:00-08:30 PM', '08:30-09:00 PM'
 ];
 
-interface ImagePayloadProps {
-    imageUrl: string,
-    public_id: string
-}
 
 interface DoctorFormProps {
     initialData?: DoctorSchemaType,
-    receiveUpdatedDetails: (data: DoctorSchemaType) => Promise<void>
+    receiveUpdatedDetails: 
+    (data: DoctorSchemaType,
+        resetForm:UseFormReset<DoctorSchemaType>, 
+        imgSrc:string, 
+        setImgSrc:React.Dispatch<React.SetStateAction<string>>
+    ) => 
+        Promise<void>;
+    imgSrc:string,
+    setImgSrc:React.Dispatch<React.SetStateAction<string>>,
+    profileImageData:ProfileImageProps,
+    setProfileImageData:React.Dispatch<React.SetStateAction<ProfileImageProps>>,
+    isAdded:boolean
 };
 
 
-function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormProps) {
+function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setImgSrc, profileImageData, setProfileImageData, isAdded }: DoctorFormProps) {
     const [commonTimeSlots, setCommonTimeSlots] = useState(COMMON_TIME_SLOTS);
     const [allottedDays, setAllottedDays] = useState(['']);
     const [chosenDay, setChosenDay] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [specialSlots, setSpecialSlots] = useState<string[]>([]);
-    const [profileImageData, setProfileImageData] = useState({
-        imageUrl: '',
-        public_id: ''
-    });
+  
     const [isUploading, setIsUploading] = useState(false);
-    const { register, control, handleSubmit, formState: { errors }, watch } = useForm({
-        resolver: zodResolver(doctorSchema),
+    const { register, control, handleSubmit, formState: { errors }, watch, reset } = useForm({
+        resolver: zodResolver(doctorFormSchema),
         defaultValues: initialData || {
             availableDays: [],
         }
@@ -70,27 +54,25 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
 
     const watchedDays = watch('availableDays');
 
-    // useEffect(() => {
-    //     console.log("watched watchedDays: ", watchedDays)
-    // }, [watchCities, watchedDays])
+
+    useEffect(() => {
+        setAllottedDays(['']);
+    }, [isAdded])
 
 
-    function getUploadedImage(imagePayload: ImagePayloadProps, imageUploading: boolean) {
+    function getUploadedImage(imageUploading: boolean) {
        
-        setProfileImageData(prev => ({
-            ...prev,
-            imageUrl: imagePayload.imageUrl,
-            public_id: imagePayload.public_id
-        }))
+        console.log("image UPloading status: ", imageUploading);
         setIsUploading(imageUploading);
 
     }
 
     const handleFormSubmission = async (data: DoctorSchemaType) => {
         console.log("data Received of Form Submission ", data);
-        const toastId = toast.loading('Loading details');
+        console.log(" Received profileImageData ", data);
+        // const toastId = toast.loading('Loading details');
         if (!profileImageData.imageUrl) {
-            toast.dismiss(toastId);
+            // toast.dismiss(toastId);
             toast.error('Profile Image is missing');
             return;
         }
@@ -102,13 +84,10 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
         }
         setSubmitting(true)
         try {
-            await receiveUpdatedDetails(doctorProfileDetails)
-            // setProfileImageData({ imageUrl: '', public_id: '' })
-            // reset();
+            await receiveUpdatedDetails(doctorProfileDetails, reset, imgSrc,setImgSrc)
         }
         finally {
             setSubmitting(false);
-            toast.dismiss(toastId)
         }
     }
 
@@ -179,7 +158,13 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                     className="flex flex-col md:flex-row gap-8">
                     <div className="w-full grid grid-cols-1 gap-5">
                         <div className="max-w-xs">
-                            <UploadProfileImage imageUpload={getUploadedImage} />
+                            <UploadProfileImage 
+                             uploadingStatus={getUploadedImage}
+                             imgSrc={imgSrc} 
+                             setImgSrc={setImgSrc} 
+                             profileImageData={profileImageData} 
+                             setProfileImageData={setProfileImageData}
+                              />
                         </div>
                         <div>
                             <label
@@ -366,7 +351,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                                             <div key={field.id}>
                                                 <h2 className="italic underline text-gray-800"> {field.day} Slots</h2>
                                                 <div className="flex flex-wrap gap-2 mt-2">
-                                                    {field.slots.map((timeSlot, uni) => (
+                                                    {field.slots.map((timeSlot:string, uni:number) => (
                                                         <p key={uni} className="border border-gray-200 rounded-full text-blue-800 bg-blue-100 text-sm px-2.5 py-0.5">{timeSlot}</p>
                                                     ))}
                                                 </div>
@@ -389,8 +374,8 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData }: DoctorFormP
                             <button 
                                 disabled={submitting}
                                 type="submit" 
-                                className={`px-5 py-2 ${submitting ? 'cursor-not-allowed bg-gray-400' : '!bg-red-400 rounded-2xl hover:shadow-md hover:!bg-red-500 '}`}>
-                                ${submitting ? 'Submitting': 'Submit'}
+                                className={`px-4 py-2 rounded-lg shadow-md ${submitting ? 'cursor-not-allowed !bg-gray-400' : '!rounded-2xl hover:shadow-md !bg-orange-500 hover:text-white transition-all duration-300'}`}>
+                                {submitting ? 'Submitting': 'Submit'}
                             </button>
                         </div>
                     </div>
