@@ -9,16 +9,21 @@ const DoctorNavbar = () => {
     const { logout } = useAuth();
 
     const handleLogoutClick = async () => {
-        alert("Logout Clicked! ");
+    alert("Logout from doctor dasboard")
         async function loggingOut() {
             const response = await axios.get(`${backend_url}/pms/logout`, {
-                withCredentials: true
+                withCredentials: true,
+                headers:{
+                    "ngrok-skip-browser-warning":"true"
+                }
             });
             if (response.data.success) {
+                console.log("resspose of successf after logout")
+                 localStorage.removeItem(`storedTab`);
                 logout();
             }
 
-            localStorage.removeItem(`storedTab`);
+           
             
         }
 

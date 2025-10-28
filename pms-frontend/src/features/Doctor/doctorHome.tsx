@@ -156,7 +156,7 @@ const DoctorHome = () => {
             </button>
           </div>
         </nav>
-        <div className="w-full flex justify-center">
+        <div className="w-full flex relative justify-center">
           {/* Main Dashboard */}
           <main className={` ${stylingOfMain} ${activeTab === 'Dashboard' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
             <section className="px-6 pb-6">
@@ -337,7 +337,7 @@ const DoctorHome = () => {
             </section>
           </main>
           {/* Add New Patient */}
-          <main className={` ${activeTab === 'AddPatient' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-event-none'}`}>
+          <main className={`h-fit ${stylingOfMain} ${activeTab === 'AddPatient' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
             <PatientAddForm />
                 
           </main>

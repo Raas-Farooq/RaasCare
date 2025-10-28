@@ -16,6 +16,7 @@ const AdminNavbar = () => {
                 }
             });
             if (response.data.success) {
+                localStorage.removeItem('ActiveTab')
                 logout();
             }
         }

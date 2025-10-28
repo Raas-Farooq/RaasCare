@@ -288,7 +288,7 @@ const AdminHome = () => {
                     <main className={`h-fit ${stylingOfMain} ${activeTab === 'New Doctor' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
                         <AddNewDoctor />
                     </main>
-                    <main className={`${stylingOfMain} ${activeTab === 'More' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
+                    {/* <main className={`${stylingOfMain} ${activeTab === 'More' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
                         <div>
                             <p>Generate doctor slots for the next 14 days</p>
                             <button 
@@ -297,7 +297,7 @@ const AdminHome = () => {
                                 Generate
                             </button>
                         </div>
-                    </main>
+                    </main> */}
                 </div>
             </div>
         </>

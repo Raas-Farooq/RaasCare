@@ -26,8 +26,6 @@ type FormComponentProps = {
 
 // Patient Form Component
 const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
-    const [submitting, setSubmitting] = useState(false);
-
     // useForm with Resolver definition
     const {register, control,handleSubmit, formState:{errors, isSubmitting}, reset} = useForm<PatientFormType>({
         resolver: zodResolver(patientSchema),
@@ -79,13 +77,12 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
             phone:normalizedPhone,
             ...restData
             }
-            setSubmitting(true);
             try{
                 await receiveSubmitData(updatedPatientData, reset);
                 // if(!initialData) reset();
             }
             finally{
-                setSubmitting(false)
+                
             }     
     }
 

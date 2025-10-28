@@ -338,7 +338,7 @@ const handleSpecialityClick = (targetSpeciality:string) => {
             <p className="text-md mt-4 text-gray-600">
               the team of best doctors serving with passion for the cure of humanity.
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 mt-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center gap-5 mt-6">
               {doctorsSpecialities.map((doctors, ind) => (
                 <button key={ind}
                 onClick={() => handleSpecialityClick(doctors.speciality)}
@@ -351,10 +351,10 @@ const handleSpecialityClick = (targetSpeciality:string) => {
                     {doctors.logo}
                   </span>
                   <h2 className="font-medium text-center text-sm md:text-base my-5 ">{doctors.speciality}</h2>
-                  <div className="flex gap-2">
+                  {/* <div className="flex gap-2">
                     <p className="text-xs text-gray-500 mt-1">{doctors.strength}</p>
                     <Users size={16} className="text-purple-400 mt-0.5" />
-                  </div>
+                  </div> */}
                 </button>
               ))}
             </div>
