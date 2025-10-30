@@ -1,29 +1,39 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/navbar"
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import makeNgrokRequest from "../../ngrokRequesthook";
+import HandleAxiosError from "../../utils/handleAxiosError";
+import toast from "react-hot-toast";
 
 
 
 
 const DiagnosticCenter = () => {
-
+    const runsOnce= useRef(false);
      const backendUrl = import.meta.env.VITE_BACKEND_URL
     useEffect(() => {
         // const toastId = toast.loading("loading patein")
-        async function fetchPatients(){
-
+        if(runsOnce.current) return;
+          async function generateSlots(docId:string){
+            const id = toast.loading('Generating 2 weeks slots.. ')
             try{
-                const patientList = await makeNgrokRequest({url:'pms/getAllUsers', method:'get'});
+                const response = await makeNgrokRequest({url:'pms/generateNewDoctorSlots', method:'post', data:{generateFor:"doctor", doctorId:docId}});
 
-                console.log("patientLIst ", patientList);
+                if(response.data.success){
+                    toast.success('Successfully Generated Slots', {id:id});
+                }
+
             }
             catch(err){
-                console.error("error while fetching patients ", err);
+                console.error('Error while Generating Doctor Slots', err);
+                const message = HandleAxiosError(err);
+                toast.error(message, {id:id});
             }
         }
-        fetchPatients();
+        generateSlots("6902dd65abe7ed7fa99787d5");
+        runsOnce.current=true;
     },[])
+
     const navigate = useNavigate();
 
     const headingStyle = "text-xl m-5 px-2 border-b w-full object-contain border-gray-300";

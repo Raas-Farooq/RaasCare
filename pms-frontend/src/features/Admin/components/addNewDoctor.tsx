@@ -7,6 +7,7 @@ import type { UseFormReset } from "react-hook-form";
 // import { z } from "zod";
 import type { DoctorSchemaType } from "../admin.types";
 import { useState } from "react";
+import makeNgrokRequest from "../../../ngrokRequesthook";
 
 
 
@@ -18,6 +19,22 @@ const AddNewDoctor = () => {
             imageUrl: '',
             public_id: ''
         });
+        async function generateSlots(docId:string){
+            const id = toast.loading('Generating 2 weeks slots.. ')
+            try{
+                const response = await makeNgrokRequest({url:'pms/generateNewDoctorSlots', method:'get', data:{generateFor:"doctor", doctorId:docId}});
+
+                if(response.data.success){
+                    toast.success('Successfully Generated Slots', {id:id});
+                }
+
+            }
+            catch(err){
+                console.error('Error while Generating Doctor Slots', err);
+                const message = HandleAxiosError(err);
+                toast.error(message, {id:id});
+            }
+        }
     async function handleDoctorSubmission(data: DoctorSchemaType, resetForm:UseFormReset<DoctorSchemaType>) {
         const toastId = toast.loading('Adding New Doctor');
         console.log("doctor data before sending to backend ", data, "resetForm ",resetForm);
@@ -38,8 +55,9 @@ const AddNewDoctor = () => {
                     public_id:''
                 })
                 setChoosenImage('');
-                setIsAdded(true)
+                setIsAdded(true);
                 toast.success('Success! Doctor Added', {id:toastId});
+                generateSlots(response.data.doctor._id);
             }
             console.log("response of sending new doctor details: ", response);
         }
