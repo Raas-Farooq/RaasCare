@@ -7,7 +7,7 @@ import axios from "axios";
 import { useAuth } from "../../context/appContext";
 import makeNgrokRequest from "../../ngrokRequesthook";
 import { FaSpinner } from "react-icons/fa";
-import useConfirmNavigation from "./useCustomLoginConfirm";
+import useConfirmNavigation from "../../utils/customLogin";
 import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface Slots {
@@ -184,8 +184,8 @@ function DoctorPublicProfile() {
             localStorage.setItem("bookedSlots", JSON.stringify(formattedSlots));
         } else {
             const updateSingleSlot = updateSingleSlotDate(newSlot);
-            localStorage.setItem("bookedSlots", JSON.stringify(updateSingleSlot));
             const newSlotArr = [updateSingleSlot];
+            localStorage.setItem("bookedSlots", JSON.stringify(newSlotArr));
             setBookedSlots(newSlotArr)
         }
 
@@ -393,7 +393,7 @@ function DoctorPublicProfile() {
                                 </button>
                             </div>
                             <Link
-                                to="/allDoctorsPublic"
+                                to="/MakeAppointment"
                                 className="inline-flex items-center text-blue-600 hover:text-blue-800"
                             >
                                 <ArrowLeft size={20} />

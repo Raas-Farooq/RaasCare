@@ -128,7 +128,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                         
                        className="w-full px-3 py-2 border-b border-gray-400 focus:outline-none"
                          />
-                         <span className='absolute right-10 bottom-3 text-gray-700 text-sm' >Select here</span>
+                         <span className='absolute right-10 top-9 text-gray-700 text-sm' >Select here</span>
                          {errors.dateOfBirth && <p className="text-red-500">{errors.dateOfBirth.message}</p>}
                     </div>
                     <div>
@@ -221,7 +221,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                     <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="border border-gray-800 p-2 bg-red-500 rounded-lg hover:border-purple-800 hover:text-purple-800"
+                    className="border border-gray-800 p-2 rounded-lg hover:border-purple-800 hover:text-purple-800 cursor-pointer"
                     >
                         {isSubmitting ? 'Submitting..' : 'Submit'}
                     </button>

@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 // Function to call when user confirms
-const useConfirmNavigation = () => {
+const useCustomLogin = () => {
     const navigate = useNavigate();
 
     const showConfirmDialogue = () => {
@@ -36,8 +36,8 @@ const useConfirmNavigation = () => {
                     </div>
                 </div>
             ), {
-                // Optional: configure the toast behavior
-                duration: Infinity, // Keep toast until user action
+                //  toast behavior
+                duration: Infinity, 
             });
         })
     }
@@ -45,4 +45,4 @@ const useConfirmNavigation = () => {
     return showConfirmDialogue
 };
 
-export default useConfirmNavigation
+export default useCustomLogin

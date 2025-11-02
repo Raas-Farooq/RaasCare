@@ -1,13 +1,22 @@
+import useImageCached from "./useImageCached"
 
 
 const HeroImage = () => {
-
+    const {imageLoaded} = useImageCached('hospitalWallpaper.jpg')
     return (
         <div className="w-full max-w-6xl mx-auto px-4 py-6">
-            <img
+            {imageLoaded === 'loading' && 
+            <div className="w-full h-[70vh] mx-auto px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
+                
+            </div>
+            }
+            <div className="w-full flex justify-center ">
+                <img
                 src={'/hospitalWallpaper.jpg'}
+                loading="lazy"
                 alt={`hero-image`}
-                className="w-full h-auto max-h-[70vh] object-cover rounded-2xl shadow-lg hover:shadow-xl transition-shadow" />
+                className={` ${imageLoaded === 'loaded' ? 'w-full h-auto max-h-[70vh] object-cover rounded-2xl shadow-lg hover:shadow-xl transition-shadow ': 'hidden'} `} />
+            </div>
         </div>
     )
 }

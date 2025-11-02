@@ -14,7 +14,7 @@ interface BookedSlot {
   isCompleted: boolean,
   doctorId: string,
   patientId: string,
-  doctorName:string,
+  doctorName: string,
   patientName: string,
   source: string,
   slotDate: {
@@ -31,66 +31,66 @@ const DoctorHome = () => {
   const [activeTab, setActiveTab] = useState<ActiveTabType>('Dashboard');
   const { doctorProfile, bookedSlots, setBookedSlots, userRole } = useAuth();
 
-  function syncUpdatedSlots(updatedSlots: BookedSlot[]){
+  function syncUpdatedSlots(updatedSlots: BookedSlot[]) {
     console.log("sync Updated slots runs: ", updatedSlots);
     const updated = updatedSlots.map((slots: BookedSlot) => (
-            {
-              ...slots,
-              slotDate: {
-                startDate: new Date(slots.slotDate.startDate),
-                endDate: slots.slotDate.endDate ? new Date(slots.slotDate.endDate) : undefined,
-              }
-            }
-        ))
-        console.log("updated inside sync: ", updated);
-      setBookedSlots(updated);
-      return updated;
-      
+      {
+        ...slots,
+        slotDate: {
+          startDate: new Date(slots.slotDate.startDate),
+          endDate: slots.slotDate.endDate ? new Date(slots.slotDate.endDate) : undefined,
+        }
+      }
+    ))
+    console.log("updated inside sync: ", updated);
+    setBookedSlots(updated);
+    return updated;
+
   }
 
-  const storeTabLocally = (tab:ActiveTabType) => {
-    localStorage.setItem(`storedTab`,tab);
+  const storeTabLocally = (tab: ActiveTabType) => {
+    localStorage.setItem(`storedTab`, tab);
   }
   useEffect(() => {
 
     const storedTab = localStorage.getItem('storedTab');
-    if(storedTab){
-       setActiveTab(storedTab as ActiveTabType)
+    if (storedTab) {
+      setActiveTab(storedTab as ActiveTabType)
     }
-  },[])
+  }, [])
 
   async function handleAppointment(action: string, slotId: string) {
-    const toastId = toast.loading('updating slot Status') 
+    const toastId = toast.loading('updating slot Status')
     try {
       let response;
       response = await axios.post(`${backend_url}/pms/updateSlotStatus/${slotId}`,
         {
           action,
           docId: doctorProfile?._id,
-          role:userRole
+          role: userRole
         },
         { withCredentials: true }
       )
       console.log("response: ", response);
       if (response.data.success) {
         toast.dismiss();
-        toast.success(`successfully ${action}ed the Slot`, {id:toastId})
+        toast.success(`successfully ${action}ed the Slot`, { id: toastId })
         console.log("response after deletion: ", response);
         if (response.data.updatedSlots.length) {
           const updatedSlots = response.data.updatedSlots;
           // storing locally
-          if(updatedSlots.length > 0){
-             localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
-             localStorage.setItem('bookedSlots', JSON.stringify([]));
-             syncUpdatedSlots(updatedSlots)
-          }          
+          if (updatedSlots.length > 0) {
+            localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
+            localStorage.setItem('bookedSlots', JSON.stringify([]));
+            syncUpdatedSlots(updatedSlots)
+          }
         }
       }
 
     }
     catch (err) {
-       let errorMessage = HandleAxiosError(err);
-       toast.error(errorMessage, { id: toastId });
+      let errorMessage = HandleAxiosError(err);
+      toast.error(errorMessage, { id: toastId });
     }
   }
 
@@ -117,7 +117,8 @@ const DoctorHome = () => {
             <button
               onClick={() => {
                 storeTabLocally('Appointments')
-                setActiveTab('Appointments')}
+                setActiveTab('Appointments')
+              }
               }
               aria-selected={activeTab === 'Appointments'}
               className={`flex items-center justify-center gap-2 p-3 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none
@@ -128,10 +129,10 @@ const DoctorHome = () => {
             </button>
             <button
               aria-selected={activeTab === 'AddPatient'}
-              onClick={() =>  {
+              onClick={() => {
                 storeTabLocally('AddPatient')
                 setActiveTab('AddPatient')
-               }
+              }
               }
               // aria-selected={activeTab === 'Dashboard'}
               // onClick={() => setActiveTab('Dashboard')}
@@ -145,7 +146,7 @@ const DoctorHome = () => {
               onClick={() => {
                 storeTabLocally('Profile')
                 setActiveTab('Profile')
-               }}
+              }}
               aria-selected={activeTab === 'Profile'}
               className={`flex items-center justify-center gap-2 p-3 rounded-lg shadow-sm hover:border-blue-400 hover:shadow-md transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:outline-none 
               ${activeTab === 'Profile' ? 'bg-blue-50 border border-blue-500 shadow-md scale-[1.02]' : 'bg-white border border-gray-200'}`}>
@@ -339,50 +340,52 @@ const DoctorHome = () => {
           {/* Add New Patient */}
           <main className={`h-fit ${stylingOfMain} ${activeTab === 'AddPatient' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
             <PatientAddForm />
-                
+
           </main>
           {/* Profile */}
           <main className={`${stylingOfMain} ${activeTab === 'Profile' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
-            <section className="flex flex-col gap-8">
+            <section className="flex flex-row gap-8">
               <div className="flex-shrink-0">
                 <img
                   src={doctorProfile?.profileImage.imageUrl}
                   alt={`Dr. ${doctorProfile?.username}`}
                   className="object-cover rounded-lg w-full max-w-xs shadow-md h-auto" />
               </div>
-              <h1 className="text-2xl rounded-md font-semibold text-gray-800">Dr. {doctorProfile?.username}</h1>
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
-                  {doctorProfile?.education}
-                </span>
-                <span className="px-3 py-1 bg-blue-100 rounded-full text-sm text-blue-700">
-                  {doctorProfile?.speciality}
-                </span>
-                <span className="px-3 py-1 bg-green-100 rounded-full text-sm text-green-700">
-                  {doctorProfile?.experience} Years
-                </span>
-              </div>
-              <div className="flex gap-3">
-                <span className="text-gray-600 font-medium">Fee</span>
-                <p className="text-gray-700 text-lg font-medium">{doctorProfile?.consultationFee} Rs</p>
-              </div>
-              <div>
-                <span className="block text-gray-600 font-medium">About</span>
-                <p className="text-gray-700"> {doctorProfile?.about}</p>
-              </div>
-              <div className="flex">
-                <span className="block text-gray-700 font-medium">Address</span>
-                <p className="text-gray-700 text-md rounded-md w-fit ml-3 font-thin">{doctorProfile?.address}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="block text-gray-600 font-medium">Available</span>
-                {doctorProfile?.available ? (
-                  <span className="text-green-600 flex items-center gap-1">
-                    <Check className="w-4 h-4" /> Yes
+              <div className="flex flex-col space-y-8">
+                <h1 className="text-2xl rounded-md font-semibold text-gray-800">Dr. {doctorProfile?.username}</h1>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                    {doctorProfile?.education}
                   </span>
-                ) : (
-                  <span className="text-red-500">No</span>
-                )}
+                  <span className="px-3 py-1 bg-blue-100 rounded-full text-sm text-blue-700">
+                    {doctorProfile?.speciality}
+                  </span>
+                  <span className="px-3 py-1 bg-green-100 rounded-full text-sm text-green-700">
+                    {doctorProfile?.experience} Years
+                  </span>
+                </div>
+                <div className="flex gap-3">
+                  <span className="text-purple-600 font-medium">Fee</span>
+                  <p className="text-gray-700 text-lg font-medium">{doctorProfile?.consultationFee} Rs</p>
+                </div>
+                <div>
+                  <span className="block text-gray-600 font-medium">About</span>
+                  <p className="text-gray-700"> {doctorProfile?.about}</p>
+                </div>
+                <div className="flex">
+                  <span className="text-gray-700 font-medium">Address</span>
+                  <p className="text-gray-700 text-md rounded-md w-fit ml-3 font-mono">{doctorProfile?.address}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="block text-gray-600 font-medium">Available</span>
+                  {doctorProfile?.available ? (
+                    <span className="text-green-600 flex items-center gap-1">
+                      <Check className="w-4 h-4" /> Yes
+                    </span>
+                  ) : (
+                    <span className="text-red-500">No</span>
+                  )}
+                </div>
               </div>
             </section>
           </main>

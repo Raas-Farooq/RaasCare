@@ -3,7 +3,7 @@ import './index.css';
 import './App.css'
 import patientRoutes from './Components/AppRoutesFrontend/patientFrontendRoutes';
 import userRoutes from './Components/AppRoutesFrontend/userFrontendRoutes';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, ScrollRestoration, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import doctorRoutes from './Components/AppRoutesFrontend/doctorFrontendRoutes';
 import NotFound from './Components/pages/notFound';
@@ -33,7 +33,7 @@ function App() {
   if (loading) return <h1>Loading..</h1>
   return (
     <div>
-      <ScrollToTop />
+      {/* <ScrollToTop /> */}
       <Toaster position='top-center' />
       <AnimatePresence mode='wait'>
         <Routes location={location} key={location.pathname}>
