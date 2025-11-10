@@ -62,7 +62,12 @@ const PatientAddForm = () => {
                         </div>
                     } */}
                     <div className="text-center space-y-3">
-                        <button className="text-gray-500 hover:text-gray-800" onClick={() => navigate(-1)}>Back</button>
+                        <button 
+                        type="button"
+                        className="text-gray-600 !cursor-pointer hover:text-gray-900" 
+                        onClick={() => navigate(-1)}>
+                            Back
+                            </button>
                     </div>
                 </article>
             </section> 

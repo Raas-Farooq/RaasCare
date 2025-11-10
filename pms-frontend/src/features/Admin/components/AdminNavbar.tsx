@@ -1,27 +1,19 @@
 import { Heart } from "lucide-react"
 import axios from "axios";
 import { useAuth } from "../../../context/appContext";
+import useCustomLogout from "../../../utils/customLogout";
 
+const logoutConfirm = useCustomLogout();
 const AdminNavbar = () => {
 
     const { logout } = useAuth();
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const handleLogoutClick = async () => {
-        alert("Logout Clicked! ");
-        async function loggingOut() {
-            const response = await axios.get(`${backendUrl}/pms/logout`, {
-                withCredentials: true,
-                headers:{
-                    "ngrok-skip-browser-warning":"true"
-                }
-            });
-            if (response.data.success) {
-                localStorage.removeItem('ActiveTab')
-                logout();
-            }
-        }
 
-        loggingOut()
+    const handleLogoutClick = async () => {
+        const confirm = await logoutConfirm();
+        if(confirm){
+            logout();
+        }
     }
 
 
@@ -41,8 +33,10 @@ const AdminNavbar = () => {
 
             <div className="text-right m-2">
                 <button onClick={handleLogoutClick}
-                    className="border border-red-200 px-4 py-2 shadow-md font-medium text-red-500 hover:text-white hover:bg-red-600 rounded-full hover:border-red-600 transition-transform transition-colors duration-200"
-                >Logout
+                    className="border border-gray-200 px-4 py-2 shadow-lg 
+                    text-gray-800 hover:text-white hover:bg-red-600 
+                    rounded-lg hover:border-red-600 transition-colors duration-500"
+                >Log out
                 </button>
             </div>
         </div>

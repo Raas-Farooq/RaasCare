@@ -92,60 +92,12 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
       </div>
     ), {
       duration: 4000, // auto-dismiss after 4s if no action
-    });
-        // new Promise((resolve, reject) => {
-        //     // Show a toast with action buttons.
-        //     toast(t => (
-        //         <span>
-        //             Are you sure you want to **logout**?
-        //             <div style={{ marginTop: '10px' }}>
-        //                 <button
-        //                     onClick={() => {
-        //                         resolve();   
-        //                         toast.dismiss(t.id); // Dismiss the toast
-        //                     }}
-        //                     style={{ marginRight: '10px', backgroundColor: '#dc3545', color: 'white', border: 'none', cursor: 'pointer' }}
-        //                 >
-        //                     Logout
-        //                 </button>
-        //                 <button
-        //                     onClick={() => {
-        //                         reject();
-        //                         toast.dismiss(t.id); // Dismiss the toast
-        //                     }}
-        //                     style={{ backgroundColor: 'lightgray', border: 'none', cursor: 'pointer' }}
-        //                 >
-        //                     Cancel
-        //                 </button>
-        //             </div>
-        //         </span>
-        //     ), {
-        //         duration: Infinity, // Keep the toast until the user acts
-        //     });
-        // })
-        //     .then(() => {
-        //         // Run the logout function after the user confirms
-        //         logout();
-        //         toast.success("You have been logged out.");
-        //     })
-        //     .catch(() => {
-        //         // Handle cancellation
-        //         toast.error("Logout cancelled.");
-        //     });
+    })
     };
 
 
 function handleLogin() {
     navigate('/login');
-}
-function handleUserClick() {
-    console.log("handle user clicked: ")
-    const message = window.confirm('You have clicked the user Menu. Are you sure to Change Yourself');
-    if (message) {
-        window.alert("Be alert. Now you will change Every aspect of your life");
-    } else {
-        window.alert("Okay you can Take more time if you have?");
-    }
 }
 
 const navbarLinks = [
@@ -165,7 +117,7 @@ return (
             className="text-2xl md:text-3xl text-purple-800 font-semibold ">
                 RaasCare
             </header>
-            <Heart className="text-red-500" size={30} />
+            <Heart className="text-red-500 mt-1.5" size={30} />
             {userRole && (userRole === 'doctor' || userRole === 'admin') &&
                 <div className="mt-1">
                     <span className="px-3 py-1 text-xs font-medium bg-red-100 text-blue-800 rounded-full">
@@ -218,18 +170,22 @@ return (
                 ))}
             </ul>
         </nav>
-        <div className={`relative w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex'} gap-5`}>
+        <div className={`relative w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex '} gap-5 text-right`}>
             {userRole && userRole === 'patient' &&
                 <>
-                    <button className={`mr-10 text-center hover:text-blue-500 text-lg transition-colors duration-200 ${isShowMenu && 'hidden'}`} onClick={() => setIsPatientCard(!isPatientCard)} > {isPatientCard ? <FaTimes /> : <User />} </button>
+                    <button
+                    type="button"
+                     className={`mr-8 w-8 h-8 text-center hover:text-blue-500 text-lg cursor-pointer transition-colors duration-200 ${isShowMenu && 'hidden'}`} onClick={() => setIsPatientCard(!isPatientCard)} > 
+                     {isPatientCard ? <FaTimes /> : <User />} 
+                     </button>
                      <div className={`flex flex-col text-black z-15 
                         ${isShowMenu ? 'relative flex-start items-start mr:auto transition-all duration-300 ease-out'
                             : 
                         'absolute top-10 right-1 bg-white '}`}>
                         <div className={`${isShowMenu || isPatientCard ? 'transition-all duration-200 ease-in-out transform origin-top-right scale-100 flex flex-col' : 'shadow-none hidden'} ${isPatientCard && !isShowMenu && 'shadow-lg w-40 p-5 space-y-3'} `}>
-                            <button onClick={handleProfileClick} className={`${underlineEffect}`}>Profile</button>
-                            <button className={`${underlineEffect}`} onClick={handleLogout}>logout</button>
-                            <button className={`${underlineEffect}`} onClick={handleMyAppointments}>My Bookings</button>
+                            <button onClick={handleProfileClick} className={`${underlineEffect} cursor-pointer`}>Profile</button>
+                            <button className={`${underlineEffect} cursor-pointer`} onClick={handleLogout}>logout</button>
+                            <button className={`${underlineEffect} cursor-pointer text-right`} onClick={handleMyAppointments}>My Bookings</button>
                         </div>
                     </div>
 

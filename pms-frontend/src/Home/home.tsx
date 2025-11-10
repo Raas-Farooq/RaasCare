@@ -3,274 +3,84 @@ import { useEffect, useRef } from "react";
 
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
-import {  Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/appContext.tsx";
-import { flushSync } from "react-dom";
-import NavigationDiagnostic from "./services/navigationDiagnostic.tsx";
+import useImageCached from "./useImageCached.tsx";
 
 
 function Home() {
   const navigate = useNavigate();
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
-  const {allDoctors} = useAuth();
-//   class ListNode {
-//     val:number
-//     next:ListNode | null
-//     constructor(val, next = null) {
-//         this.val = (val === undefined ? 0 : val);
-//         this.next = (next === undefined ? null : next);
-//     }
-// }
-
-//   function isPalindrome(head:ListNode) {
-//     let dummyNode = new ListNode(0);
-//     dummyNode.next = head;
-
-//     let fast = head;
-//     let slow = head;
-
-//     // Use fast and slow pointers to find the middle of the list
-//     while (fast && fast.next !== null) {
-//       if(slow.next){
-//         slow = slow.next;
-//       }
-//       fast = fast?.next.next;
-//     }
-
-//     // A placeholder for the original comment line
-//     // let mid = Math.floor(count/2);
-
-//     // This section is a broken attempt at reversing the list
-//     let prev = null;
-//     let curr = head; // This should be 'slow' to reverse the second half
-
-//     while (curr !== null) {
-//         const nextNode = slow.next;
-//         slow.next = prev;
-//         prev = slow;
-//         slow = nextNode;
-//         curr = curr.next; // This line causes an issue since 'curr' is not being iterated correctly
-//     }
-    
-//     // The following log statements are for debugging and showing the state
-//     console.log("slow: ", slow); // This will show null if the reversal completes
-//     console.log("reversed half (prev): ", prev);
-//     console.log("current: ", curr); // This will show null if the reversal completes
-
-//     // The original code has no comparison logic and always returns false
-//     return false;
-// }
-
-// // --- Example Usage and Setup for Debugging ---
-// function setupAndRun() {
-//     // Example 1: Create a simple linked list that is a palindrome (1 -> 2 -> 2 -> 1)
-//     let palindromeList = new ListNode(1);
-//     palindromeList.next = new ListNode(2);
-//     palindromeList.next.next = new ListNode(2);
-//     palindromeList.next.next.next = new ListNode(1);
-
-//     console.log("Running isPalindrome on a palindrome list...");
-//     let result1 = isPalindrome(palindromeList);
-//     console.log("Is palindrome? ", result1);
-//     console.log("---");
-
-//     // Example 2: Create a simple linked list that is not a palindrome (1 -> 2 -> 3)
-//     let nonPalindromeList = new ListNode(1);
-//     nonPalindromeList.next = new ListNode(2);
-//     nonPalindromeList.next.next = new ListNode(3);
-
-//     console.log("Running isPalindrome on a non-palindrome list...");
-//     let result2 = isPalindrome(nonPalindromeList);
-//     console.log("Is palindrome? ", result2);
-// }
-
-// // Call the setup and run function
-// setupAndRun();
+  const { allDoctors } = useAuth();
+  const { imageLoaded } = useImageCached("/relief.jpg");
 
   useEffect(() => {
     const userRole = localStorage.getItem('role');
     console.log("this i sthe userRole ", userRole, " AllDoctors ", allDoctors);
   }, [])
 
-  function learning(){
-    // console.log("LEARN More has been callsed")
-    // const binarydata= [3,9,12, 16,20,27,28, 29,30,35,66,892];
-    // function bubbleSort(limit:number, data:number[], data2:number[]){
-
-    //   if(limit <= 1){
-    //     return 1
-    //   }
-    //   let mid = Math.floor(data.length / 2);
-    //   const leftSide = data.slice(0,mid);
-    //   const rightSide = data.slice(mid);
-    //   console.log("left half ", leftSide);
-    //   console.log("right half ", rightSide);
-    //   return bubbleSort(mid, sort(leftSide),sort(rightSide))
-    // }
-
-    
-    // const res = bubbleSort(binarydata.length, binarydata);
-    // console.log(" fact result ", res)
+  function learning() {
 
 
+    const text = 'Resilience And Blessings';
+    function reverseString(text: string, index: number): string {
 
-
-
-    // function binarySearch(arr:number[], n:number){
-    //   let s = 0;
-    //   let e = arr.length - 1;
-    //   if(arr.length === 0){
-    //     return 'there is no data';
-    //   }
-    //   while(s <= e){
-    //     const mid = Math.floor((s+e) / 2);
-    //     console.log("mid: " ,mid);
-    //     if(arr[mid] === n){
-    //       console.log("number found ", arr[mid], " at index: ", mid);
-    //       return "number is Found"
-    //     }
-    //     if(arr[mid] < n){
-    //       console.log("mid: less than number  mid" ,arr[mid], " num ", n );
-    //       s = mid + 1;
-    //     }
-    //     if(arr[mid] > n){
-    //       console.log("mid: greater than number  mid" ,arr[mid], " num ", n );
-    //       e= mid - 1;
-    //     }
-    //   }
-
-    //   return " number not found";
-    // }
-    // const numberToFind = 20;
-    // binarySearch(binarydata, numberToFind)
-
-
-    // MERGED AREA
-//     const merge = (leftArr, rightArr) => {
-//     let sortedArr = [];
-//     let leftIndex = 0;
-//     let rightIndex = 0;
-
-//   // Compare elements from both arrays and add the smaller one
-//     while (leftIndex < leftArr.length && rightIndex < rightArr.length) {
-//       if (leftArr[leftIndex] < rightArr[rightIndex]) {
-//         sortedArr.push(leftArr[leftIndex]);
-//         leftIndex++;
-//       } else {
-//         sortedArr.push(rightArr[rightIndex]);
-//         rightIndex++;
-//       }
-//     }
-
-//   // Add any remaining elements from either array
-//   return [...sortedArr, ...leftArr.slice(leftIndex), ...rightArr.slice(rightIndex)];
-// };
-
-// function mergeSort(dataArr:number[]) {
-//   // Base case: An array with 1 or 0 elements is already sorted
-//   if (dataArr.length <= 1) {
-//     return dataArr; // Return the array itself, not its length.
-//   }
-
-//   // Divide the array into two halves
-//   const half = Math.floor(dataArr.length / 2);
-//   const firstHalf = dataArr.slice(0, half);
-//   const lastHalf = dataArr.slice(half);
-
-//   // Recursively sort the two halves and then merge the result
-//   console.log("firstHalf ", firstHalf, " lastHalf ", lastHalf);
-//   return merge(mergeSort(firstHalf), mergeSort(lastHalf));
-//   }
-
-//   const binarydata = [3, 9, 12, 16, 20, 27, 28, 29, 30, 35, 66, 892];
-//   // const mySortedList = mergeSort(binarydata);
-//   console.log(" mySorted List: ", mySortedList);
-
-
-// MERGE SORT
-
-
-// const merge = (first:number[], sec:number[]) => {
-//   console.log(" inside Merge ", first, ' sec ', sec);
-  
-
-// }
-//     const mergeSort = (myList:number[]):number[] => {
-//       let listLength = myList.length;
-
-//       if(listLength <= 1){
-//         return myList
-//       }
-//       const mid = Math.floor(listLength/2);
-//       const leftHalf= myList.slice(0, mid);
-//       const rightHalf = myList.slice(mid);
-//       console.log("inside mergeSort ", leftHalf , "rigthHalf ", rightHalf)
-//       return merge(mergeSort(leftHalf), mergeSort(rightHalf))
-//     }
-
-//     const numList = [7, 1, 4, 12];
-//     const result = mergeSort(numList);
-//     console.log("final result mergeSort ", result);
-
-const text = 'Resilience And Blessings';
-    function reverseString(text:string, index:number):string{
-
-      if(index <= 0){
+      if (index <= 0) {
         return text[0];
       }
 
       // reversed = reversed + text[index];
       // console.log("reversed each ", reversed)
-       return text[index] + reverseString(text, index-1);
-      
+      return text[index] + reverseString(text, index - 1);
+
     }
-    const length = text.length-1;
-    
+    const length = text.length - 1;
+
     const result = reverseString(text, length);
 
     console.log("result of reversed: ", result);
 
-}
+  }
 
-const handleSpecialityClick = (targetSpeciality:string) => {
-  
-  console.log("targetSpeciality ",targetSpeciality);
-  navigate('/doctorsBySpeciality', {state:{targetField:targetSpeciality}})
-}
+  const handleSpecialityClick = (targetSpeciality: string) => {
 
-  const handleServicesClick = (service:{title:string}) => {
+    console.log("targetSpeciality ", targetSpeciality);
+    navigate('/doctorsBySpeciality', { state: { targetField: targetSpeciality } })
+  }
+
+  const handleServicesClick = (service: { title: string }) => {
     console.log("clicked service: ", service);
-    if(service.title === 'Nursing Care'){
+    if (service.title === 'Nursing Care') {
       navigate('/nursingCare');
     }
-    else if(service.title === 'Diagnostic Center'){
+    else if (service.title === 'Diagnostic Center') {
       navigate('/diagnosticCenter');
     }
-    else if(service.title === 'Our Doctors'){
+    else if (service.title === 'Our Doctors') {
       navigate('/ourDoctors');
     }
   }
 
-   const handleDoctorsClick = (service:{title:string}) => {
+  const handleDoctorsClick = (service: { title: string }) => {
     console.log("clicked service: ", service);
-    if(service.title === 'Nursing Care'){
+    if (service.title === 'Nursing Care') {
       navigate('/nursingCare');
     }
   }
-   const handleDiagnosticClick = (service:{title:string}) => {
+  const handleDiagnosticClick = (service: { title: string }) => {
     console.log("clicked service: ", service);
-    if(service.title === 'Nursing Care'){
+    if (service.title === 'Nursing Care') {
       navigate('/nursingCare');
     }
   }
   // const handleAlmondsCallback = useCallback(() => {
   //   console.log("Almonds new value callback ",almonds )
   // },[almonds])
-// first:'With your Nafs', second:'With your external environment'
- 
+  // first:'With your Nafs', second:'With your external environment'
+
   return (
     <>
       <section className="Hero-Section relative bg-gradient-to-r from-purple-50 to-white">
@@ -287,18 +97,18 @@ const handleSpecialityClick = (targetSpeciality:string) => {
             Book appointments with trusted healthcare professionals in just few clicks
           </p>
           <div className="mt-6 flex justify-center gap-5">
-            <button onClick={function(){navigate('/MakeAppointment')}}
+            <button onClick={function () { navigate('/MakeAppointment') }}
               className="text-white px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
-            <button onClick = {() => learning() } className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+            <button onClick={() => learning()} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
             </button>
-             <button 
-             onClick={() => navigate('/portfolioPage')}
-             className="px-5 py-2 border border-gray-300 rounded-md hover:text-green-600 hover:border-green-700">
+            {/* <button
+              onClick={() => navigate('/portfolioPage')}
+              className="px-5 py-2 border border-gray-300 rounded-md hover:text-green-600 hover:border-green-700">
               Portfolio
-            </button>
+            </button> */}
           </div>
         </div>
       </section>
@@ -315,16 +125,29 @@ const handleSpecialityClick = (targetSpeciality:string) => {
               </p>
               <div className="flex flex-col gap-4">
                 <p className="mt-4 text-gray-600">Why You must come Here first</p>
-                <button 
-                onClick={() => navigate('/topFacilities')}
-                className="block px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+                <button
+                  onClick={() => navigate('/topFacilities')}
+                  className="block px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
                   Learn More
                 </button>
               </div>
 
             </div>
-            <div className="mt-4">
-              <img className="w-full max-w-sm md:max-w-sm lg:max-w-md rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" src="/relief.jpg" alt={"Treatment & Relief"} />
+            <div className="w-full flex justify-center items-center mt-4">
+
+              {imageLoaded === 'loading' && 
+              <div className="w-full max-w-md sm:aspect-[3/2] px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
+
+              </div>
+              }
+
+              <img
+                className={`${imageLoaded === "loaded"
+                   ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden" }`}
+                loading="lazy"
+                src="/relief.jpg"
+                alt={"Treatment & Relief"}
+              />
             </div>
           </div>
         </div>
@@ -341,7 +164,7 @@ const handleSpecialityClick = (targetSpeciality:string) => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 items-center gap-5 mt-6">
               {doctorsSpecialities.map((doctors, ind) => (
                 <button key={ind}
-                onClick={() => handleSpecialityClick(doctors.speciality)}
+                  onClick={() => handleSpecialityClick(doctors.speciality)}
                   className="flex flex-col items-center justify-center cursor-pointer 
                 bg-white shadow-md px-5 py-6 min-h-[150px] transition-all
                 duration-300 rounded-2xl border-transparent hover:shadow-xl
@@ -376,8 +199,8 @@ const handleSpecialityClick = (targetSpeciality:string) => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center ">
             {servicesImages.map((service, index) => (
               <div key={index} className={`group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 w-full max-w-md
-                ${servicesImages.length % 2 !== 0 && index === servicesImages.length - 1 ? 'md:col-span-2 md:flex md:justify-center lg:col-span-1' : ''}`} 
-               >
+                ${servicesImages.length % 2 !== 0 && index === servicesImages.length - 1 ? 'md:col-span-2 md:flex md:justify-center lg:col-span-1' : ''}`}
+              >
                 <div className="aspect-w-4 aspect-h-3">
                   <img
                     src={service.path}
@@ -392,8 +215,8 @@ const handleSpecialityClick = (targetSpeciality:string) => {
                          hover:bg-purple-50 transition-all duration-300 
                          translate-y-2 group-hover:translate-y-0 
                          opacity-0 group-hover:opacity-100 flex items-center justify-center"
-                          onClick={() => handleServicesClick(service)}
-                          >
+                    onClick={() => handleServicesClick(service)}
+                  >
                     {service.title}
                     <ArrowRight className="text-blue-500 inline ml-2 h-4 w-4" />
                   </button>
@@ -406,7 +229,7 @@ const handleSpecialityClick = (targetSpeciality:string) => {
               </div>
             ))}
           </div>
-         
+
         </div>
       </section>
       <footer className="Footer relative bg-gradient-to-r from-purple-50 to-white border-t border-gray-200 mt-16">

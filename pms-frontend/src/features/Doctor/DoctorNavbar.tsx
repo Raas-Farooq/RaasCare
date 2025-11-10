@@ -1,34 +1,25 @@
 import { Heart } from "lucide-react"
 import { useAuth } from "../../context/appContext";
-import axios from "axios";
+import useCustomLogout from "../../utils/customLogout.tsx";
 
-const backend_url = import.meta.env.VITE_BACKEND_URL;
+
+ const confirmLogout = useCustomLogout();
+
 
 const DoctorNavbar = () => {
+
 
     const { logout } = useAuth();
 
     const handleLogoutClick = async () => {
-    alert("Logout from doctor dasboard")
-        async function loggingOut() {
-            const response = await axios.get(`${backend_url}/pms/logout`, {
-                withCredentials: true,
-                headers:{
-                    "ngrok-skip-browser-warning":"true"
-                }
-            });
-            if (response.data.success) {
-                console.log("resspose of successf after logout")
-                 localStorage.removeItem(`storedTab`);
-                logout();
-            }
+    const userResponse = await confirmLogout();
 
-           
-            
-        }
-
-        loggingOut()
+    if(userResponse){
+        logout();
     }
+
+    }
+    
 
 
     return (
@@ -47,8 +38,10 @@ const DoctorNavbar = () => {
 
             <div className="text-right m-2">
                 <button onClick={handleLogoutClick}
-                    className="border border-red-200 px-4 py-2 shadow-md font-medium text-red-500 hover:text-white hover:bg-red-600 rounded-full hover:border-red-600 transition-transform transition-colors duration-200"
-                >Logout
+                    className="border border-gray-200 px-4 py-2 shadow-lg 
+                    text-gray-800 hover:text-white hover:bg-red-600 
+                    rounded-lg hover:border-red-600 transition-colors duration-500"
+                >Log out
                 </button>
             </div>
         </div>
@@ -56,3 +49,4 @@ const DoctorNavbar = () => {
 }
 
 export default DoctorNavbar
+

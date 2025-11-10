@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-
+import useScrollRestore from "./utils/useScrollRestore";
 
 const myVariants = {
   fade: { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } },
@@ -18,6 +18,7 @@ interface PageWrapperProps {
 }
 export default function PageWrapper({children, variant="fade"}: PageWrapperProps){
 
+    useScrollRestore();
     return (
         <motion.div
 

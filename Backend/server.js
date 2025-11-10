@@ -15,7 +15,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { schedule } from 'node-cron';
-import { allDoctorsSlotsGenerator, generateAllSlotsStartUp } from './Controller/slotsController.js';
+import { generateAllSlotsStartUp } from './Controller/slotsController.js';
 import errorHandler from './middleware/errorHandler.js';
 
 
@@ -64,16 +64,16 @@ app.use('/pms', userRoutes)
 app.use('/pms', doctorRoutes);
 app.use('/pms', slotsRoutes);
 
-(async () => {
-    console.log('⚙️ Running slot generator at startup...');
-    try{
-        await generateAllSlotsStartUp();
-        console.log('✅ Initial slots generated!');
-    }
-    catch(err){
-        console.error('Initial slot generation failed:', err)
-    }
-})();
+// (async () => {
+//     console.log('⚙️ Running slot generator at startup...');
+//     try{
+//         await generateAllSlotsStartUp();
+//         console.log('✅ Initial slots generated!');
+//     }
+//     catch(err){
+//         console.error('Initial slot generation failed:', err)
+//     }
+// })();
 
 
 schedule('0 0 * * *', async() => {

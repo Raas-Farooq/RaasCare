@@ -7,7 +7,7 @@ import axios from "axios";
 import { useAuth } from "../../context/appContext";
 import makeNgrokRequest from "../../ngrokRequesthook";
 import { FaSpinner } from "react-icons/fa";
-import useConfirmNavigation from "./useCustomLoginConfirm";
+import useConfirmNavigation from "../../utils/customLogin";
 import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface Slots {
@@ -123,6 +123,7 @@ function DoctorPublicProfile() {
             catch (err) {
                 console.error("Get Error while generating all doctors slots", err);
             } finally {
+                setSlotsLoading(false)
             }
         }
         if(allDoctors.length > 0){
@@ -139,6 +140,9 @@ function DoctorPublicProfile() {
 
     }, [doctorParamsId, allDoctors])
 
+    useEffect(() => {
+        console.log(" slots loading status: ", slotsLoading);
+    },[slotsLoading])
     const handleSlotSelection = (id: string, time: string) => {
         console.log("time received: ", time, " id of slot: ", id, "selected Time slot: ", selectedTimeSlot, "doctorSlots available: ", doctorSlotsAvailable);
 
@@ -184,13 +188,14 @@ function DoctorPublicProfile() {
             localStorage.setItem("bookedSlots", JSON.stringify(formattedSlots));
         } else {
             const updateSingleSlot = updateSingleSlotDate(newSlot);
-            localStorage.setItem("bookedSlots", JSON.stringify(updateSingleSlot));
             const newSlotArr = [updateSingleSlot];
+            localStorage.setItem("bookedSlots", JSON.stringify(newSlotArr));
             setBookedSlots(newSlotArr)
         }
 
     }
 
+    
     const handleMakeAppointment = async () => {
 
         if (!userRole) {
@@ -203,12 +208,12 @@ function DoctorPublicProfile() {
 
         }
         else if (userRole !== 'patient') {
-            alert("You aren't allowed to Book an appointment");
+            toast.error("You aren't allowed to Book an appointment");
             return;
         }
 
         else if (!selectedSlot_id) {
-             alert('Please select a time slot to confirm booking');
+             toast.error('Please select a time slot to confirm booking');
             return;
         }
         let storedUser;
@@ -223,7 +228,7 @@ function DoctorPublicProfile() {
         }
 
         console.log("userRole ", userRole, 'selectedSlot_id ', selectedSlot_id, 'user from localStorage', storedUser);
-        const toastId = toast.loading('Making an appointment, Please wait..');
+        const toastId = toast.loading('Booking your appointment, Please wait..');
         setIsSubmitting(true);
         try {
 
@@ -339,7 +344,7 @@ function DoctorPublicProfile() {
                                                 <FaSpinner className="animate-spin " />
                                                     </div>
                                             }
-                                        {(!slotsLoading && doctorSlotsAvailable?.length) && doctorSlotsAvailable.map((day, index) => (
+                                        {(!slotsLoading && doctorSlotsAvailable?.length > 0) && doctorSlotsAvailable.map((day, index) => (
                                             <div key={index}>
 
                                                 <button
@@ -379,7 +384,7 @@ function DoctorPublicProfile() {
                                         )) : 
                                         ''
                                         }
-                                        {(!slotsLoading && doctorSlotsAvailable.length === 0)&& <h2 className="text-yellow-500">Slots Not Found </h2>}
+                                        {(!slotsLoading && doctorSlotsAvailable.length === 0)&& <h2 className="text-teal-700">Not found slots for this doctor. </h2>}
                                     </div>
                                 </div>
                             </div>
@@ -393,7 +398,7 @@ function DoctorPublicProfile() {
                                 </button>
                             </div>
                             <Link
-                                to="/allDoctorsPublic"
+                                to="/MakeAppointment"
                                 className="inline-flex items-center text-blue-600 hover:text-blue-800"
                             >
                                 <ArrowLeft size={20} />
