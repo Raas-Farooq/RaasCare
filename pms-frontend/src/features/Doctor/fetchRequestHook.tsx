@@ -1,8 +1,8 @@
 import axios from "axios";
 import {useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import makeNgrokRequest from "../../makeRequesthook";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import makeRequest from "../../makeRequesthook";
 
 // interface IdInterface{
 //     type:string | null
@@ -51,7 +51,7 @@ function useFetchApi(url: string, id: string | null) {
             const toastId = toast.loading('fetching the data..');
             setFetchError('');
             try {
-                const response = await makeNgrokRequest({url:`pms/fetchDoctorProfile/${id}`, method:'get'});
+                const response = await makeRequest({url:`pms/fetchDoctorProfile/${id}`, method:'get'});
                 if (response.data.success) {
                     console.log('doctor fetchResponse ', response);
                     setFetchResult(response.data.doctorProfile);

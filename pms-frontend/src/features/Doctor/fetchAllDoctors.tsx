@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import makeNgrokRequest from "../../makeRequesthook"
+import makeRequest from "../../makeRequesthook"
 interface TimeSlots {
     slotTime: string,
     isBooked: boolean,
@@ -41,7 +41,7 @@ const useFetchAllDoctors = () => {
         const fetchDoctors = async () => {
             // const toastId = toast.loading('Loading Doctors');
             try {
-                const fetchResponse = await makeNgrokRequest({ url: 'pms/fetchAllDoctors', method: 'get' })
+                const fetchResponse = await makeRequest({ url: 'pms/fetchAllDoctors', method: 'get' })
                 if (fetchResponse.data.success) {
                     setDoctorsList(fetchResponse.data.doctorsList);
                     // toast.success("loaded doctors successfully", { id: toastId })

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "../../context/appContext"
-import makeNgrokRequest from "../../makeRequesthook";
 import { useNavigate } from "react-router-dom";
+import makeRequest from "../../makeRequesthook";
 
 
 const MyAppointments = () => {
@@ -24,7 +24,7 @@ const MyAppointments = () => {
       }
 
       try{
-        const paymentRequest = await makeNgrokRequest({url:`pms/onlinePaymentRequest/${slotId}`, method:'post', data:body});
+        const paymentRequest = await makeRequest({url:`pms/onlinePaymentRequest/${slotId}`, method:'post', data:body});
         console.log("Payment Request ", paymentRequest);
         if(paymentRequest.data.success){
           console.log("success inside froentend ");
