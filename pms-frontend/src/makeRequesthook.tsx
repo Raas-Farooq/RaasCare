@@ -6,18 +6,16 @@ interface AxiosFetchParameters{
     data?:object
 }
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-const makeNgrokRequest = ({url, method='get', data={}}:AxiosFetchParameters) => {
-    const headers= { "ngrok-skip-browser-warning":"true"}
-    console.log(" Ngrok hok backend url + userwritten url: ", backendUrl, " ", url);
+const makeRequest = ({url, method='get', data={}}:AxiosFetchParameters) => {
+
     return axios({
          method,
          url:`${backendUrl}/${url}`, 
          data,
-         headers
     })
 }
 
-export default makeNgrokRequest
+export default makeRequest
 
 // Access to XMLHttpRequest at 'https://b50f8246d0d1.ngrok-free.app/pms/logout' from origin 'http://localhost:5173' has been blocked by CORS policy: The value of the 'Access-Control-Allow-Origin' header in the response must not be the wildcard '*' when the request's credentials mode is 'include'. The credentials mode of requests initiated by the XMLHttpRequest is controlled by the withCredentials attribute.Understand this error
 // appContext.tsx:186 Error while clearing Cookie AxiosError {message: 'Network Error', name: 'AxiosError', code: 'ERR_NETWORK', config: {…}, request: XMLHttpRequest, …}

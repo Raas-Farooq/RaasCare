@@ -7,7 +7,7 @@ import type { UseFormReset } from "react-hook-form";
 // import { z } from "zod";
 import type { DoctorSchemaType } from "../admin.types";
 import { useState } from "react";
-import makeNgrokRequest from "../../../ngrokRequesthook";
+import makeNgrokRequest from "../../../makeRequesthook";
 
 
 

@@ -5,10 +5,10 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useAuth } from "../../context/appContext";
-import makeNgrokRequest from "../../ngrokRequesthook";
 import { FaSpinner } from "react-icons/fa";
 import useConfirmNavigation from "../../utils/customLogin";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import makeRequest from "../../makeRequesthook";
 
 interface Slots {
     slotTime: string,
@@ -112,7 +112,7 @@ function DoctorPublicProfile() {
             // const toastId = toast.loading("Loading Doctor Profile..")
 
             try {
-                const fetchdoctorAvailableDays = await makeNgrokRequest({ url: `pms/getDoctorAvailableDays/${currentDoctorId}`, method: 'get' });
+                const fetchdoctorAvailableDays = await makeRequest({ url: `pms/getDoctorAvailableDays/${currentDoctorId}`, method: 'get' });
                 console.log("fetchDoctor Avaialbe days result ", fetchdoctorAvailableDays);
                 if (fetchdoctorAvailableDays.data.success) {
                     const remainingSlots = fetchdoctorAvailableDays.data.remainingSlots;

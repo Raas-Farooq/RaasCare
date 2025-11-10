@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import makeNgrokRequest from "../../ngrokRequesthook"
+import makeNgrokRequest from "../../makeRequesthook"
 interface TimeSlots {
     slotTime: string,
     isBooked: boolean,

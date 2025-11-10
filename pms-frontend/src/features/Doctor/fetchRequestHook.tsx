@@ -1,7 +1,7 @@
 import axios from "axios";
 import {useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import makeNgrokRequest from "../../ngrokRequesthook";
+import makeNgrokRequest from "../../makeRequesthook";
 import HandleAxiosError from "../../utils/handleAxiosError";
 
 // interface IdInterface{

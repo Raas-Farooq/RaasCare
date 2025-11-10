@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
-import makeNgrokRequest from "../../ngrokRequesthook";
+import makeNgrokRequest from "../../makeRequesthook";
 import toast from "react-hot-toast";
 import { User } from "lucide-react";
 import HandleAxiosError from "../../utils/handleAxiosError";

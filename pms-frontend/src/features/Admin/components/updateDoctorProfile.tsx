@@ -38,7 +38,7 @@ const UpdateDoctorPrfoile = () =>{
         <>
             <h1 className="text-3xl text-yellow-800">Update Profile</h1>
 
-            <DoctorFormComponent receiveUpdatedDetails={updateDoctorInfo} initialData={initialData} />
+            {/* <DoctorFormComponent receiveUpdatedDetails={updateDoctorInfo} initialData={initialData} /> */}
         </>
     )
 }
