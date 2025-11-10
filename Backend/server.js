@@ -6,8 +6,6 @@ import cors from 'cors';
 import userRoutes from './routes/userRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
 import cookieParser from 'cookie-parser';
-import Patient from './models/patient.js';
-import fileUpload from 'express-fileupload';
 import doctorRoutes from './routes/doctorRoutes.js';
 import slotsRoutes from './routes/availableSlotRoutes.js';
 import helmet from 'helmet';
