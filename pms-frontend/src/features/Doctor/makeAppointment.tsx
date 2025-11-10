@@ -3,7 +3,6 @@ import { useEffect, useState } from "react"
 import DoctorsBySpeciality from "./DoctorsBySpeciality";
 import { useAuth } from "../../context/appContext";
 import { FaSpinner } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import { doctorsSpecialities } from "../../Home/homeData";
 import useScrollRestore from "../../utils/useScrollRestore";
 
@@ -11,7 +10,7 @@ const MakeAppointment = () => {
 
     const [specialities, setSpecialities] = useState(['All Doctors']);
     const [target, setTarget ] = useState('All Doctors');
-    useScrollRestore() 
+    // useScrollRestore();
     const {allDoctors, loadedAllDoctors} = useAuth();
     useEffect(() => {
         if(allDoctors.length === 0) return;

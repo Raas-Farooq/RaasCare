@@ -273,7 +273,6 @@ const getDoctorAvailableDays = async (req, res, next) => {
 
 
 const getDoctorsAndAverageSalary = async(req,res) => {
-    console.log("AVage sla baceknd runsss")
    try{
      const pipeline = [
        {

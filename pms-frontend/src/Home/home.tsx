@@ -104,11 +104,11 @@ function Home() {
             <button onClick={() => learning()} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
             </button>
-            <button
+            {/* <button
               onClick={() => navigate('/portfolioPage')}
               className="px-5 py-2 border border-gray-300 rounded-md hover:text-green-600 hover:border-green-700">
               Portfolio
-            </button>
+            </button> */}
           </div>
         </div>
       </section>
@@ -133,17 +133,17 @@ function Home() {
               </div>
 
             </div>
-            <div className="w-full mt-4">
+            <div className="w-full flex justify-center items-center mt-4">
 
               {imageLoaded === 'loading' && 
-              <div className="w-full h-80 px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
+              <div className="w-full max-w-md sm:aspect-[3/2] px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
 
               </div>
               }
 
               <img
                 className={`${imageLoaded === "loaded"
-                   ? "w-full max-w-sm md:max-w-sm lg:max-w-md rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden" }`}
+                   ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden" }`}
                 loading="lazy"
                 src="/relief.jpg"
                 alt={"Treatment & Relief"}

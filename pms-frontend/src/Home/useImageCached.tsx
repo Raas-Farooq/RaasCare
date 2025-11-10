@@ -29,6 +29,7 @@ const useImageCached = (src:string) => {
             image.removeEventListener('load', handleLoad);
             image.removeEventListener('error', handleError);
         }
+        
     },[src])
 
     return {imageLoaded}

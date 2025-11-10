@@ -1,12 +1,13 @@
 import { useEffect } from "react";
 import { useAuth } from "../../context/appContext"
 import makeNgrokRequest from "../../ngrokRequesthook";
+import { useNavigate } from "react-router-dom";
 
 
 const MyAppointments = () => {
 
     const {bookedSlots} = useAuth();
-
+    const navigate = useNavigate();
     useEffect(() => {
         console.log("slots booked: ",bookedSlots);
 
@@ -63,8 +64,8 @@ const MyAppointments = () => {
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 font-bold border-b">Patient </th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 font-medium border-b">Doctor</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 font-medium border-b">Date</th>
-                      <th className="text-left px-3 py-2 md:px-6 md:py-3 font-medium border-b">Fee</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 font-medium border-b">Status</th>
+                      <th className="text-left px-3 py-2 md:px-6 md:py-3 font-medium border-b">Fee</th>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 font-medium border-b">Action</th>
                     </tr>
                   </thead>
@@ -115,6 +116,10 @@ const MyAppointments = () => {
                     )}
                   </tbody>
                 </table>
+                <div className="flex flex-col mt-8">
+                    <button onClick={() => navigate(-1)} className="text-gray-600 hover:text-gray-900 hover:underline"> Back to Doctor Profile </button>
+                    <button onClick={() => navigate('/')} className="text-gray-600 hover:text-gray-900 hover:underline"> Back to Home</button>
+                  </div>
               </div>
         </div>
     )

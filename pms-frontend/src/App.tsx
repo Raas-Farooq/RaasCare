@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 import Home from './Home/home';
 import { useAuth } from './context/appContext';
 import ScrollToTop from './Components/scrollToTop';
-import { AnimatePresence} from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import PageWrapper from './pageWrapper';
 
 function App() {
@@ -36,16 +36,16 @@ function App() {
       {/* <ScrollToTop /> */}
       <Toaster position='top-center' />
       <AnimatePresence mode='wait'>
-        <Routes location={location} key={location.pathname}>
+        <Routes location={location} key={location.key}>
           <Route path="/" element={
             <PageWrapper >
               <Home />
-              </PageWrapper>}
-               />
+            </PageWrapper>}
+          />
           {userRoutes.map((route, index) => (
-            <Route key={`user-${index}`} 
-            path={route.path}
-            element={<PageWrapper>{route.element}</PageWrapper>} />
+            <Route key={`user-${index}`}
+              path={route.path}
+              element={<PageWrapper>{route.element}</PageWrapper>} />
           ))}
 
           {doctorRoutes.map((route, index) => (
@@ -87,7 +87,7 @@ function App() {
                 child.index ?
                   <Route key={`patient-child-${childIndex}`} index element={<PageWrapper>{child.element}</PageWrapper>} />
                   :
-                  <Route key={`patient-child-${childIndex}`} path={child.path} element={<PageWrapper>{child.element}</PageWrapper>}  />
+                  <Route key={`patient-child-${childIndex}`} path={child.path} element={<PageWrapper>{child.element}</PageWrapper>} />
               ))}
             </Route>
           ))}
@@ -111,7 +111,7 @@ function App() {
             >
               {route.children?.map((childRoute, childIndex) => (
                 childRoute.index ?
-                  <Route key={`admin-child-${childIndex}`} index element={<PageWrapper>{childRoute.element}</PageWrapper>}  />
+                  <Route key={`admin-child-${childIndex}`} index element={<PageWrapper>{childRoute.element}</PageWrapper>} />
                   :
                   <Route key={`admin-child-${childIndex}`} path={childRoute.path} element={<PageWrapper>c{childRoute.element}</PageWrapper>} />
               ))}
