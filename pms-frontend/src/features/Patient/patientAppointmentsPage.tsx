@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useAuth } from "../../context/appContext"
-import makeNgrokRequest from "../../ngrokRequesthook";
+import makeNgrokRequest from "../../makeRequesthook";
 import { useNavigate } from "react-router-dom";
 
 

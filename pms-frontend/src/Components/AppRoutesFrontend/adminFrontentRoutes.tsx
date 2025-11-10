@@ -4,7 +4,7 @@
 
 import AddNewDoctor from "../../features/Admin/components/addNewDoctor";
 import AdminHome from "../../features/Admin/components/AdminHome";
-import UpdateDoctorPrfoile from "../../features/Admin/components/updateDoctorProfile";
+// import UpdateDoctorPrfoile from "../../features/Admin/components/updateDoctorProfile";
 // import AdminHome from "../../features/Admin/AdminHome";
 // import UpdateDoctorPrfoile from "../../features/Admin/updateDoctorProfile";
 import AdminDashboard from "../dashboards/adminDashboard";
@@ -16,7 +16,7 @@ const adminRoutes = [{
     children:[
         {index:true, element:<AdminHome />},
         {path:"addDoctor", element:<AddNewDoctor />},
-        {path:"updateDoctor", element:<UpdateDoctorPrfoile />},
+        // {path:"updateDoctor", element:<UpdateDoctorPrfoile />},
     ]
 }]
 

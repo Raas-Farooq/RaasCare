@@ -22,7 +22,7 @@ import errorHandler from './middleware/errorHandler.js';
 config()
 
 const app = express();
-const Port = 2500;
+const Port = process.env.PORT || 2500;
 ConnectingToDatabase();
 
 
