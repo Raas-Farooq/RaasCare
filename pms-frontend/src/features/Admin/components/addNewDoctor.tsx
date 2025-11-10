@@ -7,8 +7,7 @@ import type { UseFormReset } from "react-hook-form";
 // import { z } from "zod";
 import type { DoctorSchemaType } from "../admin.types";
 import { useState } from "react";
-import makeNgrokRequest from "../../../makeRequesthook";
-
+import makeRequest from "../../../makeRequesthook";
 
 
   const backend_url = import.meta.env.VITE_BACKEND_URL
@@ -22,7 +21,7 @@ const AddNewDoctor = () => {
         async function generateSlots(docId:string){
             const id = toast.loading('Generating 2 weeks slots.. ')
             try{
-                const response = await makeNgrokRequest({url:'pms/generateNewDoctorSlots', method:'get', data:{generateFor:"doctor", doctorId:docId}});
+                const response = await makeRequest({url:'pms/generateNewDoctorSlots', method:'get', data:{generateFor:"doctor", doctorId:docId}});
 
                 if(response.data.success){
                     toast.success('Successfully Generated Slots', {id:id});

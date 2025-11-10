@@ -1,10 +1,10 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
-import makeNgrokRequest from "../../makeRequesthook";
 import toast from "react-hot-toast";
 import { User } from "lucide-react";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import makeRequest from "../../makeRequesthook";
 
 interface MedicalHistory{
     diagnosis?:string,
@@ -56,7 +56,7 @@ const PatientProfile = () => {
                  const toastId = toast.loading('Getting Patient Detail..')
                 try{
                    
-                    const response = await makeNgrokRequest({url:`pms/getPatient/${patientRecordId}`, method:"get"}); 
+                    const response = await makeRequest({url:`pms/getPatient/${patientRecordId}`, method:"get"}); 
         
                     console.log("response of getting Patient Record ", response);
                     if(response.data.success){

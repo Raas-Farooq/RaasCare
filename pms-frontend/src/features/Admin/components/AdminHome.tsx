@@ -59,10 +59,7 @@ const AdminHome = () => {
                     docId,
                     role:userRole
                 },
-                { withCredentials: true ,
-                    headers:{
-                        "ngrok-skip-browser-warning":"true"
-                    }
+                { withCredentials: true 
                 }
             )
             console.log("response: ", response);
