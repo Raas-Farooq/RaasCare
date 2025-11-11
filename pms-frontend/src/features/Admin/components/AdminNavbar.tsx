@@ -1,5 +1,4 @@
 import { Heart } from "lucide-react"
-import axios from "axios";
 import { useAuth } from "../../../context/appContext";
 import useCustomLogout from "../../../utils/customLogout";
 
@@ -7,8 +6,6 @@ const logoutConfirm = useCustomLogout();
 const AdminNavbar = () => {
 
     const { logout } = useAuth();
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
     const handleLogoutClick = async () => {
         const confirm = await logoutConfirm();
         if(confirm){

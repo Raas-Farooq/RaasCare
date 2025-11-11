@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {useEffect, useState } from "react";
+import { useState } from "react";
 import { useFieldArray, useForm, type UseFormReset } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Calendar,  Trash2 } from 'lucide-react';
@@ -32,15 +32,14 @@ interface DoctorFormProps {
 };
 
 
-function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setImgSrc, profileImageData, setProfileImageData, isAdded }: DoctorFormProps) {
+function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setImgSrc, profileImageData, setProfileImageData }: DoctorFormProps) {
     const [commonTimeSlots, setCommonTimeSlots] = useState(COMMON_TIME_SLOTS);
     const [allottedDays, setAllottedDays] = useState(['']);
     const [chosenDay, setChosenDay] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [specialSlots, setSpecialSlots] = useState<string[]>([]);
   
-    const [isUploading, setIsUploading] = useState(false);
-    const { register, control, handleSubmit, formState: { errors }, watch, reset } = useForm({
+    const { register, control, handleSubmit, formState: { errors }, reset } = useForm({
         resolver: zodResolver(doctorFormSchema),
         defaultValues: initialData || {
             availableDays: [],
@@ -52,25 +51,8 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
         name: 'availableDays'
     })
 
-    const watchedDays = watch('availableDays');
-
-
-    useEffect(() => {
-        setAllottedDays(['']);
-    }, [isAdded])
-
-
-    function getUploadedImage(imageUploading: boolean) {
-       
-        console.log("image UPloading status: ", imageUploading);
-        setIsUploading(imageUploading);
-
-    }
 
     const handleFormSubmission = async (data: DoctorSchemaType) => {
-        console.log("data Received of Form Submission ", data);
-        console.log(" Received profileImageData ", data);
-        // const toastId = toast.loading('Loading details');
         if (!profileImageData.imageUrl) {
             // toast.dismiss(toastId);
             toast.error('Profile Image is missing');
@@ -110,7 +92,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
 
 
     function handleSaveSlots() {
-        console.log(" day: ", chosenDay, "slots:", specialSlots);
         if (specialSlots.length === 0 && !chosenDay) {
             toast.error("Please select the day and slots first", {
                 duration: 3000
@@ -143,7 +124,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
             setChosenDay('');
         }
         setCommonTimeSlots(COMMON_TIME_SLOTS);
-        console.log("watched available days ", watchedDays, "allotted Days: ", allottedDays);
 
     }
 
@@ -159,7 +139,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                     <div className="w-full grid grid-cols-1 gap-5">
                         <div className="max-w-xs">
                             <UploadProfileImage 
-                             uploadingStatus={getUploadedImage}
                              imgSrc={imgSrc} 
                              setImgSrc={setImgSrc} 
                              profileImageData={profileImageData} 

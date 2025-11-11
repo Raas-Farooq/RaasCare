@@ -21,7 +21,7 @@ interface SubmitProps {
 function Register() {
     const navigate = useNavigate();
     const [revealPassword, setRevealPassword] = useState(false);
-    const [patientRecordId, setPatientRecordId] = useState('');
+    // const [patientRecordId, setPatientRecordId] = useState('');
     const { login } = useAuth();
     const registerSchema = z.object({
         username: z.string()
@@ -41,12 +41,11 @@ function Register() {
 
     })
 
-    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(registerSchema)
     })
 
     const submitResult = async (data: SubmitProps) => {
-        console.log("Submit clicked ,", data);
         let normalizedPhone;
         if (data.phoneNum) {
             const phoneNumber = parsePhoneNumberFromString(data.phoneNum, 'PK');
@@ -60,7 +59,6 @@ function Register() {
                 return;
             }
             normalizedPhone = phoneNumber.number;
-            console.log("normalized Phone number ", normalizedPhone);
         }
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
         const toastId = toast.loading('Signing Up. Wait..')
@@ -73,13 +71,13 @@ function Register() {
             })
 
             if (response.data.success) {
-                console.log("Success! respone data ", response.data);
+
                 const patientReceived = response.data;
                 login(patientReceived.user, patientReceived.jwt_token, patientReceived.expiresIn, patientReceived.userProfile, []);
-                const patientRecord = patientReceived.userProfile.patientRecord;
-                if (patientRecord) {
-                    setPatientRecordId(patientRecord)
-                }
+                // const patientRecord = patientReceived.userProfile.patientRecord;
+                // if (patientRecord) {
+                //     setPatientRecordId(patientRecord)
+                // }
                 toast.success('You have Successfully Registered ', { id: toastId })
                 navigate('/patient-dashboard')
             }

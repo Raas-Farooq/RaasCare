@@ -1,35 +1,34 @@
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import DoctorsBySpeciality from "./DoctorsBySpeciality";
 import { useAuth } from "../../context/appContext";
 import { FaSpinner } from "react-icons/fa";
 import { doctorsSpecialities } from "../../Home/homeData";
-import useScrollRestore from "../../utils/useScrollRestore";
+import toast from "react-hot-toast";
 
 const MakeAppointment = () => {
 
-    const [specialities, setSpecialities] = useState(['All Doctors']);
+    // const [specialities, setSpecialities] = useState(['All Doctors']);
     const [target, setTarget ] = useState('All Doctors');
     // useScrollRestore();
-    const {allDoctors, loadedAllDoctors} = useAuth();
-    useEffect(() => {
-        if(allDoctors.length === 0) return;
+    const {allDoctors, loadingAllDoctors, caughtError} = useAuth();
+    // useEffect(() => {
+    //     if(allDoctors.length === 0) return;
   
-            const allSpecialities = Array.from(
-            new Set(['All Doctors', ...allDoctors.map(doctor => doctor.speciality).filter(Boolean)])
-        )
-        setSpecialities(allSpecialities);
+    //         const allSpecialities = Array.from(
+    //         new Set(['All Doctors', ...allDoctors.map(doctor => doctor.speciality).filter(Boolean)])
+    //     )
+    //     setSpecialities(allSpecialities);
         
        
-    },[ allDoctors, allDoctors?.length>0])
+    // },[ allDoctors, allDoctors?.length>0])
 
     const handleSpecialityClick = (event:React.MouseEvent<HTMLButtonElement>, speciality:string) => {
         event.preventDefault();
-        console.log("speciality Selected: ", speciality);
         setTarget(speciality);
     }
 
-    if(!loadedAllDoctors){
+    if(loadingAllDoctors){
         // toast('Loading All Doctors');
        return (
          <div className="w-full flex text-3xl justify-center items-center ">
@@ -39,17 +38,21 @@ const MakeAppointment = () => {
        )
     }
    
-    if(allDoctors.length === 0){
+    if(!loadingAllDoctors && allDoctors.length === 0){
         return <h1 className="text-xl text-center">No Doctor Found</h1>
     }
 
-
+    if(caughtError){
+            toast.error("Error while loading all blogs");
+            console.error("Error while loading all blogs", caughtError.message)
+    }
+        
     return (
         <div className="relative min-h-screen bg-gray-50 mx-auto px-4 py-8">
             <div className="max-w-6xl mx-auto">
                 <h1 className="text-3xl text-purple-600 mb-8 text-center font-bold">Our Experienced Team</h1>
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-3 p-2 border-b border-gray-300 ">
-                    {loadedAllDoctors &&  doctorsSpecialities.map((doctor,ind) => (
+                    {loadingAllDoctors &&  doctorsSpecialities.map((doctor,ind) => (
                         <button 
                         key={ind}                                                        
                         onClick={(e) => handleSpecialityClick(e, doctor.speciality)}

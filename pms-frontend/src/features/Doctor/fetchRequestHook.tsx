@@ -1,4 +1,4 @@
-import axios from "axios";
+
 import {useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import HandleAxiosError from "../../utils/handleAxiosError";
@@ -31,11 +31,7 @@ interface DoctorProfileInterface {
     consultationFee: number,
     availableDays: AvailableDays[]
 }
-interface NgrokCall{
-    url:string,
-    method:string,
-    data?:object
-}
+
 function useFetchApi(url: string, id: string | null) {
     const [fetchLoading, setFetchLoading] = useState<boolean>(false);
     const [fetchResult, setFetchResult] = useState<DoctorProfileInterface | null>(null);
@@ -45,15 +41,14 @@ function useFetchApi(url: string, id: string | null) {
         if (!id) {
             return;
         }
-        console.log("id and url inside hook ", id, url);
         const makingApiRequest = async () => {
             
             const toastId = toast.loading('fetching the data..');
+            setFetchLoading(true);
             setFetchError('');
             try {
                 const response = await makeRequest({url:`pms/fetchDoctorProfile/${id}`, method:'get'});
                 if (response.data.success) {
-                    console.log('doctor fetchResponse ', response);
                     setFetchResult(response.data.doctorProfile);
                     toast.remove(toastId);
                     toast.success("loaded doctors successfully", { id: toastId })
@@ -62,6 +57,8 @@ function useFetchApi(url: string, id: string | null) {
             catch (err: any) {
                 let errorMessage = HandleAxiosError(err);
                 toast.error(errorMessage, { id: toastId });
+            }finally{
+                setFetchLoading(false)
             }
         }
         makingApiRequest();

@@ -1,6 +1,6 @@
 
 import { BookAIcon, Check, Delete, DollarSignIcon, LayoutDashboardIcon, Trash, User, Users } from "lucide-react";
-import { act, useEffect, useState } from "react";
+import { useState } from "react";
 // import DashboardCharts from "./charts/dashboardCharts";
 // import AddNewDoctor from "./components/addNewDoctor";
 // import { useAuth } from "../../context/appContext";
@@ -35,7 +35,6 @@ const AdminHome = () => {
     const [activeTab, setActiveTab] = useState<Tabs>(() => {
         try{
             const currentTab = localStorage.getItem('ActiveTab') || 'Dashboard';
-            console.log("currentTab fro localStorag ", currentTab);
             if(currentTab && tabsList.includes(currentTab as Tabs)){;
                 return currentTab as Tabs
             }
@@ -62,7 +61,6 @@ const AdminHome = () => {
                 { withCredentials: true 
                 }
             )
-            console.log("response: ", response);
             if (response.data.success) {
                 toast.success(`Successful Slot ${action} operation`, {id:toastId})
                 if (response.data.updatedSlots.length) {

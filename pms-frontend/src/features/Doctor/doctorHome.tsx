@@ -42,7 +42,6 @@ const DoctorHome = () => {
         }
       }
     ))
-    console.log("updated inside sync: ", updated);
     setBookedSlots(updated);
     return updated;
 
@@ -71,11 +70,9 @@ const DoctorHome = () => {
         },
         { withCredentials: true }
       )
-      console.log("response: ", response);
       if (response.data.success) {
         toast.dismiss();
         toast.success(`successfully ${action}ed the Slot`, { id: toastId })
-        console.log("response after deletion: ", response);
         if (response.data.updatedSlots.length) {
           const updatedSlots = response.data.updatedSlots;
           // storing locally

@@ -1,6 +1,5 @@
-import { useEffect } from "react"
 import { Navigate, Outlet } from "react-router-dom"
-import { useAuth } from "../../context/appContext"
+
 
 interface ProtectedRouteProps{
     isAuthenticated:boolean,
@@ -12,7 +11,6 @@ interface ProtectedRouteProps{
 }
 
 const ProtectedRoute = ({isAuthenticated,allowedRoles,userRole,redirectPath="/login",children}:ProtectedRouteProps) => {
-    const {loading} = useAuth();
 
     // if(loading) return <div>Loading..</div>
     if(!isAuthenticated){

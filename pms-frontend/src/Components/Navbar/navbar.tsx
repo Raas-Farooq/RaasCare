@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, type FC, type RefObject } from "react"
+import React, { memo, useEffect, useState} from "react"
 import { FaBars, FaTimes } from "react-icons/fa"
 import useWindowSize from "./windowSize";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -63,7 +63,6 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
         navigate('/register')
     }
     const handleMyAppointments = () => {
-        console.log("my Appointments;  run");
         setIsShowMenu(false);
         navigate('/patient-dashboard/myAppointments')
     }

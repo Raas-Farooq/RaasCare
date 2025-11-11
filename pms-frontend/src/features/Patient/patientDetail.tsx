@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast";
 import { User } from "lucide-react";
 import HandleAxiosError from "../../utils/handleAxiosError";
@@ -34,10 +34,8 @@ const PatientProfile = () => {
         if (userProfile) {
             try {
                 const parsedProfile = JSON.parse(userProfile);
-                console.log("parsed pateint ", parsedProfile);
                 setUsername(parsedProfile.username);
                 if (parsedProfile.patientRecord) {
-                    console.log("if pateint exist and record.. patientRecordId ", parsedProfile.patientRecord);
                     setPatientRecordId(parsedProfile.patientRecord)
                 }
             }
@@ -51,14 +49,11 @@ const PatientProfile = () => {
             if(!patientRecordId){
                 return;
             }
-            console.log("came inside the useEffect")
             async function fetchPatientRecord(){
                  const toastId = toast.loading('Getting Patient Detail..')
                 try{
                    
                     const response = await makeRequest({url:`pms/getPatient/${patientRecordId}`, method:"get"}); 
-        
-                    console.log("response of getting Patient Record ", response);
                     if(response.data.success){
                         setCurrentPatient(response.data.patient);
                         toast.success('Successfully ', {id: toastId})

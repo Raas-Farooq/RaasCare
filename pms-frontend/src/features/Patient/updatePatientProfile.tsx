@@ -60,7 +60,6 @@ function UpdatePatientProfile(){
     },[patientData])
 
    const mySubmitFunction = async (data:PatientData) => {
-    console.log("got result of changed fields ", data)
     let userUpdatedFields:{[key:string]:any} = {};
     
      Object.entries(data).forEach(([key, val]) => {
@@ -81,7 +80,6 @@ function UpdatePatientProfile(){
             userUpdatedFields[key] = val
         }
     })
-    console.log("UserUpdatedFields ", userUpdatedFields)
     if(Object.keys(userUpdatedFields).length === 0){
         toast.dismiss();
         toast("No changes detected from the Original profile", {
@@ -98,8 +96,6 @@ function UpdatePatientProfile(){
         const response = await axios.put(`${backend_url}/pms/updatePatientProfile/${objectId}`,
             patchPatientDetail
         )
-
-            console.log("response after making update request: ", response);
             if(response.data.success){
                 
                 toast.success("Successfully Updated the Patient", {id:toastId});

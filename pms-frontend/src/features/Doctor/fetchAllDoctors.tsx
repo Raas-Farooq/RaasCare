@@ -34,10 +34,10 @@ interface DoctorsInterface {
 const useFetchAllDoctors = () => {
     const [doctorsList, setDoctorsList] = useState<DoctorsInterface[]>([]);
     const [caughtError, setCaughtError] = useState<string | ''>('');
-    const [isLoading, setIsLoading ] = useState(true);
+    const [loadingAllDoctors, setLoadingAllDoctors ] = useState(true);
 
     useEffect(() => {
-        setIsLoading(true);
+        setLoadingAllDoctors(true);
         const fetchDoctors = async () => {
             // const toastId = toast.loading('Loading Doctors');
             try {
@@ -53,7 +53,7 @@ const useFetchAllDoctors = () => {
                 console.error("Get Error while fetching all doctors", err);
             }
             finally{
-                setIsLoading(false);
+                setLoadingAllDoctors(false);
                 // toast.dismiss(toastId);
             }
             
@@ -62,7 +62,7 @@ const useFetchAllDoctors = () => {
         
     },[])
 
-    return {isLoading, doctorsList, caughtError}
+    return {loadingAllDoctors, doctorsList, caughtError}
 }
 
 export default useFetchAllDoctors

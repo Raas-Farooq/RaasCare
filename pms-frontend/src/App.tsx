@@ -3,33 +3,22 @@ import './index.css';
 import './App.css'
 import patientRoutes from './Components/AppRoutesFrontend/patientFrontendRoutes';
 import userRoutes from './Components/AppRoutesFrontend/userFrontendRoutes';
-import { Route, Routes, ScrollRestoration, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import doctorRoutes from './Components/AppRoutesFrontend/doctorFrontendRoutes';
 import NotFound from './Components/pages/notFound';
 import ProtectedRoute from './Components/protectRoutes/protectedRoute';
 import adminRoutes from './Components/AppRoutesFrontend/adminFrontentRoutes';
 import { Toaster } from 'react-hot-toast';
-import { useEffect, useState } from 'react';
-
 import Home from './Home/home';
 import { useAuth } from './context/appContext';
-import ScrollToTop from './Components/scrollToTop';
 import { AnimatePresence } from 'framer-motion'
 import PageWrapper from './pageWrapper';
 
 function App() {
 
   const { userRole, isAuthenticated, loading } = useAuth();
-  const [allowedRoles, setAllowedRoles] = useState([]);
-
   const location = useLocation();
-
-  useEffect(() => {
-    console.log("Inside App.tsx  isAuthenticated: ", isAuthenticated, "allowedRoles", allowedRoles, "userRole ", userRole)
-  }, [isAuthenticated, userRole])
-
-
   if (loading) return <h1>Loading..</h1>
   return (
     <div>
