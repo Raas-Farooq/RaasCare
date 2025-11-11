@@ -1,18 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm, useFieldArray, type UseFormReset } from 'react-hook-form';
 import parsePhoneNumberFromString from 'libphonenumber-js';
 import toast from 'react-hot-toast';
 import { patientSchema, type PatientFormType } from './patient.types';
 
-
-// Date Defintion
-// dateOfBirth:z.preprocess((val) => val ? new Date(val as string): undefined,
-//         z.date().max(new Date(), {
-//             message:"Date of birth can't be in future"
-//         }).optional())
-
- 
 
 // defining the type of Patient Data
 
@@ -70,8 +62,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
             return;
         }
         const normalizedPhone = phoneNumber.number;
-       
-        // console.log("new patient details added: ", updatedPatientData);
+  
             const {phone, ...restData} = data
           let updatedPatientData = {
             phone:normalizedPhone,

@@ -36,7 +36,6 @@ const AddNewDoctor = () => {
         }
     async function handleDoctorSubmission(data: DoctorSchemaType, resetForm:UseFormReset<DoctorSchemaType>) {
         const toastId = toast.loading('Adding New Doctor');
-        console.log("doctor data before sending to backend ", data, "resetForm ",resetForm);
         try{
             const response = await axios.post(`${backend_url}/pms/createDoctor`, data, 
                 {
@@ -58,7 +57,6 @@ const AddNewDoctor = () => {
                 toast.success('Success! Doctor Added', {id:toastId});
                 generateSlots(response.data.doctor._id);
             }
-            console.log("response of sending new doctor details: ", response);
         }
         catch(err){
             const errorMessage = HandleAxiosError(err);

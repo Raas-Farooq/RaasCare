@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, DollarSign } from "lucide-react"
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/appContext"
+import toast from "react-hot-toast"
 
 
 interface TimeSlots {
@@ -37,10 +38,9 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
     const navigate = useNavigate();
     const targetFieldReceived = propField ?? (location.state as { targetField?: string })?.targetField ?? 'All';
 
-    const { allDoctors, loadedAllDoctors } = useAuth();
+    const { allDoctors, loadingAllDoctors, caughtError} = useAuth();
     useEffect(() => {
         setUpdatedDisplayDoctors(false);
-        console.log("targetFieldReceived: ", targetFieldReceived, " Prop Field: ", propField);
         if (allDoctors.length === 0) return;
         const sortedDoctors =
             targetFieldReceived === 'All Doctors'
@@ -51,10 +51,15 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
         setUpdatedDisplayDoctors(true)
     }, [allDoctors, targetFieldReceived])
 
-    if (!loadedAllDoctors || !updatedDisplayDoctors) {
+    if (loadingAllDoctors || !updatedDisplayDoctors) {
         return <h1 className="text-xl text-center">Loading Doctors..</h1>
     }
 
+    if(caughtError){
+        toast.error("Error while loading all blogs");
+        console.error("Error while loading all blogs", caughtError.message)
+    }
+    
     return (
         <>
             <h1 className="text-3xl text-center text-teal-700 font-bold mx-auto my-6 border-b border-gray-500 w-fit ">
@@ -119,7 +124,7 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
 
                 }
             </div>
-            {(loadedAllDoctors && updatedDisplayDoctors) && displayDoctors.length === 0 &&
+            {(!loadingAllDoctors && updatedDisplayDoctors) && displayDoctors.length === 0 &&
                 (
                     <h1 className="text-3xl text-center"> No Doctor Found </h1>
                 )}

@@ -131,8 +131,8 @@ interface AuthContextProps {
     doctorProfile: DoctorProfile | null;
     isAuthenticated: boolean;
     loading: boolean,
-    loadedAllDoctors:boolean,
-    setLoadedAllDoctors:React.Dispatch<SetStateAction<boolean>>,
+    caughtError: string | any,
+    loadingAllDoctors:boolean,
     allDoctors:AllDoctorInterface[],
     setAllDoctors:React.Dispatch<React.SetStateAction<AllDoctorInterface[]>>
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -156,7 +156,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(null);
     const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
     const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]> ([]);
-    const [loadedAllDoctors, setLoadedAllDoctors] = useState<boolean>(false);
     const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [bookedSlots, setBookedSlots] = useState<BookedSlots[] | null>(null);
@@ -165,15 +164,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [userRole, setUserRole] = useState<string | ''>('');
     const [loading, setLoading] = useState<boolean>(true);
     let logoutTimer: NodeJS.Timeout | undefined;
-    const {isLoading, doctorsList, caughtError} = useFetchAllDoctors();
+    const {loadingAllDoctors, doctorsList, caughtError} = useFetchAllDoctors();
 
       useEffect(() => {
-        console.log("doctorsList: App Context", doctorsList);
         if(doctorsList.length > 0){
             setAllDoctors(doctorsList);
-            setLoadedAllDoctors(true);
         }
-    },[doctorsList])
+        if(!loadingAllDoctors && doctorsList.length === 0){
+            setAllDoctors(doctorsList);
+
+        }
+    },[doctorsList, loadingAllDoctors])
 
     const backend_url = import.meta.env.VITE_BACKEND_URL;
     const logout = useCallback(async () => {
@@ -223,7 +224,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         return parsedBookedSlots
     }
     const login = (user: User, token: string, expiresInSec: number, userProfile: DoctorProfile | AdminProfile, slotsBooked: BookedSlots[] | null) => {
-        console.log("booked slots while login app context ", slotsBooked, "user ", user);
         if (user.role === 'doctor') {
             setDoctorProfile(userProfile as DoctorProfile);
             localStorage.setItem('profile', JSON.stringify(userProfile));
@@ -284,7 +284,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
                     }
                 }
                 const localBookedSlots = localStorage.getItem('bookedSlots');
-                console.log("local booked slots: ", localBookedSlots)
                 if (localBookedSlots) {
                     try {
                         const parsedSlots = JSON.parse(localBookedSlots);
@@ -340,7 +339,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 
     return (
-        <AuthContext.Provider value={{ patientProfile, setPatientProfile,allDoctors,loadedAllDoctors,setLoadedAllDoctors, setAllDoctors, bookedSlots, setBookedSlots, adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading, isAuthenticated, setIsAuthenticated, user, setUserRole, userRole, jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token }}>
+        <AuthContext.Provider value={{ patientProfile, setPatientProfile,allDoctors,loadingAllDoctors,caughtError, setAllDoctors, bookedSlots, setBookedSlots, adminProfile, setAdminProfile, doctorProfile, setDoctorProfile, loading, setLoading, isAuthenticated, setIsAuthenticated, user, setUserRole, userRole, jwt_token, expiryTime, login, logout, setUser, setExpiryTime, setJwt_token }}>
             {children}
         </AuthContext.Provider>
     )

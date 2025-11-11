@@ -62,7 +62,6 @@ interface DoctorProfileInterface {
 
 
 function DoctorPublicProfile() {
-    const [selectedTimeSlot, setSetSelectedTimeSlot] = useState('');
     const [dayId, setDayId] = useState<string | null>('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isProfileLoading, setIsProfileLoading] = useState<boolean | true>(true);
@@ -96,7 +95,6 @@ function DoctorPublicProfile() {
     useEffect(() => {
         setIsProfileLoading(true);
         const currentDoctorId = doctorParamsId || localStorage.getItem('doctorId');
-        console.log("currentDoctorId ", currentDoctorId)
         if (!currentDoctorId || allDoctors.length === 0) {
             return;
         }
@@ -113,7 +111,6 @@ function DoctorPublicProfile() {
 
             try {
                 const fetchdoctorAvailableDays = await makeRequest({ url: `pms/getDoctorAvailableDays/${currentDoctorId}`, method: 'get' });
-                console.log("fetchDoctor Avaialbe days result ", fetchdoctorAvailableDays);
                 if (fetchdoctorAvailableDays.data.success) {
                     const remainingSlots = fetchdoctorAvailableDays.data.remainingSlots;
                     updateDateFormat(remainingSlots)
@@ -140,18 +137,11 @@ function DoctorPublicProfile() {
 
     }, [doctorParamsId, allDoctors])
 
-    useEffect(() => {
-        console.log(" slots loading status: ", slotsLoading);
-    },[slotsLoading])
-    const handleSlotSelection = (id: string, time: string) => {
-        console.log("time received: ", time, " id of slot: ", id, "selected Time slot: ", selectedTimeSlot, "doctorSlots available: ", doctorSlotsAvailable);
-
-        setSetSelectedTimeSlot(time);
+    const handleSlotSelection = (id: string) => {
         setSelectedSlot_id(id);
     }
 
     const handleDayId = (id: string) => {
-        console.log("id: ", id, "dayIndex: ", typeof (dayId));
         if (selectedSlot_id) {
             setSelectedSlot_id('')
         }
@@ -227,7 +217,6 @@ function DoctorPublicProfile() {
             console.error("error while fetching locallay stored user ", err);
         }
 
-        console.log("userRole ", userRole, 'selectedSlot_id ', selectedSlot_id, 'user from localStorage', storedUser);
         const toastId = toast.loading('Booking your appointment, Please wait..');
         setIsSubmitting(true);
         try {
@@ -243,7 +232,6 @@ function DoctorPublicProfile() {
                     withCredentials: true
                 }
             )
-            console.log("response of appointment booking ", response)
             if (response.data.success) {
                 const newSlot = response.data.slot;
                 if (Object.keys(newSlot).length > 0) {
@@ -363,7 +351,7 @@ function DoctorPublicProfile() {
 
                                             <div className="flex flex-wrap" key={index}>
                                                 {dayId === day._id && day.slots?.map((slot, slotIndex) => (
-                                                    <button key={slotIndex} onClick={() => handleSlotSelection(slot.slotId, slot.slotTime)}
+                                                    <button key={slotIndex} onClick={() => handleSlotSelection(slot.slotId)}
                                                         className={`
                                                     m-3 text-xs py-2 w-24 rounded-xl shadow-md
                                                     bg-blue-100

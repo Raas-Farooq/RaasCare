@@ -1,15 +1,12 @@
 import toast from "react-hot-toast";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "axios";
-import { useState, type ChangeEvent } from "react";
+import {type ChangeEvent } from "react";
 import HandleAxiosError from "../../../utils/handleAxiosError";
 import { type ProfileImageProps } from "../admin.types";
 // import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface ImageUploadProps{
-        uploadingStatus:(
-            isUploading:boolean
-        )=>void,
         imgSrc:string,
         setImgSrc:React.Dispatch<React.SetStateAction<string>>,
         profileImageData:ProfileImageProps,
@@ -17,11 +14,8 @@ interface ImageUploadProps{
 }
 
 const backend_url = import.meta.env.VITE_BACKEND_URL;
-const UploadProfileImage :React.FC<ImageUploadProps> = ({uploadingStatus, imgSrc, setImgSrc, setProfileImageData}) => {
-    const [imageUploading, setImageUploading] = useState(false);
+const UploadProfileImage :React.FC<ImageUploadProps> = ({ imgSrc, setImgSrc, setProfileImageData}) => {
     async function handleImageInsertion(e: ChangeEvent<HTMLInputElement>) {
-        setImageUploading(true);
-        uploadingStatus(true);
         const toastId = toast.loading('Uploading on Cloudinary')
         if (e.target.files) {
             try {
@@ -46,7 +40,6 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({uploadingStatus, imgSrc
                         imageUrl:response.url,
                         public_id: response.public_id
                     }))
-                    uploadingStatus(false);
                     toast.dismiss(toastId);
                     toast.success("Success!")
                 }
@@ -56,11 +49,6 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({uploadingStatus, imgSrc
                 toast.error(errorMessage, { id: toastId });
                 setProfileImageData({imageUrl:'', public_id:''})
             }
-            finally{
-                setImageUploading(false);
-                uploadingStatus(false)
-            }
-         
         }
     }
 

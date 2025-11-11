@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
 import toast from 'react-hot-toast';
@@ -11,7 +10,6 @@ import type { UseFormReset } from "react-hook-form";
 
 // Patient Form Component
 const PatientAddForm = () => {
-    const [addingNewPatient, setAddingNewPatient] = useState(false);
     const navigate = useNavigate();
 // Form submit function 
     async function formSubmit(data:PatientFormType, resetForm:UseFormReset<PatientFormType>){
@@ -26,12 +24,8 @@ const PatientAddForm = () => {
         }
         const toastId = toast.loading("Ading Patient..")
         const backendUrl = import.meta.env.VITE_BACKEND_URL;
-        console.log("data has been reached inside Add Patient : ", patientPayload);
         try{
-            setAddingNewPatient(true);
-            
             const response = await axios.post(`${backendUrl}/pms/addPatientProfile`, patientPayload);
-            console.log("response: ",response);
             if(response.data.success){
                 toast.success('Success Response received by Backend', {id:toastId});
                 resetForm()
@@ -40,9 +34,6 @@ const PatientAddForm = () => {
         catch(err){
             let errorMessage = HandleAxiosError(err);
             toast.error(errorMessage, { id: toastId });
-        }
-        finally{
-            setAddingNewPatient(false);
         }
     }
 

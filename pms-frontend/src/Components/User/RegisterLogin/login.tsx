@@ -25,9 +25,9 @@ type SubmitProps = z.infer<typeof loginSchema>
 const Login = () => {
     const { login } = useAuth()
     const navigate = useNavigate();
-    const [patientRecordId, setPatientRecordId] = useState('');
+    // const [patientRecordId, setPatientRecordId] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const { register, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema)
     })
 
@@ -50,11 +50,10 @@ const Login = () => {
                 console.log("user role after login: ", role);
                 switch (role) {
                     case 'patient': {
-                        const patientId = loginResponse.userProfile.patientRecord;
-                        if(patientId){
-                            console.log("yses PatientId found: ", patientId)
-                            setPatientRecordId(patientId);
-                        };
+                        // const patientId = loginResponse.userProfile.patientRecord;
+                        // if(patientId){
+                        //     setPatientRecordId(patientId);
+                        // };
                         navigate('/patient-dashboard');
                         break;
                     }

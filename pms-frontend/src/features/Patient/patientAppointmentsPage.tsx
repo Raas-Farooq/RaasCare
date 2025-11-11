@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+
 import { useAuth } from "../../context/appContext"
 import { useNavigate } from "react-router-dom";
 import makeRequest from "../../makeRequesthook";
@@ -8,14 +8,10 @@ const MyAppointments = () => {
 
     const {bookedSlots} = useAuth();
     const navigate = useNavigate();
-    useEffect(() => {
-        console.log("slots booked: ",bookedSlots);
 
-    }, [bookedSlots])
 
 
     async function handlePayOnline(fee:number, slotId:string){
-      console.log("online pay clicked", fee, "slotId ", slotId);
       const doctorId='39784sdj'
 
       const body = {
@@ -25,13 +21,12 @@ const MyAppointments = () => {
 
       try{
         const paymentRequest = await makeRequest({url:`pms/onlinePaymentRequest/${slotId}`, method:'post', data:body});
-        console.log("Payment Request ", paymentRequest);
+
         if(paymentRequest.data.success){
-          console.log("success inside froentend ");
+
           const redirectUrl = paymentRequest.data.redirectUrl;
-          console.log(" outside redirect Url ", redirectUrl);
+   
           if(redirectUrl){
-            console.log(" Yes indeeeed redirect Url ", redirectUrl);
             // window.location.replace(redirectUrl);
             window.location.href=redirectUrl
           }
@@ -41,7 +36,7 @@ const MyAppointments = () => {
         }
       }
       catch(err){
-        console.log(" unable to make payment request. Error: ", err);
+        console.error(" unable to make payment request. Error: ", err);
       }
     }
   const options = {

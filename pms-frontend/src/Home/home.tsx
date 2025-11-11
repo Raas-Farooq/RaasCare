@@ -1,12 +1,11 @@
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
 import { ArrowRight } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/appContext.tsx";
 import useImageCached from "./useImageCached.tsx";
 
 
@@ -14,45 +13,20 @@ function Home() {
   const navigate = useNavigate();
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
-  const { allDoctors } = useAuth();
   const { imageLoaded } = useImageCached("/relief.jpg");
 
-  useEffect(() => {
-    const userRole = localStorage.getItem('role');
-    console.log("this i sthe userRole ", userRole, " AllDoctors ", allDoctors);
-  }, [])
 
   function learning() {
 
-
-    const text = 'Resilience And Blessings';
-    function reverseString(text: string, index: number): string {
-
-      if (index <= 0) {
-        return text[0];
-      }
-
-      // reversed = reversed + text[index];
-      // console.log("reversed each ", reversed)
-      return text[index] + reverseString(text, index - 1);
-
-    }
-    const length = text.length - 1;
-
-    const result = reverseString(text, length);
-
-    console.log("result of reversed: ", result);
 
   }
 
   const handleSpecialityClick = (targetSpeciality: string) => {
 
-    console.log("targetSpeciality ", targetSpeciality);
     navigate('/doctorsBySpeciality', { state: { targetField: targetSpeciality } })
   }
 
   const handleServicesClick = (service: { title: string }) => {
-    console.log("clicked service: ", service);
     if (service.title === 'Nursing Care') {
       navigate('/nursingCare');
     }
@@ -64,22 +38,7 @@ function Home() {
     }
   }
 
-  const handleDoctorsClick = (service: { title: string }) => {
-    console.log("clicked service: ", service);
-    if (service.title === 'Nursing Care') {
-      navigate('/nursingCare');
-    }
-  }
-  const handleDiagnosticClick = (service: { title: string }) => {
-    console.log("clicked service: ", service);
-    if (service.title === 'Nursing Care') {
-      navigate('/nursingCare');
-    }
-  }
-  // const handleAlmondsCallback = useCallback(() => {
-  //   console.log("Almonds new value callback ",almonds )
-  // },[almonds])
-  // first:'With your Nafs', second:'With your external environment'
+
 
   return (
     <>
