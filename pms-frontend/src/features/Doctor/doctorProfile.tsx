@@ -198,13 +198,21 @@ function DoctorPublicProfile() {
 
         }
         else if (userRole !== 'patient') {
-            toast.error("You aren't allowed to Book an appointment");
+            toast.error("Only patients can book an appointment");
             return;
         }
 
         else if (!selectedSlot_id) {
              toast.error('Please select a time slot to confirm booking');
             return;
+        }
+        else if (bookedSlots?.length){
+            const pendingBooked= bookedSlots?.filter(slot => slot.isBooked);
+            const totalBookedLen = pendingBooked?.length;
+            if(totalBookedLen && totalBookedLen >= 3){
+                toast.error("A patient can't book more than 3 slots");
+                return;
+            }
         }
         let storedUser;
         try {

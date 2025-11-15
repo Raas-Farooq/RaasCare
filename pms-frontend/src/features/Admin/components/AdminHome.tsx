@@ -241,26 +241,42 @@ const AdminHome = () => {
                                                 <td className="px-3 py-2 md:px-6 md:py-4 border-b">
 
                                                     {slot.isBooked &&
-                                                        <div>
-                                                            <button onClick={() => handleAppointment('cancel', slot._id, slot.doctorId)}
-                                                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                                        <div className="flex">
+                                                            <button title="delete" onClick={() => handleAppointment('cancel', slot._id, slot.doctorId)}
+                                                                className="relative group px-3 py-2 md:px-6 md:py-4 border-b shadow-lg text-gray-700"
                                                             >
                                                                 <Delete className="text-red-500" size={15} />
+                                                                <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                                                 transform -translate-x-1/2 invisible group-hover:visible
+                                                                 bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                                                 group-hover:opacity-100 transition duration-300 ease-in-out">Delete</span>
                                                             </button>
+                                                            {/* <div className="flex group relative"> */}
+                                                                
                                                             <button onClick={() => handleAppointment('complete', slot._id, slot.doctorId)}
-                                                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
-                                                            >
+                                                               
+                                                                className="flex group relative p-1 md:px-6 md:py-4 border-b shadow-lg text-gray-700"
+                                                                >
                                                                 <Check className="text-green-500" size={15} />
+                                                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                                                 transform -translate-x-1/2 invisible group-hover:visible
+                                                                 bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                                                 group-hover:opacity-100 transition duration-300 ease-in-out">Completed</span>
                                                             </button>
+                                                            {/* </div> */}
                                                         </div>
                                                     }
 
                                                     {(slot.isCompleted || slot.isCancelled) &&
                                                         <div className="text-center">
                                                             <button onClick={() => handleAppointment('remove', slot._id, slot.doctorId)}
-                                                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                                                className="relative group px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                                                             >
                                                                 <Trash className="text-red-500" size={15} />
+                                                                <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                                                 transform -translate-x-1/2 invisible group-hover:visible
+                                                                 bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                                                 group-hover:opacity-100 transition duration-300 ease-in-out">Remove</span>
                                                             </button>
 
                                                         </div>
