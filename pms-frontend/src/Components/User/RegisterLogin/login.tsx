@@ -34,7 +34,7 @@ const Login = () => {
   
 
     const submitResult = async (data: SubmitProps) => {
-        const toastId = toast.loading('Signing In..')
+        const toastId = toast.loading('Signing In..');
         try {
             const response = await axios.post(`${backend_url}/pms/loginUser`,
                 { email: data.email, password: data.password },
@@ -42,12 +42,10 @@ const Login = () => {
                     withCredentials: true,
                 })
             if (response.data.success) {
-                console.log("frontend response of login:", response.data);
                 toast.success("Successfully LoggedIn", { id: toastId });
                 const loginResponse = response.data;
                 const role = loginResponse.user.role;
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
-                console.log("user role after login: ", role);
                 switch (role) {
                     case 'patient': {
                         // const patientId = loginResponse.userProfile.patientRecord;
@@ -120,6 +118,7 @@ const Login = () => {
                        className={`
                             w-full px-4 py-3 rounded-md font-semibold text-black
                             text-lg transition-colors duration-300
+                            hover:text-white 
                             ${isSubmitting 
                                 ? '!bg-gray-400 cursor-not-allowed'
                                 : '!bg-purple-400 hover:!bg-purple-700 text-white'

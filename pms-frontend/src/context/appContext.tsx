@@ -203,7 +203,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const scheduledLogout = useCallback((exp: number) => {
+        console.log("SCEDULE Logout Called")
         const timeLeft = exp - Date.now();
+        console.log("time left: ", timeLeft, " exp: ", exp, " Date now ", Date.now());
         if (timeLeft > 0) {
             logoutTimer = setTimeout(logout, timeLeft)
         } else {
@@ -249,6 +251,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUserRole(user.role);
         setIsAuthenticated(true);
         const expiryInSeconds = Date.now() + expiresInSec * 1000;
+        console.log("expire IN seconds: ",expiresInSec);
         setExpiryTime(expiryInSeconds);
         localStorage.setItem('auth', JSON.stringify({
             user: user,
@@ -313,9 +316,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     }, [logout, scheduledLogout])
 
+    const baseUrl = import.meta.env.VITE_BACKEND_URL;
     useEffect(() => {
         const axiosInstance = axios.create({
-            baseURL: `https://da46e8198308.ngrok-free.app`,
+            baseURL: baseUrl,
     
             withCredentials: true
         })

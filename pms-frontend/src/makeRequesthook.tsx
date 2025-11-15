@@ -6,6 +6,7 @@ interface AxiosFetchParameters{
     data?:object
 }
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
 const makeRequest = ({url, method='get', data={}}:AxiosFetchParameters) => {
 
     return axios({

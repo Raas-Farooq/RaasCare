@@ -47,7 +47,7 @@ const registerPatient = async (req, res, next) => {
         }
         console.log("patientADded after the exist process ", patientAdded);
         let token;
-        const expiryTime = 60 * 60;
+        const expiryTime = 1 * 60;
         try{
             token = jwt.sign({id: patientAdded._id, email:email, role:'patient'}, process.env.JWT_SECRET, {expiresIn:'1h'});
         }

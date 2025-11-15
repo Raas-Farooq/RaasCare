@@ -434,12 +434,12 @@ const updateSlotStatus = async (req, res, next) => {
         }
     }
 
-    console.log("role; ",role, "action ", action, "slotId ", slotId, "docId; ", docId);
     if (!updateOperation) {
         return res.status(400).json({ success: false, message: "invalid action" })
     }
     try {
 
+        const currentDate = new Date();
         await AvailableSlots.findOneAndUpdate(
             { _id: slotId, doctorId: docId },
             {
@@ -449,8 +449,17 @@ const updateSlotStatus = async (req, res, next) => {
             { new: true, lean: true }
         );
 
-        const latestSlots = await AvailableSlots.find(filterUpdatedSlots).lean().limit(10);
-        console.log("latest Slots: ", latestSlots)
+        const latestUpdatedSlots= {
+            ...filterUpdatedSlots,
+            "slotDate.startDate": {
+                $gte:currentDate
+            }
+        }
+        const latestSlots = (await AvailableSlots.find(latestUpdatedSlots)
+        .lean()
+        .limit(10)
+        .sort({updatedAt:-1}))
+
         return res.status(200).json({
             success: true,
             message: "Successfully updated the Slot status",

@@ -1,5 +1,5 @@
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import Navbar from '../Components/Navbar/navbar.tsx';
 import HeroImage from "./heroImage.tsx";
@@ -20,11 +20,15 @@ function Home() {
 
 
   }
+  useEffect(() => {
+    localStorage.removeItem('doctorId');
+  },[])
 
   const handleSpecialityClick = (targetSpeciality: string) => {
 
     navigate('/doctorsBySpeciality', { state: { targetField: targetSpeciality } })
   }
+
 
   const handleServicesClick = (service: { title: string }) => {
     if (service.title === 'Nursing Care') {

@@ -56,7 +56,7 @@ const PatientProfile = () => {
                     const response = await makeRequest({url:`pms/getPatient/${patientRecordId}`, method:"get"}); 
                     if(response.data.success){
                         setCurrentPatient(response.data.patient);
-                        toast.success('Successfully ', {id: toastId})
+                        toast.success('Successfully Loaded ', {id: toastId})
                     }
                     
                 }
