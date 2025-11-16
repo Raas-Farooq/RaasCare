@@ -23,6 +23,23 @@ const app = express();
 const Port = process.env.PORT || 2500;
 ConnectingToDatabase();
 
+const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raas-care.vercel.app'];
+const corsAuthen = {
+    origin:function(requestOrigin , callback){
+
+        if(!requestOrigin || allowedOrigins.includes(requestOrigin)){
+            return callback(null, true)
+        }
+            
+        return callback (new Error("Not allowed by CORS"))
+        
+    },
+    credentials:true
+}
+
+app.use(cors(corsAuthen));
+app.options("*", cors(corsAuthen));
+
 
 app.use(helmet());
 app.use(morgan('dev'));
@@ -38,20 +55,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(express.json());
 app.use(cookieParser());
-const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raascare.vercel.app/'];
-app.use(cors({
-    origin:function(requestOrigin , callback){
 
-        if(!requestOrigin || allowedOrigins.includes(requestOrigin)){
-            return callback(null, true)
-        }
-            
-        return callback (new Error("Not allowed by CORS"))
-        
-    },
-    credentials:true
-}),
-);
 app.get('/', (req, res) => {
         res.send("Welcome the The Arena of Last BALL. Alhamdulila")
     })
