@@ -38,7 +38,7 @@ const corsAuthen = {
 }
 
 app.use(cors(corsAuthen));
-app.options("*", cors(corsAuthen));
+app.options("/*", cors(corsAuthen));
 
 
 app.use(helmet());
