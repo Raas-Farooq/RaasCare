@@ -37,9 +37,7 @@ const corsAuthen = {
 }
 
 app.use(cors(corsAuthen));
-app.options("*", (req, res) => {
-  res.sendStatus(200);
-});
+app.options(/.*/, cors(corsAuthen));
 
 
 app.use(helmet());
