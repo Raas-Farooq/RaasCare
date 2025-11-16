@@ -30,7 +30,6 @@ const corsAuthen = {
         if(!requestOrigin || allowedOrigins.includes(requestOrigin)){
             return callback(null, true)
         }
-            
         return callback (new Error("Not allowed by CORS"))
         
     },
@@ -38,7 +37,9 @@ const corsAuthen = {
 }
 
 app.use(cors(corsAuthen));
-app.options("/*", cors(corsAuthen));
+app.options("*", (req, res) => {
+  res.sendStatus(200);
+});
 
 
 app.use(helmet());
