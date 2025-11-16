@@ -7,7 +7,8 @@ export default defineConfig({
   server:{
     allowedHosts:[
       'localhost',
-      'adder-rational-panther.ngrok-free.app'
     ]
   }
 })
+
+
