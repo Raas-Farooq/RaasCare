@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash, IndianRupee } from "lucide-react";
+import { LayoutDashboardIcon, BookAIcon, User, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
-import { FaRupeeSign } from "react-icons/fa";
+
 
 interface BookedSlot {
   isBooked: boolean,

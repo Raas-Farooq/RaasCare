@@ -1,5 +1,5 @@
 
-import { BookAIcon, Check, Delete, DollarSignIcon, LayoutDashboardIcon, Trash, User, Users } from "lucide-react";
+import { BookAIcon, Check, Delete, LayoutDashboardIcon, Trash, User, Users } from "lucide-react";
 import { useState } from "react";
 // import DashboardCharts from "./charts/dashboardCharts";
 // import AddNewDoctor from "./components/addNewDoctor";
