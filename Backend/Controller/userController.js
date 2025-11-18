@@ -47,7 +47,7 @@ const registerPatient = async (req, res, next) => {
         }
         console.log("patientADded after the exist process ", patientAdded);
         let token;
-        const expiryTime = 1 * 60;
+        const expiryTime = 60 * 60;
         try{
             token = jwt.sign({id: patientAdded._id, email:email, role:'patient'}, process.env.JWT_SECRET, {expiresIn:'1h'});
         }
@@ -131,7 +131,7 @@ const userLogin = async (req, res,next) => {
                     doctorId:userExist._id,
                      ...slotsFilter,
                     'slotDate.startDate':{$gte:today}}
-            ).lean();
+            ).lean().sort({updatedAt:-1});
         }
         if(userExist.role === 'admin'){
             slotsBooked = await AvailableSlots.find(
@@ -139,7 +139,7 @@ const userLogin = async (req, res,next) => {
                     ...slotsFilter,
                     'slotDate.startDate':{$gte:today}
                 }
-            ).sort({createdAt:-1}).
+            ).sort({updatedAt:-1}).
             limit(10)
             .lean()
         }
@@ -151,7 +151,7 @@ const userLogin = async (req, res,next) => {
                     ...slotsFilter,
                     'slotDate.startDate':{$gte:today}
                 },
-            ).sort({createdAt:-1}).limit(5).lean()
+            ).sort({updatedAt:-1}).limit(5).lean()
             // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
             console.log("slots inside the user controller ", slotsBooked);
         }
