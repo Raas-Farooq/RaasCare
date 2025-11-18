@@ -16,10 +16,6 @@ function Home() {
   const { imageLoaded } = useImageCached("/relief.jpg");
 
 
-  function learning() {
-
-
-  }
   useEffect(() => {
     localStorage.removeItem('doctorId');
   },[])
