@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash } from "lucide-react";
+import { LayoutDashboardIcon, BookAIcon, User, DollarSignIcon, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash, IndianRupee } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
 import toast from "react-hot-toast";
 import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import { FaRupeeSign } from "react-icons/fa";
 
 interface BookedSlot {
   isBooked: boolean,
@@ -163,11 +164,11 @@ const DoctorHome = () => {
                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300">
                   <div className="flex items-center justify-between">
                     <div className="p-3 rounded-lg bg-blue text-blue-600">
-                      <DollarSignIcon className="w-6 h-6" />
+                      <span className="w-6 h-6"> Rs </span>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-500">Earnings</p>
-                      <p className="text-2xl font-semibold text-gray-800">$12,345</p>
+                      <p className="text-2xl font-semibold text-gray-800">78,345</p>
                     </div>
                   </div>
                 </div>
@@ -228,13 +229,21 @@ const DoctorHome = () => {
                                     <div className="flex gap-4">
                                       <button
                                         onClick={() => handleAppointment('complete', slot._id)}
-                                        className="text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                        className="group text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
                                         <CheckCircle />
+                                        <span className="absolute invisible opacity-0 
+                                        group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
+                                        px-1 left-1/2 -translate-x-1/2 top-7 rounded-full transition-all duration-300"
+                                        > Complete </span>
                                       </button>
                                       <button
                                         onClick={() => handleAppointment('cancel', slot._id)}
-                                        className="text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                        className="group text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
                                         <CircleX />
+                                        <span className="absolute invisible opacity-0 
+                                        group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
+                                        px-1 left-1/2 -translate-x-1/2 top-7 rounded-full transition-all duration-300"
+                                        > delete </span>
                                       </button>
                                     </div>
                                   }
@@ -250,7 +259,14 @@ const DoctorHome = () => {
                                   )}
                                   {(slot.isCancelled || slot.isCompleted) &&
                                     <div>
-                                      <button onClick={() => handleAppointment('remove', slot._id)}><Trash className="text-red-400" size={20} />  </button>
+                                      <button onClick={() => handleAppointment('remove', slot._id)}
+                                        className="group relative">
+                                        <Trash className="text-red-400" size={20} />
+                                        <span className="absolute invisible opacity-0 
+                                        group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
+                                        px-1 left-1/2 -translate-x-1/2 top-6 rounded-full transition-all duration-300"
+                                        > remove </span>
+                                      </button>
                                     </div>
                                   }
                                 </div>
@@ -303,14 +319,22 @@ const DoctorHome = () => {
                           {slot.isBooked &&
                             <div>
                               <button onClick={() => handleAppointment('cancel', slot._id)}
-                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
                                 <Delete className="text-red-500" size={15} />
+                                <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                                  transform -translate-x-1/2 invisible group-hover:visible
+                                                  bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                                  group-hover:opacity-100 transition duration-300 ease-in-out">Delete</span>
                               </button>
                               <button onClick={() => handleAppointment('complete', slot._id)}
-                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
                                 <Check className="text-green-500" size={15} />
+                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                                  transform -translate-x-1/2 invisible group-hover:visible
+                                                  bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                                  group-hover:opacity-100 transition duration-300 ease-in-out">Complete</span>
                               </button>
                             </div>
                           }
@@ -318,9 +342,14 @@ const DoctorHome = () => {
                           {(slot.isCompleted || slot.isCancelled) &&
                             <div className="text-center">
                               <button onClick={() => handleAppointment('remove', slot._id)}
-                                className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
+                                className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
                                 <Trash className="text-red-500" size={15} />
+                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                                  transform -translate-x-1/2 invisible group-hover:visible
+                                                  bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                                  group-hover:opacity-100 transition duration-300 ease-in-out">
+                                                    Remove</span>
                               </button>
 
                             </div>

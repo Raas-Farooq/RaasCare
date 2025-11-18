@@ -2,7 +2,7 @@ import useImageCached from "./useImageCached"
 
 
 const HeroImage = () => {
-    const {imageLoaded} = useImageCached('hospitalWallpaper.jpg')
+    const {imageLoaded} = useImageCached('heroImage.png')
     return (
         <div className="w-full max-w-6xl mx-auto px-4 py-6">
             {imageLoaded === 'loading' && 
@@ -12,7 +12,7 @@ const HeroImage = () => {
             }
             <div className="w-full flex justify-center ">
                 <img
-                src={'/hospitalWallpaper.jpg'}
+                src={'/heroImage.png'}
                 loading="lazy"
                 alt={`hero-image`}
                 className={` ${imageLoaded === 'loaded' ? 'w-full h-auto max-h-[70vh] object-cover rounded-2xl shadow-lg hover:shadow-xl transition-shadow ': 'hidden'} `} />

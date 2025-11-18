@@ -162,11 +162,11 @@ const AdminHome = () => {
                                 <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-lg transition-shadow duration-300">
                                     <div className="flex items-center justify-between">
                                         <div className="p-3 rounded-lg bg-blue text-blue-600">
-                                            <DollarSignIcon className="w-6 h-6" />
+                                            <span className="w-6 h-6"> Rs </span>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm text-gray-500">Revenue Monthly</p>
-                                            <p className="text-2xl font-semibold text-gray-800">$12,345</p>
+                                            <p className="text-2xl font-semibold text-gray-800">Rs 26,55300</p>
                                         </div>
                                     </div>
                                 </div>

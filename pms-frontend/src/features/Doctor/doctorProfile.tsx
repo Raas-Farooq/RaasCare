@@ -360,15 +360,15 @@ function DoctorPublicProfile() {
                                             <div className="flex flex-wrap" key={index}>
                                                 {dayId === day._id && day.slots?.map((slot, slotIndex) => (
                                                     <button key={slotIndex} onClick={() => handleSlotSelection(slot.slotId)}
-                                                        className={`
-                                                    m-3 text-xs py-2 w-24 rounded-xl shadow-md
-                                                    bg-blue-100
-                                                    hover:shadow-lg 
-                                                    ease-out
-                                                    opacity-0 animate-fade-in
+                                                    className={`            
+                                                        m-3 text-xs py-2 w-24 rounded-xl shadow-md
+                                                        bg-blue-100
+                                                        hover:shadow-lg 
+                                                        ease-out
+                                                        opacity-0 animate-fade-in
                                                     
                                                     ${(!(slot.isBooked) && selectedSlot_id === slot.slotId) ? 'bg-green-400' : 'hover:bg-blue-100'}
-                                                    ${slot.isBooked ? '!bg-gray-400 hover:bg-gray-400 disabled cursor-not-allowed' : 'bg-blue-200 hover:bg-blue-300'}
+                                                    ${slot.isBooked && '!bg-gray-400 hover:bg-gray-400 disabled cursor-not-allowed'}
                                                     `}
                                                         style={{ animationDelay: `${slotIndex * 50}ms` }}
                                                     >
@@ -389,7 +389,7 @@ function DoctorPublicProfile() {
                                 <button
                                     disabled={isSubmitting}
                                     onClick={handleMakeAppointment}
-                                    className={` rounded-full max-w-fit ${isSubmitting ? '!bg-gray-400 cursor-not-allowed px-2 py-3' : 'bg-purple-300 transition-colors duration-300 px-2 py-3 hover:shadow-md hover:bg-purple-500 '}`}
+                                    className={` rounded-full max-w-fit ${isSubmitting ? '!bg-gray-400 cursor-not-allowed px-2 py-3' : 'bg-purple-300 transition-colors duration-300 px-2 py-3 hover:shadow-md hover:bg-purple-500 hover:text-white'}`}
                                 > Book Appointment
                                 </button>
                             </div>
