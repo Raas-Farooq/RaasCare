@@ -71,7 +71,7 @@ const Login = () => {
 
         } catch (err) {
            let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId });
+            toast.error(errorMessage, { id: toastId , duration:8000});
         }
     }
     return (

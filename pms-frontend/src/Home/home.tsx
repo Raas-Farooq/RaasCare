@@ -16,10 +16,6 @@ function Home() {
   const { imageLoaded } = useImageCached("/relief.jpg");
 
 
-  function learning() {
-
-
-  }
   useEffect(() => {
     localStorage.removeItem('doctorId');
   },[])
@@ -61,16 +57,11 @@ function Home() {
           </p>
           <div className="mt-6 flex justify-center gap-5">
             <button onClick={function () { navigate('/MakeAppointment') }}
-              className="text-white text-sm sm:text-normal px-4 py-2 md:px-6 md:py-3 rounded-full bg-purple-500 hover:bg-purple-600 transition">
+              className="text-white text-sm sm:text-base px-4 py-2 md:px-6 md:py-4 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
-            <button onClick={() => learning()} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+            {/* <button onClick={() => learning()} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
-            </button>
-            {/* <button
-              onClick={() => navigate('/portfolioPage')}
-              className="px-5 py-2 border border-gray-300 rounded-md hover:text-green-600 hover:border-green-700">
-              Portfolio
             </button> */}
           </div>
         </div>

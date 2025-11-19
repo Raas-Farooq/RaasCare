@@ -84,7 +84,7 @@ function Register() {
 
         } catch (err: string | any) {
             let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId });
+            toast.error(errorMessage, { id: toastId, duration:8000 });
         }
     }
 

@@ -19,7 +19,7 @@ export default function useScrollRestore() {
       const timeoutId = setTimeout(() => {
         window.scrollTo(0, scrollPosition);
         isRestoringRef.current = false;
-      }, 100); // Adjust timing to match your PageTransition duration (400ms)
+      }, 50); // Adjust timing to match your PageTransition duration (400ms)
       
       return () => clearTimeout(timeoutId);
     } else {
