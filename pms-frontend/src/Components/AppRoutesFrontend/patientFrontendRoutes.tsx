@@ -6,16 +6,19 @@ import PatientDashboard from '../dashboards/patientDashboards.tsx';
 import UpdatePatientProfile from '../../features/Patient/updatePatientProfile.tsx';
 import MyAppointments from '../../features/Patient/patientAppointmentsPage.tsx';
 
-export const patientRoutes = [{
-  path:'/patient-dashboard',
-  element: <PatientDashboard />,
-  children:[
+
+
+const patientRoutesChildren = [
     { index: true, element: <Home /> },
     { path: "patientProfile/", element: <PatientProfile /> },
     {path: 'myAppointments', element :<MyAppointments />},
     { path: 'addPatient', element: <PatientAddForm /> },
     { path: "updatePatientProfile", element: <UpdatePatientProfile /> }
   ]
+const patientRoutes = [{
+  path:'/patient-dashboard',
+  element: <PatientDashboard />,
+  children: patientRoutesChildren
 }
 ];
 

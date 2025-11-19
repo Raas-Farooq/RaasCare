@@ -74,15 +74,17 @@ const DoctorHome = () => {
       if (response.data.success) {
         toast.dismiss();
         toast.success(`successfully ${action}ed the Slot`, { id: toastId })
-        if (response.data.updatedSlots.length) {
+        if (response.data.success) {
           const updatedSlots = response.data.updatedSlots;
           // storing locally
-          if (updatedSlots.length > 0) {
+          console.log("response: ", response.data, " updatedSlots status: ", updatedSlots);
             localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
             localStorage.setItem('bookedSlots', JSON.stringify([]));
             syncUpdatedSlots(updatedSlots)
-          }
         }
+        else{
+            toast.error(`Error occurred while ${action}ing slot`, { id: toastId });
+          }
       }
 
     }

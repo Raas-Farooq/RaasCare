@@ -1,18 +1,19 @@
 import { Navigate, Outlet } from "react-router-dom"
+import { useAuth } from "../../context/appContext";
 
 
 interface ProtectedRouteProps{
-    isAuthenticated:boolean,
+
     allowedRoles:string[],
-    userRole:string,
     redirectPath:string,
     children?:React.ReactNode,
 
 }
 
-const ProtectedRoute = ({isAuthenticated,allowedRoles,userRole,redirectPath="/login",children}:ProtectedRouteProps) => {
+const ProtectedRoute = ({allowedRoles,redirectPath="/login"}:ProtectedRouteProps) => {
+    const {isAuthenticated, userRole, loading} = useAuth();
 
-    // if(loading) return <div>Loading..</div>
+    if(loading) return <div>Loading..</div>
     if(!isAuthenticated){
         return <Navigate to={redirectPath} replace />
     }
@@ -21,7 +22,7 @@ const ProtectedRoute = ({isAuthenticated,allowedRoles,userRole,redirectPath="/lo
         return <Navigate to ={redirectPath} replace />
     }
 
-    return children ? children: <Outlet />
+    return <Outlet />
 
 }
 

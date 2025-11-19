@@ -9,6 +9,7 @@ import axios from "axios";
 import { useAuth } from "../../../context/appContext";
 import DashboardCharts from "../charts/dashboardCharts";
 import AddNewDoctor from "./addNewDoctor";
+import AdminNavbar from "./AdminNavbar";
 
 interface BookedSlot {
   isBooked: boolean,
@@ -89,6 +90,7 @@ const AdminHome = () => {
     return (
         <>
             <div className="bg-gray-50 min-h-screen">
+                <AdminNavbar />
                 <nav className="w-full max-w-5xl mx-auto py-4 px-2">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <button
