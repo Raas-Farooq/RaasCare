@@ -1,14 +1,14 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-
 import HandleAxiosError from "../../../utils/handleAxiosError"
+
 
 const loginSchema = z.object({
     email: z.string()
@@ -25,13 +25,18 @@ type SubmitProps = z.infer<typeof loginSchema>
 const Login = () => {
     const { login } = useAuth()
     const navigate = useNavigate();
+    const location = useLocation();
+    const redirectTo = location.state?.redirectTo;
+
     // const [patientRecordId, setPatientRecordId] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema)
     })
 
-  
+    useEffect(() => {
+        console.log("redirectTo inside login ", redirectTo);
+    }, [redirectTo])
 
     const submitResult = async (data: SubmitProps) => {
         const toastId = toast.loading('Signing In..');
@@ -48,11 +53,15 @@ const Login = () => {
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
                 switch (role) {
                     case 'patient': {
-                        // const patientId = loginResponse.userProfile.patientRecord;
-                        // if(patientId){
-                        //     setPatientRecordId(patientId);
-                        // };
-                        navigate('/patient-dashboard');
+                  
+                        console.log("came in Patient case")
+                        if (redirectTo) {
+                            console.log("redirectTo exist")
+                            navigate(`/${redirectTo}`)
+                        } else {
+                            navigate('/patient-dashboard');
+                        }
+
                         break;
                     }
                     case 'doctor': {
@@ -70,8 +79,8 @@ const Login = () => {
             }
 
         } catch (err) {
-           let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId , duration:8000});
+            let errorMessage = HandleAxiosError(err);
+            toast.error(errorMessage, { id: toastId, duration: 8000 });
         }
     }
     return (
@@ -79,8 +88,8 @@ const Login = () => {
             <h1 className="text-2xl md:text-3xl text-purple-700 text-center font-bold mb-6"> Login Here</h1>
             <section className="shadow-xl bg-white rounded-lg w-full max-w-md p-8 sm:p-12">
                 <form className="flex flex-col gap-6" onSubmit={handleSubmit(submitResult)}>
-                    <label htmlFor="email" 
-                    className="block text-gray-700 font-medium mb-1">Email</label>
+                    <label htmlFor="email"
+                        className="block text-gray-700 font-medium mb-1">Email</label>
                     <input
                         type="email"
                         id="email"
@@ -107,7 +116,7 @@ const Login = () => {
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute right-5 top-12 -translate-y-1/2 text-gray-500"
-                            aria-label={showPassword ? 'Hide Password': 'Show Password'}
+                            aria-label={showPassword ? 'Hide Password' : 'Show Password'}
                         > {showPassword ? <FaEye /> : <FaEyeSlash />}
                         </button>
                         {errors.password && <p className="text-red-500 mt-1 text-sm"> {errors.password.message?.toString()} </p>}
@@ -115,11 +124,11 @@ const Login = () => {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                       className={`
+                        className={`
                             w-full px-4 py-3 rounded-md font-semibold text-black
                             text-lg transition-colors duration-300
                             hover:text-white 
-                            ${isSubmitting 
+                            ${isSubmitting
                                 ? '!bg-gray-400 cursor-not-allowed'
                                 : '!bg-purple-400 hover:!bg-purple-700 text-white'
                             }
@@ -131,7 +140,7 @@ const Login = () => {
                     <div className="flex flex-right">
                         <button
                             type="button"
-                            onClick={() => navigate('/register')}
+                            onClick={() => navigate('/register', { state: { redirectTo:redirectTo } })}
                             className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
                                 ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >
@@ -139,7 +148,7 @@ const Login = () => {
                         </button>
                         <button
                             type="button"
-  
+
                             className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
                                 ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >
@@ -154,3 +163,20 @@ const Login = () => {
 }
 
 export default Login
+
+// Unexpected Application Error!
+// id is not defined
+// ReferenceError: id is not defined
+//     at http://localhost:5173/src/Components/User/RegisterLogin/login.tsx?t=1763629051167:47:66
+//     at react-stack-bottom-frame (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:17478:20)
+//     at runWithFiberInDEV (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:1485:72)
+//     at commitHookEffectListMount (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:8460:122)
+//     at commitHookPassiveMountEffects (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:8518:60)
+//     at reconnectPassiveEffects (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:10016:13)
+//     at recursivelyTraverseReconnectPassiveEffects (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:9995:11)
+//     at reconnectPassiveEffects (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:10054:13)
+//     at recursivelyTraverseReconnectPassiveEffects (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:9995:11)
+//     at reconnectPassiveEffects (http://localhost:5173/node_modules/.vite/deps/react-dom_client.js?v=d1637c5f:10009:13)
+// 💿 Hey developer 👋
+
+// You can provide a way better UX than this when your app throws errors by providing your own ErrorBoundary or errorElement prop on your route.

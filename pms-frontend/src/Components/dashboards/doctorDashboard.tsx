@@ -2,20 +2,9 @@ import { Outlet } from "react-router-dom";
 
 
 
-
-
 function DoctorDashboard(){
  
-    return (
-      <>
-        
-        <main>
-          <Outlet />
-        </main>
-        
-      </>
-         
-    )
+    return <Outlet />
 }
 
 export default DoctorDashboard

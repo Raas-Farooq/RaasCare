@@ -1,11 +1,11 @@
 
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+
 
 // Function to call when user confirms
 const useCustomLogin = () => {
-    const navigate = useNavigate();
 
+ 
     const showConfirmDialogue = () => {
 
         return new Promise(resolve => {
@@ -15,7 +15,6 @@ const useCustomLogin = () => {
                     <div className="mt-4">
                         <button
                             onClick={() => {
-                                navigate('/login');
                                 toast.dismiss(t.id);
                                 resolve(true)
                             }}

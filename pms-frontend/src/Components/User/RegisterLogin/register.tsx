@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import parsePhoneNumberFromString from "libphonenumber-js"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
 import HandleAxiosError from "../../../utils/handleAxiosError"
@@ -21,7 +21,12 @@ interface SubmitProps {
 function Register() {
     const navigate = useNavigate();
     const [revealPassword, setRevealPassword] = useState(false);
-    // const [patientRecordId, setPatientRecordId] = useState('');
+    const location = useLocation();
+    const redirectTo  = location.state?.redirectTo;
+        useEffect(() => {
+            console.log("redirectTo register", redirectTo);
+        },[redirectTo])
+
     const { login } = useAuth();
     const registerSchema = z.object({
         username: z.string()
@@ -79,7 +84,14 @@ function Register() {
                 //     setPatientRecordId(patientRecord)
                 // }
                 toast.success('You have Successfully Registered ', { id: toastId })
-                navigate('/patient-dashboard')
+                  console.log("came in Patient case")
+                        if (redirectTo) {
+                            console.log("redirectTo exist")
+                            navigate(`/${redirectTo}`)
+                        } else {
+                            navigate('/patient-dashboard');
+                        }
+                
             }
 
         } catch (err: string | any) {
@@ -172,3 +184,8 @@ function Register() {
 }
 
 export default Register
+
+// 1- first only have the whole state assigned then in try catch block get the state
+// 2- big error message solution
+// 3- register working component
+// 4- how patient-dashboard can open even i'm not opening
