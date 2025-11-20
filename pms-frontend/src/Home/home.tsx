@@ -60,9 +60,9 @@ function Home() {
               className="text-white text-sm sm:text-base px-4 py-2 md:px-6 md:py-4 rounded-full bg-purple-500 hover:bg-purple-600 transition">
               Book Appointment
             </button>
-            {/* <button onClick={() => learning()} className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
+            <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-full hover:text-purple-700 hover:border-purple-600 transition">
               Learn More
-            </button> */}
+            </button>
           </div>
         </div>
       </section>

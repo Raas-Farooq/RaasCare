@@ -191,6 +191,7 @@ function DoctorPublicProfile() {
         if (!userRole) {
             const confirmResponse = await confirmLogin();
             if (confirmResponse) {
+                navigate('/login', {state:{redirectTo:`doctorPublicProfile/${doctorParamsId}`} });
                 return
             } else {
                 return

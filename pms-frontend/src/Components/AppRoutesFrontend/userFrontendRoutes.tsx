@@ -8,19 +8,17 @@ import NursingCare from "../../Home/services/nursingCare.tsx"
 import OurDoctors from "../../Home/services/ourDoctors.tsx"
 import DiagnosticCenter from "../../Home/services/diagnosticCenter.tsx"
 import PortfolioSite from "../../Home/services/portfolio.tsx"
-import type { RouteObject } from "react-router-dom"
-import type { ReactNode } from "react"
 import Home from "../../Home/home.tsx"
 
-interface AppRoute extends Omit<RouteObject, 'element'> {
-  element: ReactNode;
-  public?: boolean;
+// interface AppRoute extends Omit<RouteObject, 'element'> {
+//   element: ReactNode;
+//   public?: boolean;
 
-}
+// }
 
 
 
-const userRoutes: AppRoute[] = [
+const userRoutes = [
      {path:'/', element:<Home />, index:true},
      {path:"/register", element:<Register />,public:true },
      {path:'/topFacilities', element:<TopFacilities />, public:true},
