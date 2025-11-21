@@ -57,9 +57,9 @@ const Login = () => {
                         console.log("came in Patient case")
                         if (redirectTo) {
                             console.log("redirectTo exist")
-                            navigate(`/${redirectTo}`)
+                            navigate(redirectTo, {replace:true})
                         } else {
-                            navigate('/patient-dashboard');
+                            navigate('/patient-dashboard', {replace:true});
                         }
 
                         break;
@@ -140,7 +140,7 @@ const Login = () => {
                     <div className="flex flex-right">
                         <button
                             type="button"
-                            onClick={() => navigate('/register', { state: { redirectTo:redirectTo } })}
+                            onClick={() => navigate('/register', { state: { redirectTo:redirectTo }, replace:true })}
                             className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
                                 ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >

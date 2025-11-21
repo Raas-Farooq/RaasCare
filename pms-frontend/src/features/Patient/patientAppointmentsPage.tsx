@@ -111,7 +111,7 @@ const MyAppointments = () => {
                     )}
                   </tbody>
                 </table>
-                <div className="flex flex-col mt-8">
+                <div className="flex flex-col mt-24">
                     <button onClick={() => navigate(-1)} className="text-gray-600 hover:text-gray-900 hover:underline"> Back to Doctor Profile </button>
                     <button onClick={() => navigate('/')} className="text-gray-600 hover:text-gray-900 hover:underline"> Back to Home</button>
                   </div>

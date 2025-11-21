@@ -9,6 +9,7 @@ import { FaSpinner } from "react-icons/fa";
 import useConfirmNavigation from "../../utils/customLogin";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import makeRequest from "../../makeRequesthook";
+import { replace } from "lodash";
 
 interface Slots {
     slotTime: string,
@@ -191,7 +192,7 @@ function DoctorPublicProfile() {
         if (!userRole) {
             const confirmResponse = await confirmLogin();
             if (confirmResponse) {
-                navigate('/login', {state:{redirectTo:`doctorPublicProfile/${doctorParamsId}`} });
+                navigate('/login', {state:{redirectTo:`/doctorPublicProfile/${doctorParamsId}`}, replace:true });
                 return
             } else {
                 return
@@ -199,7 +200,7 @@ function DoctorPublicProfile() {
 
         }
         else if (userRole !== 'patient') {
-            toast.error("Only patients can book an appointment");
+            toast.error(`${userRole}s can't book an appointment. You can contact with Management`);
             return;
         }
 
@@ -263,7 +264,7 @@ function DoctorPublicProfile() {
                 toast.success('Booked Successfully!', { id: toastId })
                 
                 setTimeout(() => {
-                    navigate('/patient-dashboard/myAppointments');
+                    navigate('/patient-dashboard/myAppointments', {replace:true});
                 }, 1500)
             }
         }

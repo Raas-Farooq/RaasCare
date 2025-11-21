@@ -6,10 +6,10 @@ import useImageCached from "./useImageCached";
 const TopFacilities = () => {
 
 
-    const care = useImageCached('/patientCareNew.jpg');
-    const doctors = useImageCached('/patientFacilitiesDoctors.jpg');
-    const counselling = useImageCached('/topFacilitiesCounselling.jpg');
-    const international = useImageCached('/internationalPatients.jpg');
+    const care = useImageCached('/patientCareNew.webp');
+    const doctors = useImageCached('/patientFacilitiesDoctors.webp');
+    const counselling = useImageCached('/topFacilitiesCounselling.webp');
+    const international = useImageCached('/internationalPatients.webp');
  
 
 
@@ -26,7 +26,7 @@ const TopFacilities = () => {
             <div className="w-full max-w-7xl mx-auto flex flex-col items-center text-center sm:px-6 lg:px-8">
                 <div>
                     <h1 className="text-purple-500 text-4xl my-8 font-bold">Built For Ease And Comfort</h1>
-                    <p className={`text-center text-justify max-w-5xl text-lg text-gray-600`}>
+                    <p className={`text-center text-justify max-w-5xl sm:text-lg text-gray-600 px-4`}>
                         It streamlines the process by enabling users to search for providers, view their availability, book slots, and receive reminders, which significantly simplifies managing their schedules and makes healthcare or other services more accessible
                         aims to provide a user-friendly scheduling experience that saves time and reduces stress for both clients and businesses by streamlining the process of booking, rescheduling, and canceling appointments. Key features contributing to this experience include an intuitive interface, 24/7 self-service booking, automated notifications, real-time availability, a mobile-first design, and integrated payments.
                     </p>
@@ -44,7 +44,7 @@ const TopFacilities = () => {
                             }
                             <img
 
-                                src="/patientCareNew.jpg" loading="lazy"
+                                src="/patientCareNew.webp" loading="lazy"
                                 className={`${BaseImageStyling} ${care.imageLoaded === 'loaded' ? 'block' : 'hidden'}`}
                                 alt="Patient Care" />
 
@@ -74,7 +74,7 @@ const TopFacilities = () => {
                                 <div className="h-64 bg-gray-200 animate-pulse ">
                                 </div>
                             }
-                            <img src="patientFacilitiesDoctors.jpg"
+                            <img src="patientFacilitiesDoctors.webp"
                                 className={`${BaseImageStyling}${doctors.imageLoaded === 'loaded' ? 'block' : 'hidden'}`}
                                 loading="lazy"
                             />
@@ -102,7 +102,7 @@ const TopFacilities = () => {
                                     </div>
                                 }
                                 <img
-                                    src="./internationalPatients.jpg"
+                                    src="./internationalPatients.webp"
                                     className={`${BaseImageStyling} ${international.imageLoaded === 'loaded' ? 'block' : 'hidden'}`}
                                     loading="lazy" />
 
@@ -127,7 +127,7 @@ const TopFacilities = () => {
                             }
                             <img
 
-                                src="/topFacilitiesCounselling.jpg" loading="lazy"
+                                src="/topFacilitiesCounselling.webp" loading="lazy"
                                 className={`${BaseImageStyling} 
                                 ${counselling.imageLoaded === 'loaded' ? 'block' : 'hidden'}`}
                                 alt="Patient Care" />
