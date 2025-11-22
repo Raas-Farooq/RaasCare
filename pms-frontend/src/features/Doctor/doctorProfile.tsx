@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import './cssTransition.css';
-import { ArrowLeft } from "lucide-react";
+// import { ArrowLeft } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -92,6 +92,11 @@ function DoctorPublicProfile() {
         setSlotsLoading(false);
     }
 
+    useEffect(() => {
+        window.scrollTo({top:0, behavior:"instant" as ScrollBehavior})
+    }, [doctorParamsId])
+
+    
     useEffect(() => {
         setIsProfileLoading(true);
         const currentDoctorId = doctorParamsId || localStorage.getItem('doctorId');
@@ -390,17 +395,33 @@ function DoctorPublicProfile() {
                                 <button
                                     disabled={isSubmitting}
                                     onClick={handleMakeAppointment}
-                                    className={` rounded-full max-w-fit ${isSubmitting ? '!bg-gray-400 cursor-not-allowed px-2 py-3' : 'bg-purple-300 transition-colors duration-300 px-2 py-3 hover:shadow-md hover:bg-purple-500 hover:text-white'}`}
+                                    className={` rounded-full max-w-fit text-white ${isSubmitting ? '!bg-gray-400 cursor-not-allowed px-2 py-3' : 'bg-purple-500 transition-colors duration-300 px-2 py-3 hover:shadow-md hover:bg-purple-700'}`}
                                 > Book Appointment
                                 </button>
                             </div>
+                           <div className="flex flex-col gap-5 sm:flex-row sm:gap-10">
+                               <button
+                                onClick = {() => navigate(-1)}
+                                className="inline-flex items-center w-fit text-blue-600 hover:text-blue-800"
+                             >
+                             
+                                Back to Previous Page
+                            </button>
                             <Link
                                 to="/MakeAppointment"
-                                className="inline-flex items-center text-blue-600 hover:text-blue-800"
-                            >
-                                <ArrowLeft size={20} />
-                                Back to Doctors List
+                                className="inline-flex items-center w-fit text-blue-600 hover:text-blue-800"
+                             >
+                               
+                                Move to All Doctors List
                             </Link>
+                            <button
+                                onClick = {() => navigate("/")}
+                                className="inline-flex items-center w-fit text-blue-600 hover:text-blue-800"
+                             >
+                             
+                                HOME
+                            </button>
+                            </div>
                         </div>
                     </>
                 }

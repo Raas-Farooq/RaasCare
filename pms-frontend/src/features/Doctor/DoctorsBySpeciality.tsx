@@ -39,6 +39,11 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
     const targetFieldReceived = propField ?? (location.state as { targetField?: string })?.targetField ?? 'All';
 
     const { allDoctors, loadingAllDoctors, caughtError} = useAuth();
+
+    useEffect(() => {
+        window.scrollTo({top:0, behavior:'instant' as ScrollBehavior})
+    },[targetFieldReceived])
+    
     useEffect(() => {
         setUpdatedDisplayDoctors(false);
         if (allDoctors.length === 0) return;

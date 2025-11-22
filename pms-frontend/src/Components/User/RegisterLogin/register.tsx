@@ -159,7 +159,7 @@ function Register() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full font-bold !bg-purple-300 transition-colors duration-300 text-white py-4 px-4 rounded-md hover:!bg-purple-800 
+                            className="w-full font-bold !bg-purple-500 transition-colors duration-300 text-white py-4 px-4 rounded-md hover:!bg-purple-800 
                              disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isSubmitting ? "Registering..." : "Register"}
