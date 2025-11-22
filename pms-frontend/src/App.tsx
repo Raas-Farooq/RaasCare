@@ -18,18 +18,20 @@ function App() {
   if (loading) return <h1>Loading..</h1>
 
   return (
-    <div>
-      <AnimatePresence mode='wait'>
-        <Outlet />
-      </AnimatePresence>
+
+    <>
       <Toaster
         position="top-center"
         toastOptions={{
           duration: 3000
         }}
       />
-    </div>
-
+      <div>
+        <AnimatePresence mode='wait'>
+          <Outlet />
+        </AnimatePresence>
+      </div>
+    </>
   )
 }
 

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import HandleAxiosError from "../../../utils/handleAxiosError"
 
@@ -33,10 +33,6 @@ const Login = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema)
     })
-
-    useEffect(() => {
-        console.log("redirectTo inside login ", redirectTo);
-    }, [redirectTo])
 
     const submitResult = async (data: SubmitProps) => {
         const toastId = toast.loading('Signing In..');

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState} from "react";
 import './cssTransition.css';
 // import { ArrowLeft } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -96,7 +96,7 @@ function DoctorPublicProfile() {
         window.scrollTo({top:0, behavior:"instant" as ScrollBehavior})
     }, [doctorParamsId])
 
-    
+
     useEffect(() => {
         setIsProfileLoading(true);
         const currentDoctorId = doctorParamsId || localStorage.getItem('doctorId');
