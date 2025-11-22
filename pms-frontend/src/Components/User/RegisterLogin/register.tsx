@@ -83,7 +83,7 @@ function Register() {
                 // if (patientRecord) {
                 //     setPatientRecordId(patientRecord)
                 // }
-                toast.success('You have Successfully Registered ', { id: toastId })
+                toast.success('You have Successfully Registered ', { id: toastId, duration:3000})
                   console.log("came in Patient case")
                         if (redirectTo) {
                             console.log("redirectTo exist")

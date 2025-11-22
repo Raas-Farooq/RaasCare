@@ -43,7 +43,7 @@ const Login = () => {
                     withCredentials: true,
                 })
             if (response.data.success) {
-                toast.success("Successfully LoggedIn", { id: toastId });
+                toast.success("Successfully LoggedIn", { id: toastId, duration:3000 });
                 const loginResponse = response.data;
                 const role = loginResponse.user.role;
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
