@@ -292,7 +292,7 @@ const AdminHome = () => {
                                 
                             </div>
                             <button 
-                            className="text-gray-500 border border-gray-400 p-2 text-sm hover:border-purple-700 text-gray-700">
+                            className="text-gray-800 border border-gray-400 p-2 rounded-md mt-6 text-sm hover:border-purple-700 hover:text-purple-700">
                                 Load More
                             </button>
                         </section>
