@@ -9,7 +9,6 @@ import { FaSpinner } from "react-icons/fa";
 import useConfirmNavigation from "../../utils/customLogin";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import makeRequest from "../../makeRequesthook";
-import { replace } from "lodash";
 
 interface Slots {
     slotTime: string,
