@@ -28,14 +28,14 @@ const servicesImages = [
     },
     {
         title: 'Nursing Care',
-        path: '/nursingCare.jpg',
+        path: '/nursingCare1.webp',
         alt: "Nursing Care Unit ",
         description: '24/7 Care for You',
         cta: 'contact with the center'
 
     }, {
         title: 'Diagnostic Center',
-        path: '/MRI.jpg',
+        path: '/MRI.webp',
         alt: "Diagnostic Center",
         description: 'Provide 90% Accurate results',
         cta: 'checkout more'

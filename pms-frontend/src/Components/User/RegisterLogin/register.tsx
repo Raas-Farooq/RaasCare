@@ -87,9 +87,9 @@ function Register() {
                   console.log("came in Patient case")
                         if (redirectTo) {
                             console.log("redirectTo exist")
-                            navigate(`/${redirectTo}`)
+                            navigate(redirectTo, {replace:true})
                         } else {
-                            navigate('/patient-dashboard');
+                            navigate('/patient-dashboard', {replace:true});
                         }
                 
             }

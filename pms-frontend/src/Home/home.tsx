@@ -13,7 +13,7 @@ function Home() {
   const navigate = useNavigate();
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
-  const { imageLoaded } = useImageCached("/relief.jpg");
+  const { imageLoaded } = useImageCached("/relief.webp");
 
 
   useEffect(() => {
@@ -99,7 +99,7 @@ function Home() {
                 className={`${imageLoaded === "loaded"
                    ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden" }`}
                 loading="lazy"
-                src="/relief.jpg"
+                src="/relief.webp"
                 alt={"Treatment & Relief"}
               />
             </div>
