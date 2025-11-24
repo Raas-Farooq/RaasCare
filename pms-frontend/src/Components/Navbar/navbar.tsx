@@ -3,7 +3,7 @@ import { FaBars, FaTimes } from "react-icons/fa"
 import useWindowSize from "./windowSize";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/appContext";
-import { Heart, User } from "lucide-react";
+import { ArrowRight, Heart, User } from "lucide-react";
 import toast from "react-hot-toast";
 
 
@@ -118,15 +118,18 @@ return (
             </header>
             <Heart className="text-red-500 mt-1.5" size={30} />
             {userRole && (userRole === 'doctor' || userRole === 'admin') &&
-                <div className="mt-1">
+                <div className="flex justify-center items-center gap-3">
                     <span className="px-3 py-1 text-xs font-medium bg-red-100 text-blue-800 rounded-full">
                         {userRole}
                     </span>
-                    <button
+                   <div className="flex group gap-2 hover:bg-purple-100 rounded-md transition-all duration-300">
+                         <button
                         onClick={() => navigate(`${userRole}-dashboard`)}
-                        className={`font-normal ml-3 text-purple-500 hover:bg-purple-100`}>
+                        className={`font-normal ml-3 text-purple-500 `}>
                         Dashboard
                     </button>
+                    <ArrowRight size={20} className="mt-0.5 text-purple-700 hidden group-hover:block transition-all duration-300"/>
+                    </div>
                 </div>
             }
         </div>

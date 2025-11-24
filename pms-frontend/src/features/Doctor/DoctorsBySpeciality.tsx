@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, DollarSign } from "lucide-react"
+import { ArrowLeft, ArrowRight} from "lucide-react"
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/appContext"
@@ -110,7 +110,8 @@ const DoctorsBySpeciality = ({ targetField: propField }: ComponentProps) => {
                                     {/* Fee and Rating */}
                                     <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
                                         <div className="flex items-center text-gray-700">
-                                            <DollarSign className="text-teal-500 mr-1" size={18} />
+                                            {/* <DollarSign className="text-teal-500 mr-1" size={18} /> */}
+                                            <span className="text-teal-500 mr-1">Rs</span>
                                             <span className="font-semibold">{doctor.consultationFee}</span>
                                         </div>
                                     </div>

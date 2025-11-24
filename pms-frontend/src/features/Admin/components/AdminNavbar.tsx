@@ -9,6 +9,7 @@ const AdminNavbar = () => {
     const handleLogoutClick = async () => {
         const confirm = await logoutConfirm();
         if(confirm){
+            localStorage.removeItem('storedTab')
             logout();
         }
     }

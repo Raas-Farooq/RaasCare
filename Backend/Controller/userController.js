@@ -114,7 +114,6 @@ const userLogin = async (req, res,next) => {
         }
         const today = new Date();
         today.setHours(0,0,0,0);
-        console.log("userExist value: ", userExist);
         let slotsBooked;
         const slotsFilter = {
              $or:[
@@ -153,7 +152,6 @@ const userLogin = async (req, res,next) => {
                 },
             ).sort({updatedAt:-1}).limit(5).lean()
             // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
-            console.log("slots inside the user controller ", slotsBooked);
         }
         const matchPassword = await bcrypt.compare(password, userExist.password);
         console.log("is password matched: ", matchPassword);

@@ -268,7 +268,7 @@ function DoctorPublicProfile() {
                 toast.success('Booked Successfully!', { id: toastId })
                 
                 setTimeout(() => {
-                    navigate('/patient-dashboard/myAppointments', {replace:true});
+                    navigate('/patient-dashboard/myAppointments');
                 }, 1500)
             }
         }

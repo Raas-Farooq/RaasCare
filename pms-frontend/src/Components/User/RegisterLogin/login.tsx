@@ -49,8 +49,6 @@ const Login = () => {
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
                 switch (role) {
                     case 'patient': {
-                  
-                        console.log("came in Patient case")
                         if (redirectTo) {
                             console.log("redirectTo exist")
                             navigate(redirectTo, {replace:true})
@@ -61,15 +59,15 @@ const Login = () => {
                         break;
                     }
                     case 'doctor': {
-                        navigate('/doctor-dashboard');
+                        navigate('/doctor-dashboard', {replace:true});
                         break;
                     }
                     case 'admin': {
-                        navigate('/admin-dashboard');
+                        navigate('/admin-dashboard', {replace:true});
                         break;
                     }
                     default: {
-                        navigate('/');
+                        navigate('/', {replace:true});
                     }
                 }
             }

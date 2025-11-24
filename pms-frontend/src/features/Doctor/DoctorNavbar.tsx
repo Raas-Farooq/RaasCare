@@ -15,6 +15,7 @@ const DoctorNavbar = () => {
     const userResponse = await confirmLogout();
 
     if(userResponse){
+        localStorage.removeItem('storedTab')
         logout();
     }
 
