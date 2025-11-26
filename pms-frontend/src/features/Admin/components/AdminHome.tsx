@@ -106,7 +106,7 @@ const AdminHome = () => {
             <div className="bg-gray-50 min-h-screen">
                 <AdminNavbar />
                 <nav className="w-full max-w-5xl mx-auto py-4 px-2">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                         <button
                             aria-selected={activeTab === 'Dashboard'}
                             onClick={() => {
@@ -151,7 +151,7 @@ const AdminHome = () => {
                                 Add New Doctor
                             </span>
                         </button>
-                        <button
+                        {/* <button
                             onClick={() => {
                                 setActiveTab('More');
                                 localStorage.setItem('ActiveTab', 'More')
@@ -165,7 +165,7 @@ const AdminHome = () => {
                             <span className="font-medium text-gray-700">
                                 More
                             </span>
-                        </button>
+                        </button> */}
                     </div>
                 </nav>
                 <div className="w-full flex justify-center">

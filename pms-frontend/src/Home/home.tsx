@@ -2,11 +2,11 @@
 import { useEffect, useRef } from "react";
 
 import Navbar from '../Components/Navbar/navbar.tsx';
-import HeroImage from "./heroImage.tsx";
 import { ArrowRight } from "lucide-react";
 import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecialities } from './homeData.tsx';
 import { useNavigate } from "react-router-dom";
 import useImageCached from "./useImageCached.tsx";
+import HeroVideo from "./heroVideo.tsx";
 
 
 function Home() {
@@ -48,8 +48,8 @@ function Home() {
           <h1 className="text-4xl md:text-5xl mt-5 font-bold text-yellow-600">
             Your health our priority
           </h1>
-          <HeroImage />
-          <h1 className="text-4xl md:text-5xl mt-5 font-bold text-gray-800">
+          <HeroVideo />
+          <h1 className="text-3xl sm:text-4xl md:text-5xl mt-5 font-bold text-gray-800">
             Book your Appointment
           </h1>
           <p className="text-lg mt-4 text-gray-600">
@@ -70,7 +70,7 @@ function Home() {
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 place-items-center gap-5">
             <div className="flex flex-col items-center justify-center text-center">
-              <h1 className="text-4xl md:text-5xl mt-5 font-bold text-gray-800">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl mt-5 font-bold text-gray-800">
                 Treatment & Relief starts here
               </h1>
               <p className="text-md mt-4 text-gray-600">
@@ -109,7 +109,7 @@ function Home() {
       <section className="DoctorsBySpeciality-Section relative bg-gradient-to-r from-purple-50 to-white">
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center px-6 py-12">
           <div className="flex flex-col items-center justify-center text-center">
-            <h1 className="text-4xl md:text-5xl mt-5 font-bold text-gray-800">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl mt-5 font-bold text-gray-800">
               Browse Doctors By Speciality
             </h1>
             <p className="text-md mt-4 text-gray-600">

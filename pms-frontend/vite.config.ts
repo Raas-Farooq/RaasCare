@@ -7,7 +7,8 @@ export default defineConfig({
   server:{
     allowedHosts:[
       'localhost',
-    ]
+    ],
+    host:'0.0.0.0'
   }
 })
 

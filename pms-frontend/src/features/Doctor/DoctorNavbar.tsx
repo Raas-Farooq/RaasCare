@@ -39,7 +39,7 @@ const DoctorNavbar = () => {
 
             <div className="text-right m-2">
                 <button onClick={handleLogoutClick}
-                    className="border border-gray-200 px-4 py-2 shadow-lg 
+                    className="border border-gray-200 **px-2 **text-sm** sm:px-4 py-2 shadow-lg 
                     text-white bg-red-600 hover:bg-red-800  
                     rounded-lg hover:border-red-600 transition-colors duration-500"
                 >Log out

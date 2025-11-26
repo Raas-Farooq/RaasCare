@@ -114,7 +114,7 @@ return (
         <div className="flex gap-3">
             <header 
             className="text-2xl md:text-3xl text-purple-800 font-semibold ">
-                RaasCare
+                CureYou
             </header>
             <Heart className="text-red-500 mt-1.5" size={30} />
             {userRole && (userRole === 'doctor' || userRole === 'admin') &&

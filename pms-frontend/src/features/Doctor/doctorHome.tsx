@@ -64,8 +64,7 @@ const DoctorHome = () => {
     if (!isAuthenticated) {
       toast.error('You have to login again to proceed further');
     }
-    console.log("action ", action, slotId);
-    const confirmAction = useConfirmAction('action');
+    const confirmAction = useConfirmAction(action);
     const confirm = await confirmAction;
  
     if (confirm) {
