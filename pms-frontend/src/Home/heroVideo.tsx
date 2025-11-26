@@ -8,6 +8,7 @@ const HeroVideo = () => {
     // const {imageLoaded} = useImageCached('heroImage.webp');
     useEffect(() => {
       console.log("VIDEO URL:", import.meta.env.VITE_VIDEO_URL);
+      console.log("all import Meta:", import.meta.env);
     },[])
     
     return (
