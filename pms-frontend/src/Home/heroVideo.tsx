@@ -1,10 +1,15 @@
 // import useImageCached from "./useImageCached"
 
+import { useEffect } from "react";
+
 
 const HeroVideo = () => {
     const videoUrl = import.meta.env.VITE_VIDEO_URL;
     // const {imageLoaded} = useImageCached('heroImage.webp');
-    console.log("VIDEO URL:", import.meta.env.VITE_VIDEO_URL);
+    useEffect(() => {
+      console.log("VIDEO URL:", import.meta.env.VITE_VIDEO_URL);
+    },[])
+    
     return (
         <div className="w-full flex justify-center mx-auto items-center max-w-6xl mx-auto px-4 py-6">
            <div className="w-full max-w-2xl md:max-w-4xl aspect-video">
