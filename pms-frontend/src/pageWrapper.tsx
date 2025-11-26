@@ -30,6 +30,7 @@ export default function PageWrapper({ children, variant = "fade" }: PageWrapperP
         animate="animate"
         exit="exit"
         transition={PageTransition}
+        style={{ width: '100%'}}
       >
        {children ||  <Outlet />}
       </motion.div>

@@ -88,8 +88,8 @@ const availableSlotsSchema = new mongoose.Schema({
     timestamps:true
 })
  
-availableSlotsSchema.indexes({doctorId:1, slotDate:1, patientId:1}, {unique:true});
-availableSlotsSchema.indexes({patientId:1, isBooked:1});
+availableSlotsSchema.index({doctorId:1, slotDate:1, patientId:1}, {unique:true});
+availableSlotsSchema.index({patientId:1, isBooked:1});
 
 const appointmentSchema = new mongoose.Schema({
   doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },

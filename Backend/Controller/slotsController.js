@@ -154,7 +154,7 @@ function createSlots(doctor){
 
 
 async function generateNewDoctorSlots(req, res,next) {
-            console.log("req.body ", req.body);
+          
             const {generateFor, doctorId} = req.body;
             try{
                 if(generateFor !== "doctor"){
@@ -187,8 +187,7 @@ async function generateNewDoctorSlots(req, res,next) {
 const bookSlot = async (req, res, next) => {
     const { slotId } = req.params;
     const { patientName, docId, patientId } = req.body;
-    console.log("slotId inside bookSlot ", slotId, "patientId ", patientId, "patineName ", patientName);
-    try {
+        try {
         const slot = await AvailableSlots.findOneAndUpdate(
             { _id: slotId, isBooked: false, isCancelled: false },
             {
@@ -204,7 +203,7 @@ const bookSlot = async (req, res, next) => {
         )
 
         if (!slot) return res.status(400).json("Slot is Not Available")
-        console.log("slot: ", slot);
+
 
         const addAppointment = new Appointments({
             doctorId: slot.doctorId,
@@ -294,7 +293,6 @@ const getDoctorsAndAverageSalary = async(req,res) => {
     ]
 
     const aggregateResult = await Doctor.aggregate(pipeline);
-      console.log(" result  of aggregate: ", aggregateResult);
         return res.status(200).json({result: aggregateResult});
   
    }
@@ -380,10 +378,14 @@ const updateSlotStatus = async (req, res, next) => {
 
     const { slotId } = req.params;
     const { action, docId, role } = req.body;
+    console.log("action , docId, role ", action, docId, role);
     let filterUpdatedSlots;
     if(role === 'admin'){
         
            filterUpdatedSlots = {
+                
+                "slotDate.startDate":{$gte: new Date()}
+                ,
                 $or:[
                     {isBooked:true},
                     {isCancelled:true},
@@ -395,6 +397,7 @@ const updateSlotStatus = async (req, res, next) => {
     else{
         filterUpdatedSlots = {
             doctorId:docId,
+            "slotDate.startDate":{$gte:new Date()},
                 $or:[
                     {isBooked:true},
                     {isCancelled:true},
@@ -440,30 +443,41 @@ const updateSlotStatus = async (req, res, next) => {
     try {
 
         const currentDate = new Date();
-        await AvailableSlots.findOneAndUpdate(
+        console.log("current Date: ", currentDate);
+        const resultOfUpdateOperation = await AvailableSlots.findOneAndUpdate(
             { _id: slotId, doctorId: docId },
             {
                 $set: updateOperation
 
             },
-            { new: true, lean: true }
+            { new: true, lean: true, sort:{updatedAt:-1}}
         );
-
+ console.log(" result of UpdateOperation : ", resultOfUpdateOperation)
         const latestUpdatedSlots= {
             ...filterUpdatedSlots,
-            "slotDate.startDate": {
-                $gte:currentDate
-            }
+            // "slotDate.startDate": {
+            //     $gte:currentDate
+            // }
         }
-        const latestSlots = (await AvailableSlots.find(latestUpdatedSlots)
-        .lean()
-        .limit(10)
-        .sort({updatedAt:-1}))
+        let latestRemainingSlots;
+        if(role === 'doctor'){
+            console.log("latest filtered slots logic ", latestUpdatedSlots, " filter logic ", filterUpdatedSlots);
+             latestRemainingSlots = (await AvailableSlots.find(latestUpdatedSlots)
+            .lean()
+            .sort({updatedAt:-1}))
+        }
+       else{
+         latestRemainingSlots = (await AvailableSlots.find( latestUpdatedSlots)
+            .lean()
+            .limit(10)
+            .sort({updatedAt:-1}))
+       }
 
+        console.log("latestSlots: remain", latestRemainingSlots)
         return res.status(200).json({
             success: true,
             message: "Successfully updated the Slot status",
-            updatedSlots: latestSlots
+            updatedSlots: latestRemainingSlots
         })
 
     } catch (err) {

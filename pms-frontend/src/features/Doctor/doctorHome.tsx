@@ -7,6 +7,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import useConfirmAction from "../../utils/customConfirmAction";
 
 
 interface BookedSlot {
@@ -30,10 +31,10 @@ type ActiveTabType = 'Dashboard' | 'Appointments' | 'Profile' | 'AddPatient'
 const backend_url = import.meta.env.VITE_BACKEND_URL;
 const DoctorHome = () => {
   const [activeTab, setActiveTab] = useState<ActiveTabType>('Dashboard');
-  const { doctorProfile, bookedSlots, setBookedSlots, userRole } = useAuth();
+  const { doctorProfile, bookedSlots, setBookedSlots, userRole, isAuthenticated } = useAuth();
 
   function syncUpdatedSlots(updatedSlots: BookedSlot[]) {
-    console.log("sync Updated slots runs: ", updatedSlots);
+    
     const updated = updatedSlots.map((slots: BookedSlot) => (
       {
         ...slots,
@@ -60,38 +61,44 @@ const DoctorHome = () => {
   }, [])
 
   async function handleAppointment(action: string, slotId: string) {
-    const toastId = toast.loading('updating slot Status')
-    try {
-      let response;
-      response = await axios.post(`${backend_url}/pms/updateSlotStatus/${slotId}`,
-        {
-          action,
-          docId: doctorProfile?._id,
-          role: userRole
-        },
-        { withCredentials: true }
-      )
-      if (response.data.success) {
-        toast.dismiss();
-        toast.success(`successfully ${action}ed the Slot`, { id: toastId })
+    if (!isAuthenticated) {
+      toast.error('You have to login again to proceed further');
+    }
+    const confirmAction = useConfirmAction(action);
+    const confirm = await confirmAction;
+ 
+    if (confirm) {
+      const toastId = toast.loading('updating slot Status')
+      try {
+        let response;
+        response = await axios.post(`${backend_url}/pms/updateSlotStatus/${slotId}`,
+          {
+            action,
+            docId: doctorProfile?._id,
+            role: userRole
+          },
+          { withCredentials: true }
+        )
         if (response.data.success) {
+          toast.dismiss();
+          toast.success(`successfully ${action}ed the Slot`, { id: toastId })       
           const updatedSlots = response.data.updatedSlots;
-          // storing locally
-          console.log("response: ", response.data, " updatedSlots status: ", updatedSlots);
+            // storing locally
+          
             localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
             localStorage.setItem('bookedSlots', JSON.stringify([]));
             syncUpdatedSlots(updatedSlots)
         }
-        else{
+        else {
             toast.error(`Error occurred while ${action}ing slot`, { id: toastId });
           }
       }
+      catch (err) {
+        let errorMessage = HandleAxiosError(err);
+        toast.error(errorMessage, { id: toastId });
+      }
+    }
 
-    }
-    catch (err) {
-      let errorMessage = HandleAxiosError(err);
-      toast.error(errorMessage, { id: toastId });
-    }
   }
 
   const stylingOfMain = `w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`
@@ -323,7 +330,7 @@ const DoctorHome = () => {
                               <button onClick={() => handleAppointment('cancel', slot._id)}
                                 className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
-                                <Delete className="text-red-500" size={15} />
+                                <Delete className="text-red-500" size={18} />
                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
                                                   transform -translate-x-1/2 invisible group-hover:visible
                                                   bg-gray-800 text-white opacity-0 rounded-lg p-1 
@@ -332,8 +339,8 @@ const DoctorHome = () => {
                               <button onClick={() => handleAppointment('complete', slot._id)}
                                 className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
-                                <Check className="text-green-500" size={15} />
-                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                <Check className="text-green-500" size={18} />
+                                <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
                                                   transform -translate-x-1/2 invisible group-hover:visible
                                                   bg-gray-800 text-white opacity-0 rounded-lg p-1 
                                                   group-hover:opacity-100 transition duration-300 ease-in-out">Complete</span>
@@ -346,12 +353,12 @@ const DoctorHome = () => {
                               <button onClick={() => handleAppointment('remove', slot._id)}
                                 className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
-                                <Trash className="text-red-500" size={15} />
-                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
+                                <Trash className="text-red-500" size={18} />
+                                <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
                                                   transform -translate-x-1/2 invisible group-hover:visible
                                                   bg-gray-800 text-white opacity-0 rounded-lg p-1 
                                                   group-hover:opacity-100 transition duration-300 ease-in-out">
-                                                    Remove</span>
+                                  Remove</span>
                               </button>
 
                             </div>

@@ -5,7 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import HandleAxiosError from "../../../utils/handleAxiosError"
 
@@ -34,10 +34,6 @@ const Login = () => {
         resolver: zodResolver(loginSchema)
     })
 
-    useEffect(() => {
-        console.log("redirectTo inside login ", redirectTo);
-    }, [redirectTo])
-
     const submitResult = async (data: SubmitProps) => {
         const toastId = toast.loading('Signing In..');
         try {
@@ -47,14 +43,12 @@ const Login = () => {
                     withCredentials: true,
                 })
             if (response.data.success) {
-                toast.success("Successfully LoggedIn", { id: toastId });
+                toast.success("Successfully LoggedIn", { id: toastId, duration:3000 });
                 const loginResponse = response.data;
                 const role = loginResponse.user.role;
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
                 switch (role) {
                     case 'patient': {
-                  
-                        console.log("came in Patient case")
                         if (redirectTo) {
                             console.log("redirectTo exist")
                             navigate(redirectTo, {replace:true})
@@ -65,15 +59,15 @@ const Login = () => {
                         break;
                     }
                     case 'doctor': {
-                        navigate('/doctor-dashboard');
+                        navigate('/doctor-dashboard', {replace:true});
                         break;
                     }
                     case 'admin': {
-                        navigate('/admin-dashboard');
+                        navigate('/admin-dashboard', {replace:true});
                         break;
                     }
                     default: {
-                        navigate('/');
+                        navigate('/', {replace:true});
                     }
                 }
             }

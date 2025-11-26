@@ -7,7 +7,7 @@ const doctorsSpecialities = [
     { speciality: 'Physician', logo: <Stethoscope size={40} className="text-purple-500" />, strength: 7 },
     { speciality: 'Cardialogist', logo: <FaHeartbeat size={40} className="text-purple-500" />, strength: 7 },
     { speciality: 'Surgeon', logo: <Scissors size={40} className="text-purple-500" />, strength: 6 },
-    { speciality: 'Gynecologist', logo: <FaBaby size={40} className="text-purple-500" />, strength: 5 },
+    { speciality: 'Gynaecologist', logo: <FaBaby size={40} className="text-purple-500" />, strength: 5 },
     { speciality: 'Gastroenterologist', logo: <Cylinder size={40} className="text-purple-500" />, strength: 6 },
     { speciality: 'Oncologist', logo: <FaTooth size={40} className="text-purple-500" />, strength: 6 },
     { speciality: 'Dermatologist', logo: <Droplet size={40} className="text-purple-500" />, strength: 3 },

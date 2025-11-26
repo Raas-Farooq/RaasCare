@@ -15,6 +15,7 @@ const DoctorNavbar = () => {
     const userResponse = await confirmLogout();
 
     if(userResponse){
+        localStorage.removeItem('storedTab')
         logout();
     }
 
@@ -38,8 +39,8 @@ const DoctorNavbar = () => {
 
             <div className="text-right m-2">
                 <button onClick={handleLogoutClick}
-                    className="border border-gray-200 px-4 py-2 shadow-lg 
-                    text-gray-800 bg-red-400 hover:text-white hover:bg-red-600 
+                    className="border border-gray-200 **px-2 **text-sm** sm:px-4 py-2 shadow-lg 
+                    text-white bg-red-600 hover:bg-red-800  
                     rounded-lg hover:border-red-600 transition-colors duration-500"
                 >Log out
                 </button>
