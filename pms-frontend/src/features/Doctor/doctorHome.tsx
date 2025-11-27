@@ -379,7 +379,7 @@ const DoctorHome = () => {
           </main>
           {/* Profile */}
           <main className={`${stylingOfMain} ${activeTab === 'Profile' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
-            <section className="flex flex-row gap-8">
+            <section className="flex flex-col sm:flex-row gap-8">
               <div className="flex-shrink-0">
                 <img
                   src={doctorProfile?.profileImage.imageUrl}
@@ -396,7 +396,7 @@ const DoctorHome = () => {
                     {doctorProfile?.speciality}
                   </span>
                   <span className="px-3 py-1 bg-green-100 rounded-full text-sm text-green-700">
-                    {doctorProfile?.experience} Years
+                    Exp {doctorProfile?.experience} Years
                   </span>
                 </div>
                 <div className="flex gap-3">

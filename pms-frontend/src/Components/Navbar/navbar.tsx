@@ -114,7 +114,7 @@ return (
         <div className="flex gap-3">
             <header 
             className="text-2xl md:text-3xl text-purple-800 font-semibold ">
-                CureYou
+                RaasCare
             </header>
             <Heart className="text-red-500 mt-1.5" size={30} />
             {userRole && (userRole === 'doctor' || userRole === 'admin') &&
@@ -122,13 +122,13 @@ return (
                     <span className="px-3 py-1 text-xs font-medium bg-red-100 text-blue-800 rounded-full">
                         {userRole}
                     </span>
-                   <div className="flex group gap-2 hover:bg-purple-100 rounded-md transition-all duration-300">
+                   <div className="flex group sm:gap-2 items-center hover:bg-purple-100 rounded-md transition-all duration-300">
                          <button
                         onClick={() => navigate(`${userRole}-dashboard`)}
                         className={`font-normal ml-3 text-purple-500 `}>
                         Dashboard
                     </button>
-                    <ArrowRight size={20} className="mt-0.5 text-purple-700 hidden group-hover:block transition-all duration-300"/>
+                    <ArrowRight className="h-4 md:h-6 text-purple-700 transition-all duration-300"/>
                     </div>
                 </div>
             }
