@@ -122,13 +122,13 @@ return (
                     <span className="px-3 py-1 text-xs font-medium bg-red-100 text-blue-800 rounded-full">
                         {userRole}
                     </span>
-                   <div className="flex group sm:gap-2 items-center hover:bg-purple-100 rounded-md transition-all duration-300">
+                   <div className="flex group items-center hover:bg-purple-100 rounded-md transition-all duration-300">
                          <button
                         onClick={() => navigate(`${userRole}-dashboard`)}
                         className={`font-normal ml-3 text-purple-500 `}>
                         Dashboard
                     </button>
-                    <ArrowRight className="h-4 md:h-6 text-purple-700 transition-all duration-300"/>
+                    <ArrowRight className="h-4 text-purple-700 transition-all duration-300"/>
                     </div>
                 </div>
             }

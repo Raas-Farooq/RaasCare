@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import Navbar from "../../Components/Navbar/navbar"
 
 
@@ -11,6 +12,9 @@ const OurDoctors = () => {
     const BaseContainerStyle = 'flex flex-col md:flex-row items-center gap-6 px-4';
     const paragraphStyles = "max-w-xl mx-auto md:mx-0 tracking-tight leading-relaxed text-center";
 
+    useEffect(() => {
+        window.scrollTo(0,0)
+    },[])
     return (
         <div className="relative bg-gray-50 font-sans text-gray-800">
             <Navbar />
@@ -30,10 +34,10 @@ const OurDoctors = () => {
                         </div>
                         <div className={`relative w-full md:w-1/2 max-h-[600px] flex justify-center items-center`}>
                             <img
-                                src="/bestDoctors.jpg"
+                                src="/bestDoctors.webp"
                                 loading="lazy"
                                 className={`${BaseImageStyling} max-w-md w-full`}
-                                alt="Patient Care" />
+                                alt="bestDoctors" />
                         </div>
                     </div>
                 </section>

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/Navbar/navbar"
+import { useEffect } from "react";
 
 
 
@@ -11,6 +12,10 @@ const DiagnosticCenter = () => {
     const BaseImageStyling = "w-full h-full object-contain sm:w-full md:w-full rounded-lg shadow-md shadow-transition hover:scale-105 transition-all duration-700";
     const BaseContainerStyle = 'flex flex-col md:flex-row items-center gap-6 px-4';
     const paragraphStyles = "max-w-xl mx-auto md:mx-0 tracking-tight leading-relaxed text-center";
+    
+    useEffect(() => {
+            window.scrollTo(0,0)
+        },[])
 
     return (
         <div className="relative bg-gray-50 font-sans text-gray-800">
@@ -31,7 +36,7 @@ const DiagnosticCenter = () => {
                         </div>
                         <div className={`relative w-full md:w-1/2 max-h-[600px] flex justify-center items-center`}>
                             <img
-                                src="/bestDiagnostic.jpg"
+                                src="/bestDiagnostic.webp"
                                 loading="lazy"
                                 className={`${BaseImageStyling} max-w-md w-full`}
                                 alt="Patient Care" />
