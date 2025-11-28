@@ -1,22 +1,91 @@
-# Project Title
-RaasCare
+# 🏥 Raas-Care — Full-Stack Healthcare & Appointment Management System
 
-# Description
-Modern Appointment Booking App as well as complete health care services. The project includes the admin, doctor, patient roles with their respective privileges. It automatically generates the next weekly slots for each doctor. The project is providing powerful feature of generating montly reports, revenue and patient bookings. It enable the doctors and admins to cancel or delete the bookings. User has a very smart, easy to use UI to find any doctor by their speciality with experience, ratings, concelltation fee and city. Doctor has special responsbilities from cancelling, deleting the bookings to add new patients with their treatment details. The admin has some cool privileges to add new doctors, update their data and generate monthly revenue and reports of overall system
+Raas-Care is a modern healthcare management platform designed to simplify the appointment booking process for patients while providing powerful dashboards for doctors and admins.  
+It supports **role-based access**, **automatic slot generation**, **patient management**, and **real-time healthcare analytics**.
 
-# Key Features
-- Modern Appointment Booking system + Healthcare Services
-- Doctors, Admin, Patient roles
-- Automatic Slots Generation
-- Monthly revenue, patient treatments, other reports
-- Doctors by Specialities, experience, fee, city
-- Cancellation, completion or removal of any appointment
-- Profile management of different roles
+---
 
-# Tech Stack
-* JavaScript
-* Typescript
-* React
-* Express
-* Node
-* Mongo
+## Features
+
+###  Admin Dashboard
+- Add, update, or remove doctors
+- Track monthly **revenue**, **appointments**, and **patient activity**
+- View platform-wide analytics through charts
+- Manage all appointments in the system (cancel, delete, complete)
+
+###  Patient Portal
+- View available slots in real-time
+- Book, manage appointments
+- Explore hospital services such as *Diagnostics*, *Home Nursing*, and more
+
+###  Doctor Dashboard
+- Manage daily appointments
+- Add new patients (with diagnosis & treatment history)
+- Update patient medical records
+- Edit personal profile and availability
+- Mark appointments as completed or cancelled
+
+
+### ⏱ Automatic Slot Management
+- Daily backend cron job auto-generates next-day doctor slots
+- Removes outdated slots (previous than today)
+- Ensures patients always see up-to-date availability
+
+---
+
+##  System Highlights
+
+- Fully role-based system: **Admin**, **Doctor**, **Patient**
+- End-to-end healthcare workflow management
+- Clean and modern UI built for accessibility
+- Backend automation for operational accuracy
+- Real-world patient management: treatment, diagnosis, history
+
+---
+
+## 🏗 Tech Stack
+
+### Frontend
+- **React**
+- **TypeScript**
+- **Tailwind CSS**
+
+### Backend
+- **Node.js**
+- **Express.js**
+- **MongoDB (Mongoose)**
+- **JWT Authentication**
+- **Cron Jobs for Automation**
+
+### Deployment
+- **Frontend:** Vercel  
+- **Backend:** Render
+- **Database:** MongoDB Atlas  
+
+---
+
+## 📊 Admin Analytics (Reports)
+The Admin dashboard shows:
+- Monthly **Revenue**
+- Monthly **Appointments**
+- Patient growth
+- Doctor activity insights
+
+Charts are generated dynamically based on real-time data from the MongoDB database.
+
+---
+
+## 🔮 Future Improvements
+
+### Online Payment Integration
+SafePay payment gateway integration (in progress)
+
+### AI Features (Upcoming)
+- **AI-assisted treatment strategy recommendations**
+- **Symptom-based diagnosis prediction**  
+  (initial medical insights before lab reports)
+
+---
+
+## 📁 Project Structure
+
