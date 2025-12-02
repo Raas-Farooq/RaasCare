@@ -69,6 +69,13 @@ const makeSlotDate = (onlyDate, timeString) => {
 
 const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
     let doctors;
+
+    const cleanedSlots = await AvailableSlots.deleteMany({
+        "slotDate.endDate":{$lt:new Date()},
+        "isBooked":false,
+        "isCancelled":false
+    })
+    console.log(`Cleaned Up ${cleanedSlots.deletedCount} expired slots`)
     if(generateFor === 'all'){
         doctors = await Doctor.find({}).lean();
         if(!doctors.length){
@@ -95,62 +102,150 @@ const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
         })
     }
 
-    doctors.forEach(doctor => {
-            const ops = createSlots(doctor);
-            insertOps(ops);
-        })
-}
-const insertOps = async(ops) => {
-      if (ops.length > 0) {
-            await AvailableSlots.deleteMany({"slotDate.endDate": {$lt: new Date()}});
+    // doctors.forEach(doctor => {
+    //         const ops = createSlots(doctor);
+    //         insertOps(ops);
+    //     })
 
-            const bulkResult = await AvailableSlots.bulkWrite(ops, { ordered: false });
-            if (bulkResult.mongoose && bulkResult.mongoose.validationErrors?.length) {
-                console.error('got validationErrors during bulkWrite ', bulkResult.mongoose.validationErrors);
-                throw new Error("Validation errors occurred while generating slots")        
-            }
-        }
+    for (const doctor of doctors){
+        await generateSlotsForDoctor(doctor);
+    } 
 }
-function createSlots(doctor){
+
+// const insertOps = async(ops) => {
+//       if (ops.length > 0) {
+//             await AvailableSlots.deleteMany({"slotDate.endDate": {$lt: new Date()}});
+
+//             const bulkResult = await AvailableSlots.bulkWrite(ops, { ordered: false });
+//             if (bulkResult.mongoose && bulkResult.mongoose.validationErrors?.length) {
+//                 console.error('got validationErrors during bulkWrite ', bulkResult.mongoose.validationErrors);
+//                 throw new Error("Validation errors occurred while generating slots")        
+//             }
+//         }
+// }
+const generateSlotsForDoctor = async (doctor) => {
     const availableDays = doctor.availableDays;
-    const forDays = 14;
-    let ops = [];
-    for (let dayObj of availableDays){
-                const getDates = getNextAvailableDates(dayObj.day, forDays);
-                for (let date of getDates) {
-                    dayObj.slots.forEach((slotTime) => {
-                        const dateSlots = makeSlotDate(date, slotTime);
-                        const startAndEndDates = {
-                            startDate: dateSlots.startDate,
-                            endDate: dateSlots.endDate
-                        }
-                        ops.push({
-                            updateOne: {
-                                filter: { doctorId: doctor._id, "slotDate.startDate": startAndEndDates.startDate, slotTime },
-                                update: {
-                                    $setOnInsert: {
-                                        doctorId: doctor._id,
-                                        doctorName:doctor.username,
-                                        doctorSpeciality:doctor.speciality,
-                                        slotDate: {
-                                            startDate: startAndEndDates.startDate,
-                                            endDate: startAndEndDates.endDate
-                                        },
-                                        slotTime: slotTime,
-                                        isBooked: false,
-                                        isCancelled: false,
-                                        sources: 'template'
-                                    }
-                                },
-                                upsert: true
-                            }
-                        })
+    const forDays = 14; // Generate for next 14 days
+    
+    // Get existing future slots for this doctor to avoid duplicates
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + forDays);
+    
+    const existingSlots = await AvailableSlots.find({
+        doctorId: doctor._id,
+        "slotDate.startDate": { 
+            $gte: startDate,
+            $lte: endDate 
+        }
+    }).select('slotDate.startDate slotTime isBooked').lean();
 
-                    })
+    // Create lookup map for existing slots
+    const existingSlotsMap = new Map();
+    existingSlots.forEach(slot => {
+    
+        const key = `${slot.slotDate.startDate.getTime()}-${slot.slotTime}`;
+        existingSlotsMap.set(key, slot);
+    });
+    let newSlotsCount = 0;
+    const bulkOps = [];
+
+    for (let dayObj of availableDays) {
+        const availableDates = getNextAvailableDates(dayObj.day, forDays);
+        
+        for (let date of availableDates) {
+            for (let slotTime of dayObj.slots) {
+                const slotDates = makeSlotDate(date, slotTime);
+                const slotKey = `${slotDates.startDate.getTime()}-${slotTime}`;
+                
+                // Check if slot already exists
+                const existingSlot = existingSlotsMap.get(slotKey);
+                
+                if (!existingSlot) {
+                    // Slot doesn't exist - create new one
+                    bulkOps.push({
+                        insertOne: {
+                            document: {
+                                doctorId: doctor._id,
+                                doctorName: doctor.username,
+                                doctorSpeciality: doctor.speciality,
+                                slotDate: {
+                                    startDate: slotDates.startDate,
+                                    endDate: slotDates.endDate
+                                },
+                                slotTime: slotTime,
+                                isBooked: false,
+                                isCancelled: false,
+                                isCompleted: false,
+                                patientId: null,
+                                patientName: '',
+                                source: 'template'
+                            }
+                        }
+                    });
+                    newSlotsCount++;
                 }
             }
-        return ops
+        }
+    }
+
+    // Insert only new slots
+    if (bulkOps.length > 0) {
+        try {
+            const result = await AvailableSlots.bulkWrite(bulkOps, { ordered: false });
+            console.log(`Created ${newSlotsCount} new slots for Dr. ${doctor.username}`);
+        } catch (error) {
+            if (error.code === 11000) {
+                console.log(`Some duplicates detected for Dr. ${doctor.username}, continuing...`);
+            } else {
+                throw error;
+            }
+        }
+    } else {
+        console.log(`No new slots needed for Dr. ${doctor.username}`);
+    }
 }
+
+// function createSlots(doctor){
+//     const availableDays = doctor.availableDays;
+//     const forDays = 14;
+//     let ops = [];
+//     for (let dayObj of availableDays){
+//                 const getDates = getNextAvailableDates(dayObj.day, forDays);
+//                 for (let date of getDates) {
+//                     dayObj.slots.forEach((slotTime) => {
+//                         const dateSlots = makeSlotDate(date, slotTime);
+//                         const startAndEndDates = {
+//                             startDate: dateSlots.startDate,
+//                             endDate: dateSlots.endDate
+//                         }
+//                         ops.push({
+//                             updateOne: {
+//                                 filter: { doctorId: doctor._id, "slotDate.startDate": startAndEndDates.startDate, slotTime },
+//                                 update: {
+//                                     $setOnInsert: {
+//                                         doctorId: doctor._id,
+//                                         doctorName:doctor.username,
+//                                         doctorSpeciality:doctor.speciality,
+//                                         slotDate: {
+//                                             startDate: startAndEndDates.startDate,
+//                                             endDate: startAndEndDates.endDate
+//                                         },
+//                                         slotTime: slotTime,
+//                                         isBooked: false,
+//                                         isCancelled: false,
+//                                         sources: 'template'
+//                                     }
+//                                 },
+//                                 upsert: true
+//                             }
+//                         })
+
+//                     })
+//                 }
+//             }
+//         return ops
+// }
 
 
 async function generateNewDoctorSlots(req, res,next) {
@@ -235,6 +330,8 @@ const ObjectId = mongoose.Types.ObjectId;
 const getDoctorAvailableDays = async (req, res, next) => {
 
     const { docId } = req.params;
+    const doctorSlots = await AvailableSlots.findOne({doctorId:docId});
+
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
     try {
@@ -378,7 +475,7 @@ const updateSlotStatus = async (req, res, next) => {
 
     const { slotId } = req.params;
     const { action, docId, role } = req.body;
-    console.log("action , docId, role ", action, docId, role);
+ 
     let filterUpdatedSlots;
     if(role === 'admin'){
         
@@ -485,6 +582,44 @@ const updateSlotStatus = async (req, res, next) => {
     }
 }
 
+// Safe version for production - runs daily maintenance
+const runDailySlotMaintenance = async () => {
+    try {
+        console.log('Running daily slot maintenance...');
+        
+        // 1. Mark past booked slots as completed
+        const completedResult = await AvailableSlots.updateMany(
+            {
+                "slotDate.endDate": { $lt: new Date() },
+                "isBooked": true,
+                "isCompleted": false
+            },
+            {
+                $set: { isBooked:false,
+                     isCompleted: true }
+            }
+        );
+        console.log(`Marked ${completedResult.modifiedCount} past appointments as completed`);
 
-export {generateNewDoctorSlots, generateAllSlotsStartUp, getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
+        // 2. Clean up expired available slots (not booked)
+        const cleanupResult = await AvailableSlots.deleteMany({
+            "slotDate.endDate": { $lt: new Date() },
+            "isBooked": false
+        });
+        console.log(`Cleaned up ${cleanupResult.deletedCount} expired available slots`);
+
+        // 3. Generate new slots for next 14 days
+        await generateAllSlotsStartUp('all');
+        
+        console.log('✅ Daily slot maintenance completed');
+        
+    } catch (error) {
+        console.error('❌ Daily slot maintenance failed:', error);
+        // Don't throw - this is a maintenance function
+    }
+};
+
+
+
+export {runDailySlotMaintenance, generateNewDoctorSlots, generateAllSlotsStartUp, getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
 

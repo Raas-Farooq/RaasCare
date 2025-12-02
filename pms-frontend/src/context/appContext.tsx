@@ -203,9 +203,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const scheduledLogout = useCallback((exp: number) => {
-        console.log("SCEDULE Logout Called")
+
         const timeLeft = exp - Date.now();
-        console.log("time left: ", timeLeft, " exp: ", exp, " Date now ", Date.now());
         if (timeLeft > 0) {
             logoutTimer = setTimeout(logout, timeLeft)
         } else {
