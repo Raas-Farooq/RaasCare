@@ -34,7 +34,7 @@ const DoctorHome = () => {
   const { doctorProfile, bookedSlots, setBookedSlots, userRole, isAuthenticated } = useAuth();
 
   function syncUpdatedSlots(updatedSlots: BookedSlot[]) {
-    
+
     const updated = updatedSlots.map((slots: BookedSlot) => (
       {
         ...slots,
@@ -50,11 +50,15 @@ const DoctorHome = () => {
   }
 
   const storeTabLocally = (tab: ActiveTabType) => {
-    localStorage.setItem(`storedTab`, tab);
+    setTimeout(() => {
+      localStorage.setItem(`storedTab`, tab);
+    }, 0)
   }
   useEffect(() => {
-
-    const storedTab = localStorage.getItem('storedTab');
+    let storedTab;
+    setTimeout(function () {
+      storedTab = localStorage.getItem('storedTab');
+    }, 0)
     if (storedTab) {
       setActiveTab(storedTab as ActiveTabType)
     }
@@ -66,7 +70,7 @@ const DoctorHome = () => {
     }
     const confirmAction = useConfirmAction(action);
     const confirm = await confirmAction;
- 
+
     if (confirm) {
       const toastId = toast.loading('updating slot Status')
       try {
@@ -80,18 +84,18 @@ const DoctorHome = () => {
           { withCredentials: true }
         )
         if (response.data.success) {
-          toast.dismiss();
-          toast.success(`successfully ${action}ed the Slot`, { id: toastId })       
+          toast.success(`successfully ${action}ed the Slot`, { id: toastId })
           const updatedSlots = response.data.updatedSlots;
-            // storing locally
-          
+          // storing locally
+
+          setTimeout(() => {
             localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
-            localStorage.setItem('bookedSlots', JSON.stringify([]));
             syncUpdatedSlots(updatedSlots)
+          }, 0)
         }
         else {
-            toast.error(`Error occurred while ${action}ing slot`, { id: toastId });
-          }
+          toast.error(`Error occurred while ${action}ing slot`, { id: toastId });
+        }
       }
       catch (err) {
         let errorMessage = HandleAxiosError(err);
@@ -231,30 +235,33 @@ const DoctorHome = () => {
                               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                                 <UserIcon className="w-5 h-5 text-gray-500" />
                               </div>
-                              <h3 className="">{slot.patientName}</h3>
                               <div className="grid grid-cols-2 justify-between">
-                                <div className="font-medium text-gray-800">
+                                <div className="font-medium">
                                   {(!(slot.isCompleted) && slot.isBooked) &&
-                                    <div className="flex gap-4">
-                                      <button
-                                        onClick={() => handleAppointment('complete', slot._id)}
-                                        className="group text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
-                                        <CheckCircle />
-                                        <span className="absolute invisible opacity-0 
+                                    <>
+                                      <h3 className="">{slot.patientName}</h3>
+                                      <div className="flex gap-4">
+                                        <button
+                                          onClick={() => handleAppointment('complete', slot._id)}
+                                          className="group text-green-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                          <CheckCircle />
+                                          <span className="absolute invisible opacity-0 
                                         group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
                                         px-1 left-1/2 -translate-x-1/2 top-7 rounded-full transition-all duration-300"
-                                        > Complete </span>
-                                      </button>
-                                      <button
-                                        onClick={() => handleAppointment('cancel', slot._id)}
-                                        className="group text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
-                                        <CircleX />
-                                        <span className="absolute invisible opacity-0 
+                                          > Complete </span>
+                                        </button>
+                                        <button
+                                          onClick={() => handleAppointment('cancel', slot._id)}
+                                          className="group text-red-500 text-xs hover-shadow-lg hover:scale-105 transition-transform duration-200">
+                                          <CircleX />
+                                          <span className="absolute invisible opacity-0 
                                         group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
                                         px-1 left-1/2 -translate-x-1/2 top-7 rounded-full transition-all duration-300"
-                                        > delete </span>
-                                      </button>
-                                    </div>
+                                          > delete </span>
+                                        </button>
+                                      </div>
+                                    </>
+
                                   }
                                   {slot.isCancelled && (
                                     <div>
@@ -279,7 +286,7 @@ const DoctorHome = () => {
                                     </div>
                                   }
                                 </div>
-                                <div className="mb-10">
+                                <div className="mb-10 flex flex-col items-center">
                                   <p className="text-sm text-gray-500">{doctorProfile?.speciality} - {slot.slotTime}</p>
                                   {slot?.slotDate && (<h2 className="text-sm text-gray-500">{slot?.slotDate?.startDate.getDate()} - {slot?.slotDate?.startDate.toLocaleString('default', { month: 'short' })} </h2>)}
                                 </div>

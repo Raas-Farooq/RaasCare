@@ -51,6 +51,7 @@ function Home() {
           <h1 className="text-4xl md:text-5xl mt-5 font-bold text-yellow-600">
             Your health our priority
           </h1>
+          <h1>All the Praises Belongs to Almighty (SWT)</h1>
           <HeroVideo />
           <DemoCredentials />
           <h1 className="text-3xl sm:text-4xl md:text-5xl mt-5 font-bold text-gray-800">

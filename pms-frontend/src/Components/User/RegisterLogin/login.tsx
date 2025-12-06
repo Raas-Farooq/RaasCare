@@ -9,7 +9,7 @@ import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import HandleAxiosError from "../../../utils/handleAxiosError"
 import { ArrowRight, ShieldCheck, Stethoscope } from "lucide-react"
-
+import { useToast } from "../../../utils/useToast"
 
 const loginSchema = z.object({
     email: z.string()
@@ -28,7 +28,7 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const redirectTo = location.state?.redirectTo;
-
+    const {showLoading,showSuccess,showError } = useToast();
     // const [patientRecordId, setPatientRecordId] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
@@ -36,7 +36,7 @@ const Login = () => {
     })
 
     const submitResult = async (data: SubmitProps) => {
-        const toastId = toast.loading('Signing In..');
+        const toastId = showLoading('Signing In..');
         try {
             const response = await axios.post(`${backend_url}/pms/loginUser`,
                 { email: data.email, password: data.password },
@@ -44,7 +44,7 @@ const Login = () => {
                     withCredentials: true,
                 })
             if (response.data.success) {
-                toast.success("Successfully LoggedIn", { id: toastId, duration: 3000 });
+                showSuccess("Successfully LoggedIn", toastId);
                 const loginResponse = response.data;
                 const role = loginResponse.user.role;
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
@@ -75,7 +75,7 @@ const Login = () => {
 
         } catch (err) {
             let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId, duration: 8000 });
+            showError(errorMessage, toastId);
         }
     }
     return (

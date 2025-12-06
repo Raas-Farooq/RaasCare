@@ -1,9 +1,10 @@
 
 import './index.css';
 import './App.css'
-
-import { Outlet } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from './context/appContext';
+import toast from 'react-hot-toast';
 // import { AnimatePresence } from 'framer-motion';
 
 
@@ -11,8 +12,9 @@ import { useAuth } from './context/appContext';
 function App() {
 
   const { loading } = useAuth();
-
+  const location = useLocation();
   if (loading) return <h1>Loading..</h1>
+
 
   return (
 

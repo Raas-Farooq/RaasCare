@@ -1,12 +1,3 @@
-div[class*="Toaster"] {
-  position: fixed !important;
-  z-index: 99999 !important;
-  pointer-events: none !important;
-}
-
-div[class*="Toaster"] > div {
-  pointer-events: auto !important;
-}
 
 #page-wrapper {
   position: relative;

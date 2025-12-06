@@ -8,10 +8,10 @@ import doctorRoutes from "./doctorFrontendRoutes";
 import patientRoutes from "./patientFrontendRoutes";
 import DoctorDashboard from "../dashboards/doctorDashboard";
 import PatientDashboard from "../dashboards/patientDashboards";
-import AdminDashboard from "../dashboards/adminDashboard";
 import PublicDashboard from "../dashboards/publicDashboard";
 import PageWrapper from "../../pageWrapper";
-import adminRoutes from "./adminFrontentRoutes";
+import adminRoutes from "./adminRoutes/adminFrontentRoutes";
+import RoutesErrorBoundary from "../../utils/routesErrorBoundary";
 
 
 
@@ -25,10 +25,11 @@ export const myRouter = createBrowserRouter([
  {
   path: "/",
   element: <App />,
+  errorElement:<RoutesErrorBoundary />,
   children: [
-    {
-      element: <PageWrapper />,   // only ONE place!
-      children: [
+    // {
+      // element: <PageWrapper />,   // only ONE place!
+      // children: [
         {
           element: <PublicDashboard />,
           children: userRoutes
@@ -51,18 +52,20 @@ export const myRouter = createBrowserRouter([
           ),
           children: doctorRoutes
         },
-        {
-          path: "/admin-dashboard",
-          element: (
-            <ProtectedRoute allowedRoles={["admin"]} redirectPath={"/login"} >
-              <AdminDashboard />
-            </ProtectedRoute>
-          ),
-          children: adminRoutes
-        }
+
+        ...adminRoutes
+        // {
+        //   path: "/admin-dashboard",
+        //   element: (
+        //     <ProtectedRoute allowedRoles={["admin"]} redirectPath={"/login"} >
+        //       <AdminDashboard />
+        //     </ProtectedRoute>
+        //   ),
+        //   children: adminRoutes
+        // }
       ]
+    // }
     }
-  ]
-}
+
 
 ]);

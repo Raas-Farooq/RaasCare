@@ -7,17 +7,25 @@ import { AuthProvider } from './context/appContext.tsx';
 import { myRouter } from './Components/AppRoutesFrontend/router.tsx';
 import { Toaster } from 'react-hot-toast';
 
-
 createRoot(document.getElementById('root')!).render(
   <>
-    <Toaster
-      position="top-center"
-      toastOptions={{ duration: 3000 }}
-    />
-    <StrictMode>
-      <AuthProvider>
-        <RouterProvider router={myRouter} />
-      </AuthProvider>
-    </StrictMode>
+    <AuthProvider>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            zIndex: 9999,
+          },
+        }}
+        containerStyle={{
+          zIndex: 9999,
+        }}
+        // Force re-render on mobile
+        reverseOrder={false}
+      />
+      <RouterProvider router={myRouter} />
+    </AuthProvider>
+
   </>
 )
