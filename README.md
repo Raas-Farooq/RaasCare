@@ -4,6 +4,40 @@ Raas-Care is a modern healthcare management platform designed to simplify the ap
 It supports **role-based access**, **automatic slot generation**, **patient management**, and **real-time healthcare analytics**.
 
 ---
+## Live Demo
+**App Link**: https://raas-care.vercel.app
+
+**Note**: You can directly login using one click buttons on login page otherwise the credentials are given below as well.
+
+**Demo Credentials**
+
+<h6 font="italic">Admin Login</h6>
+
+email: raas@gmail.com
+
+password: raas$0022
+
+<h6 font="italic">Doctor Login</h6>
+
+email: farhan@gmail.com
+
+password: farhanali
+
+## Screenshots
+
+<h4>Admin Dashboard</h4>
+<img width="1322" height="653" alt="readmiAdmin" src="https://github.com/user-attachments/assets/7ee76082-fd76-4d4a-991b-c32871663dd9" />
+
+<h4>Doctor Dashboard</h4>
+<img width="1314" height="615" alt="doctorDashboardReadmi" src="https://github.com/user-attachments/assets/abac73ab-ff9b-4248-82fc-381a24896ba8" />
+
+<h4>Doctor Profile</h4>
+<img width="1315" height="642" alt="doctorProfileReadmi" src="https://github.com/user-attachments/assets/253e3635-513d-4492-bb03-1086ab7ce891" />
+
+<h4>New Patient Record</h4>
+<img width="958" height="639" alt="newPatient" src="https://github.com/user-attachments/assets/c4230850-b2ff-4f64-b84b-d1045baf30d6" />
+
+#### Admin Dashboard
 
 ## Features
 
