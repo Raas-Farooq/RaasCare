@@ -26,10 +26,13 @@ password: farhanali
 ## Screenshots
 
 <h4>Admin Dashboard</h4>
-<img width="1322" height="653" alt="readmiAdmin" src="https://github.com/user-attachments/assets/7ee76082-fd76-4d4a-991b-c32871663dd9" />
+<img width="831" height="637" alt="adminSun" src="https://github.com/user-attachments/assets/0939b54d-c576-4459-8850-306f588fc0a7" />
 
 <h4>Doctor Dashboard</h4>
-<img width="1314" height="615" alt="doctorDashboardReadmi" src="https://github.com/user-attachments/assets/abac73ab-ff9b-4248-82fc-381a24896ba8" />
+<img width="769" height="648" alt="doctorSun" src="https://github.com/user-attachments/assets/e983ae3d-5cc7-428e-b9d8-eaf27e3fc3fa" />
+
+<h4>Slots Selection </h4>
+<img width="831" height="634" alt="slotsSelection" src="https://github.com/user-attachments/assets/5276e10e-f2a7-4f1d-af1e-2066daf80c6a" />
 
 <h4>Doctor Profile</h4>
 <img width="1315" height="642" alt="doctorProfileReadmi" src="https://github.com/user-attachments/assets/253e3635-513d-4492-bb03-1086ab7ce891" />
@@ -37,7 +40,6 @@ password: farhanali
 <h4>New Patient Record</h4>
 <img width="958" height="639" alt="newPatient" src="https://github.com/user-attachments/assets/c4230850-b2ff-4f64-b84b-d1045baf30d6" />
 
-#### Admin Dashboard
 
 ## Features
 
@@ -70,6 +72,8 @@ password: farhanali
 ##  System Highlights
 
 - Fully role-based system: **Admin**, **Doctor**, **Patient**
+- Slot automation
+- Real-time updates
 - End-to-end healthcare workflow management
 - Clean and modern UI built for accessibility
 - Backend automation for operational accuracy
@@ -108,6 +112,43 @@ The Admin dashboard shows:
 Charts are generated dynamically based on real-time data from the MongoDB database.
 
 ---
+
+## High Level Architecture
+
+Frontend (React/Tailwind)
+      ↓ REST API
+Backend (Node/Express)
+      ↓
+MongoDB (Mongoose)
+
+## API Documentation
+#### user/patient Routes
+post(api/pms/registerUserValidation, registerPatient);
+post(api/pms/ loginValidation,userLogin)
+Get/api/pms Authenticate;
+
+#### admin routes
+Get/pms/
+Get/api/pms,Authenticate ,ProtectedRoutes, fetchAllAdmins;
+Post/api/pms, UploadOnCloudinary);
+Post/api/pms/, createDoctorValidation, createDoctor
+
+## Installation & Local Setup
+
+git clone https://github.com/Raas-Farooq/RaasCare.git
+cd raas-care
+🛠 Backend Setup
+cd backend
+npm install
+add .env file 
+npm run dev
+
+🧩 Frontend Setup
+
+cd pms-frontend
+npm install
+npm start
+
 
 ## 🔮 Future Improvements
 
