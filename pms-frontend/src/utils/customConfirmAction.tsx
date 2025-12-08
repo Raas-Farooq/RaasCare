@@ -1,5 +1,5 @@
 
-import toast from "react-hot-toast"
+import {toast} from "sonner"
 
 
 
@@ -8,7 +8,7 @@ const useConfirmAction = (action:string) => {
 
     const confirmAction = () => { 
         return new Promise((resolve) => {
-            toast((t) => 
+            toast.custom((id) => 
                {
                 return (
                      <div className="flex flex-col items-center">
@@ -17,13 +17,13 @@ const useConfirmAction = (action:string) => {
                      <button 
                       className="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:!bg-red-600 "
                     onClick={() => {
-                        toast.dismiss(t.id);
+                        toast.dismiss(id);
                         resolve(true)
                     }}> Yes</button>
                     <button 
                     className="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:!bg-gray-400"
                     onClick={() => {
-                        toast.dismiss(t.id);
+                        toast.dismiss(id);
                         resolve(false)
                     }}> No</button>
                    </div>

@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import parsePhoneNumberFromString from "libphonenumber-js"
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
-import toast from "react-hot-toast"
+import {toast} from "sonner";
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import { useLocation, useNavigate } from "react-router-dom"
 import { z } from "zod"

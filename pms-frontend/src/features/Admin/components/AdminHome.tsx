@@ -4,7 +4,7 @@ import { useState } from "react";
 // import DashboardCharts from "./charts/dashboardCharts";
 // import AddNewDoctor from "./components/addNewDoctor";
 // import { useAuth } from "../../context/appContext";
-import toast from "react-hot-toast";
+import {toast} from 'sonner';
 import axios from "axios";
 import { useAuth } from "../../../context/appContext";
 import DashboardCharts from "../charts/dashboardCharts";
@@ -75,7 +75,7 @@ const AdminHome = () => {
                     }
                 )
                 if (response.data.success) {
-                    toast.success(`Successful Slot ${action} operation`, { id: toastId })
+                    toast.success(`Slot ${action} operation is Successful`, { id: toastId })
                     if (response.data.updatedSlots.length) {
                         const updatedSlots = response.data.updatedSlots;
                         localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
@@ -90,6 +90,8 @@ const AdminHome = () => {
                         ))
                         setBookedSlots(parsedBookedSlots)
                     }
+                }else{
+                    toast.error(`error while performing ${action} operation  `, {id:toastId})
                 }
 
             }

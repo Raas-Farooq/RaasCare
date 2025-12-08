@@ -4,7 +4,7 @@ import useWindowSize from "./windowSize";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/appContext";
 import { ArrowRight, Heart, User } from "lucide-react";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 
 
@@ -70,12 +70,12 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
         logout()
     }
     function handleLogout() {
-        toast((t) => (
-      <div className="flex items-center gap-3">
-        <span>Are you sure you want to logout?</span>
+        toast.custom((id) => (
+      <div className="flex items-center gap-3 shadow-2xl bg-white p-4 min-w-[300px]">
+        <span className="flex-1">Are you sure you want to logout?</span>
         <button
           onClick={() => {
-            toast.dismiss(t.id); // close toast
+            toast.dismiss(id); // close toast
             onLogout();          // your logout function
           }}
           className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
@@ -83,7 +83,7 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
           Yes
         </button>
         <button
-          onClick={() => toast.dismiss(t.id)}
+          onClick={() => toast.dismiss(id)}
           className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-sm"
         >
           No

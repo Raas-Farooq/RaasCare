@@ -4,7 +4,7 @@ import { LayoutDashboardIcon, BookAIcon, User, Users, UserIcon, Check, Delete, C
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
 import axios from "axios";
-import toast from "react-hot-toast";
+import { toast } from 'sonner';
 import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import useConfirmAction from "../../utils/customConfirmAction";
@@ -84,7 +84,8 @@ const DoctorHome = () => {
           { withCredentials: true }
         )
         if (response.data.success) {
-          toast.success(`successfully ${action}ed the Slot`, { id: toastId })
+          console.log("response.data ", response.data)
+          toast.success(`Slot ${action} operation is Successful`, { id: toastId })
           const updatedSlots = response.data.updatedSlots;
           // storing locally
 
@@ -218,7 +219,7 @@ const DoctorHome = () => {
                 <div className="border-b border-gray-200 px-6 py-4">
                   <h2 className="text-lg font-semibold text-gray-800">Latest Bookings</h2>
                 </div>
-                <div className="px-6 py-4 hover:bg-gray-50 transition-colors duration-150">
+                <div className="px-4 py-2 md:px-6 md:py-4 hover:bg-gray-50 transition-colors duration-150">
                   <div className="flex flex-col w-full justify-between">
                     {/* {bookedSlots && bookedSlots.map((slot,ind) => {
                     return (
@@ -228,18 +229,18 @@ const DoctorHome = () => {
                     )
                   })} */}
                     {bookedSlots && bookedSlots.map((slot, index) => (
-                      <div key={index}>
-                        <div className="flex items-center space-x-4">
+                      <>
+                        <div className="flex items-center space-x-2" key={index} >
                           {(slot.isBooked || slot.isCancelled || slot.isCompleted) && (
                             <div>
                               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                                 <UserIcon className="w-5 h-5 text-gray-500" />
                               </div>
                               <div className="grid grid-cols-2 justify-between">
-                                <div className="font-medium">
+                                <div className="font-medium md:w-60">
                                   {(!(slot.isCompleted) && slot.isBooked) &&
                                     <>
-                                      <h3 className="">{slot.patientName}</h3>
+                                      <h3 className="text-sm text-base">{slot.patientName}</h3>
                                       <div className="flex gap-4">
                                         <button
                                           onClick={() => handleAppointment('complete', slot._id)}
@@ -263,30 +264,36 @@ const DoctorHome = () => {
                                     </>
 
                                   }
-                                  {slot.isCancelled && (
-                                    <div>
-                                      <p className="text-pink-500 text-xs">cancelled</p>
-                                    </div>
-                                  )}
-                                  {slot.isCompleted && (
-                                    <div>
-                                      <p className="text-green-500 text-xs">completed</p>
-                                    </div>
-                                  )}
+
+
                                   {(slot.isCancelled || slot.isCompleted) &&
-                                    <div>
-                                      <button onClick={() => handleAppointment('remove', slot._id)}
-                                        className="group relative">
-                                        <Trash className="text-red-400" size={20} />
-                                        <span className="absolute invisible opacity-0 
+                                    <>
+                                      <h3 className="text-sm md:text-base">{slot.patientName}</h3>
+                                      {slot.isCancelled && (
+                                        <div>
+                                          <p className="text-pink-500 text-xs">cancelled</p>
+                                        </div>
+                                      )}
+                                      {slot.isCompleted && (
+                                        <div>
+                                          <p className="text-green-500 text-xs">completed</p>
+                                        </div>
+                                      )}
+                                      <div className="mt-1 ml-2">
+                                        <button onClick={() => handleAppointment('remove', slot._id)}
+                                          className="group relative">
+                                          <Trash className="text-red-400" size={20} />
+                                          <span className="absolute invisible opacity-0 
                                         group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
                                         px-1 left-1/2 -translate-x-1/2 top-6 rounded-full transition-all duration-300"
-                                        > remove </span>
-                                      </button>
-                                    </div>
+                                          > remove </span>
+                                        </button>
+                                      </div>
+                                    </>
+
                                   }
                                 </div>
-                                <div className="mb-10 flex flex-col items-center">
+                                <div className="mb-10 flex flex-col">
                                   <p className="text-sm text-gray-500">{doctorProfile?.speciality} - {slot.slotTime}</p>
                                   {slot?.slotDate && (<h2 className="text-sm text-gray-500">{slot?.slotDate?.startDate.getDate()} - {slot?.slotDate?.startDate.toLocaleString('default', { month: 'short' })} </h2>)}
                                 </div>
@@ -294,7 +301,7 @@ const DoctorHome = () => {
                             </div>
                           )}
                         </div>
-                      </div>
+                      </>
                     ))}
                   </div>
                 </div>
@@ -339,18 +346,18 @@ const DoctorHome = () => {
                               >
                                 <Delete className="text-red-500" size={18} />
                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
-                                                  transform -translate-x-1/2 invisible group-hover:visible
-                                                  bg-gray-800 text-white opacity-0 rounded-lg p-1 
-                                                  group-hover:opacity-100 transition duration-300 ease-in-out">Delete</span>
+                                        transform -translate-x-1/2 invisible group-hover:visible
+                                        bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                        group-hover:opacity-100 transition duration-300 ease-in-out">Delete</span>
                               </button>
                               <button onClick={() => handleAppointment('complete', slot._id)}
                                 className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
                               >
                                 <Check className="text-green-500" size={18} />
                                 <span className="absolute bottom-full left-1/2 text-xs whitespace-nowrap 
-                                                  transform -translate-x-1/2 invisible group-hover:visible
-                                                  bg-gray-800 text-white opacity-0 rounded-lg p-1 
-                                                  group-hover:opacity-100 transition duration-300 ease-in-out">Complete</span>
+                                      transform -translate-x-1/2 invisible group-hover:visible
+                                      bg-gray-800 text-white opacity-0 rounded-lg p-1 
+                                      group-hover:opacity-100 transition duration-300 ease-in-out">Complete</span>
                               </button>
                             </div>
                           }

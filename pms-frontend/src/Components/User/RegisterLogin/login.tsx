@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useForm } from "react-hook-form"
 import { useLocation, useNavigate } from "react-router-dom"
-import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
 import { useState } from "react"
@@ -10,6 +9,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa"
 import HandleAxiosError from "../../../utils/handleAxiosError"
 import { ArrowRight, ShieldCheck, Stethoscope } from "lucide-react"
 import { useToast } from "../../../utils/useToast"
+
 
 const loginSchema = z.object({
     email: z.string()
@@ -34,9 +34,9 @@ const Login = () => {
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema)
     })
-
+    let toastId:string | number | undefined;
     const submitResult = async (data: SubmitProps) => {
-        const toastId = showLoading('Signing In..');
+        toastId = showLoading('Signing In..');
         try {
             const response = await axios.post(`${backend_url}/pms/loginUser`,
                 { email: data.email, password: data.password },
@@ -72,7 +72,9 @@ const Login = () => {
                     }
                 }
             }
-
+            else{
+                 showError("Something went wrong while logging In", toastId);
+        }
         } catch (err) {
             let errorMessage = HandleAxiosError(err);
             showError(errorMessage, toastId);

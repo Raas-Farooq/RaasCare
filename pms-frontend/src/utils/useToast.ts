@@ -1,9 +1,9 @@
 // useToast.ts
 import { useEffect, useRef } from 'react';
-import toast from 'react-hot-toast';
+import {toast} from 'sonner';
 
 export function useToast() {
-    const toastIdsRef = useRef<Set<string>>(new Set());
+    const toastIdsRef = useRef<Set<string | number>>(new Set());
 
     useEffect(() => {
         // Cleanup all toasts created by this component on unmount
@@ -19,14 +19,14 @@ export function useToast() {
         return id;
     };
 
-    const showSuccess = (message: string, id?: string) => {
+    const showSuccess = (message: string, id?: string | number) => {
         if (id) {
             toastIdsRef.current.delete(id);
         }
         return toast.success(message, { id });
     };
 
-    const showError = (message: string, id?: string) => {
+    const showError = (message: string, id?: string | number) => {
         if (id) {
             toastIdsRef.current.delete(id);
         }
