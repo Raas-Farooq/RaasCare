@@ -4,7 +4,7 @@ import { useState } from "react";
 // import DashboardCharts from "./charts/dashboardCharts";
 // import AddNewDoctor from "./components/addNewDoctor";
 // import { useAuth } from "../../context/appContext";
-import toast from "react-hot-toast";
+import {toast} from 'sonner';
 import axios from "axios";
 import { useAuth } from "../../../context/appContext";
 import DashboardCharts from "../charts/dashboardCharts";
@@ -75,7 +75,7 @@ const AdminHome = () => {
                     }
                 )
                 if (response.data.success) {
-                    toast.success(`Successful Slot ${action} operation`, { id: toastId })
+                    toast.success(`Slot ${action} operation is Successful`, { id: toastId })
                     if (response.data.updatedSlots.length) {
                         const updatedSlots = response.data.updatedSlots;
                         localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
@@ -90,6 +90,8 @@ const AdminHome = () => {
                         ))
                         setBookedSlots(parsedBookedSlots)
                     }
+                }else{
+                    toast.error(`error while performing ${action} operation  `, {id:toastId})
                 }
 
             }
@@ -226,7 +228,7 @@ const AdminHome = () => {
                     </main>
                     {/* Bookings */}
                     <main className={`${stylingOfMain} ${activeTab === 'Appointments' ? 'opacity-100 relative' : 'opacity-0 absolute pointer-events-none'}`}>
-                        <section className="px-6 pb-6">
+                        <section className="px-4 pb-6">
                             <header>
                                 <h1 className="border-b border-gray-200 px-2 py-5 text-blue-600 shadow-md text-xl hover:border-gray-300 hover:shadow-lg transition-all duration-200"> Recent Appointments</h1>
                             </header>
@@ -234,21 +236,21 @@ const AdminHome = () => {
                                 <table className="min-w-max w-full border border-gray-200 rounded-lg overflow-hidden" cellPadding="10" cellSpacing="0" >
                                     <thead className="border border-gray-100 text-sm md:text-base">
                                         <tr>
-                                            <th className="text-left text-xl px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Patient</th>
-                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Doctor</th>
-                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Date</th>
-                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Fee</th>
-                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Status</th>
-                                            <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Action</th>
+                                            <th className="text-left text-xl px-3 py-2 text-gray-600 font-medium border-b">Patient</th>
+                                            <th className="text-left px-3 py-2 text-gray-600 font-medium border-b">Doctor</th>
+                                            <th className="text-left px-3 py-2 text-gray-600 font-medium border-b">Date</th>
+                                            <th className="text-left px-3 py-2 text-gray-600 font-medium border-b">Fee</th>
+                                            <th className="text-left px-3 py-2 text-gray-600 font-medium border-b">Status</th>
+                                            <th className="text-left px-3 py-2 text-gray-600 font-medium border-b">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {bookedSlots && bookedSlots?.map((slot, index) => (
                                             <tr key={index}>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{slot.patientName}</td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{slot.doctorName} </td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">{slot.slotDate.startDate.toLocaleString()}</td>
-                                                <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">Rs 4000</td>
+                                                <td className="px-3 py-2 border-b text-gray-700">{slot.patientName}</td>
+                                                <td className="px-3 py-2 border-b text-gray-700">{slot.doctorName} </td>
+                                                <td className="px-3 py-2 border-b text-gray-700 whitespace-nowrap">{slot.slotDate.startDate.toLocaleString()}</td>
+                                                <td className="px-3 py-2 border-b text-gray-700">Rs 4000</td>
                                                 <td
                                                     className={`px-6 py-4 border-b font-medium text-sm
                                                         ${slot.isCompleted && "text-green-600"} ${slot.isCancelled && 'text-red-600'} ${slot.isBooked && 'text-blue-600'}`}

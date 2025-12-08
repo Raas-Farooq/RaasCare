@@ -2,12 +2,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import axios from "axios"
 import { useForm } from "react-hook-form"
 import { useLocation, useNavigate } from "react-router-dom"
-import { toast } from "react-hot-toast"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
 import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import HandleAxiosError from "../../../utils/handleAxiosError"
+import { ArrowRight, ShieldCheck, Stethoscope } from "lucide-react"
+import { useToast } from "../../../utils/useToast"
 
 
 const loginSchema = z.object({
@@ -27,15 +28,15 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const redirectTo = location.state?.redirectTo;
-
+    const {showLoading,showSuccess,showError } = useToast();
     // const [patientRecordId, setPatientRecordId] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema)
     })
-
+    let toastId:string | number | undefined;
     const submitResult = async (data: SubmitProps) => {
-        const toastId = toast.loading('Signing In..');
+        toastId = showLoading('Signing In..');
         try {
             const response = await axios.post(`${backend_url}/pms/loginUser`,
                 { email: data.email, password: data.password },
@@ -43,7 +44,7 @@ const Login = () => {
                     withCredentials: true,
                 })
             if (response.data.success) {
-                toast.success("Successfully LoggedIn", { id: toastId, duration:3000 });
+                showSuccess("Successfully LoggedIn", toastId);
                 const loginResponse = response.data;
                 const role = loginResponse.user.role;
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
@@ -51,35 +52,53 @@ const Login = () => {
                     case 'patient': {
                         if (redirectTo) {
                             console.log("redirectTo exist")
-                            navigate(redirectTo, {replace:true})
+                            navigate(redirectTo, { replace: true })
                         } else {
-                            navigate('/patient-dashboard', {replace:true});
+                            navigate('/patient-dashboard', { replace: true });
                         }
 
                         break;
                     }
                     case 'doctor': {
-                        navigate('/doctor-dashboard', {replace:true});
+                        navigate('/doctor-dashboard', { replace: true });
                         break;
                     }
                     case 'admin': {
-                        navigate('/admin-dashboard', {replace:true});
+                        navigate('/admin-dashboard', { replace: true });
                         break;
                     }
                     default: {
-                        navigate('/', {replace:true});
+                        navigate('/', { replace: true });
                     }
                 }
             }
-
+            else{
+                 showError("Something went wrong while logging In", toastId);
+        }
         } catch (err) {
             let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId, duration: 8000 });
+            showError(errorMessage, toastId);
         }
     }
     return (
         <main className="min-h-screen bg-gray-50 flex flex-col justify-center items-center p-4">
             <h1 className="text-2xl md:text-3xl text-purple-700 text-center font-bold mb-6"> Login Here</h1>
+            <div>
+                <p className="text-yellow-600"> One Click Demo Login For Visitors</p>
+                <div className="flex justify-between gap-5 my-4">
+                    <button
+                        onClick={() => submitResult({ email: "raas@gmail.com", password: 'raas$0022' })}
+                        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg shadow-md transition"
+                    >
+                        Login as Admin <ArrowRight size={15} />
+                        <ShieldCheck />
+                    </button>
+                    <button
+                        onClick={() => submitResult({ email: "ijaz@gmail.com", password: 'ijazHassan' })}
+                        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-3 py-1 
+                " >Login as Doctor <ArrowRight size={15} /> <Stethoscope /></button>
+                </div>
+            </div>
             <section className="shadow-xl bg-white rounded-lg w-full max-w-md p-8 sm:p-12">
                 <form className="flex flex-col gap-6" onSubmit={handleSubmit(submitResult)}>
                     <label htmlFor="email"
@@ -120,11 +139,10 @@ const Login = () => {
                         disabled={isSubmitting}
                         className={`
                             w-full px-4 py-3 rounded-md font-semibold text-black
-                            text-lg transition-colors duration-300
-                            hover:text-white 
+                            text-lg transition-colors duration-300 !text-white  !bg-purple-600
                             ${isSubmitting
-                                ? '!bg-gray-400 cursor-not-allowed'
-                                : '!bg-purple-400 hover:!bg-purple-700 text-white'
+                                ? '!bg-gray-500 cursor-not-allowed'
+                                : '!bg-purple-400 hover:!bg-purple-900'
                             }
                         `}
                     >
@@ -134,7 +152,7 @@ const Login = () => {
                     <div className="flex flex-right">
                         <button
                             type="button"
-                            onClick={() => navigate('/register', { state: { redirectTo:redirectTo }, replace:true })}
+                            onClick={() => navigate('/register', { state: { redirectTo: redirectTo }, replace: true })}
                             className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
                                 ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >

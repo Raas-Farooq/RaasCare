@@ -2,8 +2,7 @@
 
 
 const HeroVideo = () => {
-    const videoUrl = import.meta.env.VITE_VIDEO_URL;
-    // const {imageLoaded} = useImageCached('heroImage.webp')
+    const videoUrl = import.meta.env.VITE_VIDEO_URL; 
     return (
         <div className="w-full flex justify-center mx-auto items-center max-w-6xl mx-auto px-4 py-6">
            <div className="w-full max-w-2xl md:max-w-4xl aspect-video">
@@ -12,6 +11,7 @@ const HeroVideo = () => {
               className="w-full h-full object-cover rounded-lg shadow-md">
                 <source
                  src={videoUrl}
+                 type="video/mp4"
                   />
                 Your Browser doesn't support video tag.
             </video>

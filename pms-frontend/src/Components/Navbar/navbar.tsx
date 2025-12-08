@@ -4,7 +4,7 @@ import useWindowSize from "./windowSize";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/appContext";
 import { ArrowRight, Heart, User } from "lucide-react";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 
 
@@ -70,12 +70,12 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
         logout()
     }
     function handleLogout() {
-        toast((t) => (
-      <div className="flex items-center gap-3">
-        <span>Are you sure you want to logout?</span>
+        toast.custom((id) => (
+      <div className="flex items-center gap-3 shadow-2xl bg-white p-4 min-w-[300px]">
+        <span className="flex-1">Are you sure you want to logout?</span>
         <button
           onClick={() => {
-            toast.dismiss(t.id); // close toast
+            toast.dismiss(id); // close toast
             onLogout();          // your logout function
           }}
           className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-sm"
@@ -83,7 +83,7 @@ const Navbar = ({ servicesRef, contactRef }: NavbarProps) => {
           Yes
         </button>
         <button
-          onClick={() => toast.dismiss(t.id)}
+          onClick={() => toast.dismiss(id)}
           className="bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded text-sm"
         >
           No
@@ -114,7 +114,7 @@ return (
         <div className="flex gap-3">
             <header 
             className="text-2xl md:text-3xl text-purple-800 font-semibold ">
-                CureYou
+                RaasCare
             </header>
             <Heart className="text-red-500 mt-1.5" size={30} />
             {userRole && (userRole === 'doctor' || userRole === 'admin') &&
@@ -122,13 +122,13 @@ return (
                     <span className="px-3 py-1 text-xs font-medium bg-red-100 text-blue-800 rounded-full">
                         {userRole}
                     </span>
-                   <div className="flex group gap-2 hover:bg-purple-100 rounded-md transition-all duration-300">
+                   <div className="flex group items-center hover:bg-purple-100 rounded-md transition-all duration-300">
                          <button
                         onClick={() => navigate(`${userRole}-dashboard`)}
                         className={`font-normal ml-3 text-purple-500 `}>
                         Dashboard
                     </button>
-                    <ArrowRight size={20} className="mt-0.5 text-purple-700 hidden group-hover:block transition-all duration-300"/>
+                    <ArrowRight className="h-4 text-purple-700 transition-all duration-300"/>
                     </div>
                 </div>
             }

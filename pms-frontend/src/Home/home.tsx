@@ -7,6 +7,8 @@ import { footerLinks, servicesImages, myIcons, termsAndConditions, doctorsSpecia
 import { useNavigate } from "react-router-dom";
 import useImageCached from "./useImageCached.tsx";
 import HeroVideo from "./heroVideo.tsx";
+import Banner from "./banner.tsx";
+import DemoCredentials from "./demoCredentials.tsx";
 
 
 function Home() {
@@ -44,11 +46,14 @@ function Home() {
     <>
       <section className="Hero-Section relative bg-gradient-to-r from-purple-50 to-white">
         <Navbar servicesRef={servicesRef} contactRef={contactRef} />
+        <Banner />
         <div className="max-w-6xl mx-auto flex flex-col items-center text-center px-4 py-8">
           <h1 className="text-4xl md:text-5xl mt-5 font-bold text-yellow-600">
             Your health our priority
           </h1>
+          <h1>All the Praises Belongs to Almighty (SWT). Indeed with Sonner</h1>
           <HeroVideo />
+          <DemoCredentials />
           <h1 className="text-3xl sm:text-4xl md:text-5xl mt-5 font-bold text-gray-800">
             Book your Appointment
           </h1>

@@ -2,6 +2,7 @@ import axios, { type AxiosInstance } from "axios";
 import React, { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
 
 import useFetchAllDoctors from "../features/Doctor/fetchAllDoctors";
+import toast from "react-hot-toast";
 
 
 interface User {
@@ -186,6 +187,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (err) {    
             console.error("Error while clearing Cookie", err)
         }
+        toast.dismiss();
         setExpiryTime(null);
         setJwt_token(null);
         setUser(null);
@@ -203,9 +205,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const scheduledLogout = useCallback((exp: number) => {
-        console.log("SCEDULE Logout Called")
+
         const timeLeft = exp - Date.now();
-        console.log("time left: ", timeLeft, " exp: ", exp, " Date now ", Date.now());
         if (timeLeft > 0) {
             logoutTimer = setTimeout(logout, timeLeft)
         } else {

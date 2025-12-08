@@ -51,6 +51,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
         name: 'availableDays'
     })
 
+    console.log("allotted days: ", allottedDays);
 
     const handleFormSubmission = async (data: DoctorSchemaType) => {
         if (!profileImageData.imageUrl) {
@@ -283,7 +284,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                                         ${allottedDays.includes(day) ? 'disabled:bg-gray-400 disabled:cursor-not-allowed pointer-events-none' : 'hover:bg-blue-100'}`}> {day}</button>
                                 ))}
 
-                                {!chosenDay && <p className="text-yellow-500"> please Select the day first</p>}
+                                {!chosenDay && <p className="text-yellow-600"> please Select the day first</p>}
 
 
                             </div>
@@ -303,7 +304,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                                                     onClick={() => handleSlotToggle(time)}
                                                     className={`px-3 py-1 rounded-lg border 
                                                         ${isSelected
-                                                            ? "!bg-blue-500 text-white border-blue-600"
+                                                            ? "!bg-blue-400 text-white border-blue-600"
                                                             : "bg-gray-100 hover:bg-gray-200 border-gray-300"
                                                         }`}
                                                 >
@@ -317,13 +318,13 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                                 <button
                                     type="button"
                                     onClick={handleSaveSlots}
-                                    className="border border-gray-300 px-4 py-2 rounded-xl hover:text-white hover:border-white !bg-blue-400 mt-1">
+                                    className="border border-gray-300 px-4 py-2 rounded-xl hover:!bg-blue-800 text-white hover:border-white !bg-blue-600 mt-1">
                                     Save Slots for {chosenDay}
                                 </button>
 
                             </div>
                             <div className="mt-4 border-t pt-4">
-                                <h4 className="text-md font-semibold">Saved Slots</h4>
+                                <h4 className="text-md font-semibold">{allottedDays.length > 1 && 'Saved Slots'}</h4>
                                 <div className="max-h-60 overflow-y-auto mt-2">
                                     {fields.map((field, index) => (
                                         <>
@@ -353,7 +354,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                             <button 
                                 disabled={submitting}
                                 type="submit" 
-                                className={`px-4 py-2 rounded-lg shadow-md ${submitting ? 'cursor-not-allowed !bg-gray-400' : '!rounded-2xl hover:shadow-md !bg-orange-500 hover:text-white transition-all duration-300'}`}>
+                                className={`px-4 py-2 rounded-lg shadow-md ${submitting ? 'cursor-not-allowed !bg-gray-400' : '!rounded-2xl hover:shadow-md !bg-orange-500 text-white hover:!bg-orange-700 transition-all duration-300'}`}>
                                 {submitting ? 'Submitting': 'Submit'}
                             </button>
                         </div>
