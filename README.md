@@ -7,21 +7,19 @@ It supports **role-based access**, **automatic slot generation**, **patient mana
 ## Live Demo
 **App Link**: https://raas-care.vercel.app
 
-**Note**: You can directly login using one click buttons on login page otherwise the credentials are given below as well.
+**Note**: You can directly login as Visitor using demo credentials by just one click buttons. Available on login page otherwise credentials are given below as well.
 
 **Demo Credentials**
 
-<h6 font="italic">Admin Login</h6>
+### Admin Login  
+**email:** raas@gmail.com  
+**password:** raas$0022  
 
-email: raas@gmail.com
+### Doctor Login
 
-password: raas$0022
+**email:** farhan@gmail.com
 
-<h6 font="italic">Doctor Login</h6>
-
-email: farhan@gmail.com
-
-password: farhanali
+**password:** farhanali
 
 ## Screenshots
 
@@ -116,39 +114,115 @@ Charts are generated dynamically based on real-time data from the MongoDB databa
 ## High Level Architecture
 
 Frontend (React/Tailwind)
+
       ↓ REST API
+      
 Backend (Node/Express)
+
       ↓
+      
 MongoDB (Mongoose)
+
 
 ## API Documentation
 #### user/patient Routes
-post(api/pms/registerUserValidation, registerPatient);
-post(api/pms/ loginValidation,userLogin)
-Get/api/pms Authenticate;
+| Method | Endpoint                   | Description          |
+| ------ | -------------------------- | -------------------- |
+| POST   | `/pms/createNewUser`       | Register new patient |
+| POST   | `/pms/loginUser`           | User login           |
+| GET    | `/pms/logout`              | Logout user          |
+| GET    | `/pms/checkAuthentication` | Verify auth token    |
+
 
 #### admin routes
-Get/pms/
-Get/api/pms,Authenticate ,ProtectedRoutes, fetchAllAdmins;
-Post/api/pms, UploadOnCloudinary);
-Post/api/pms/, createDoctorValidation, createDoctor
+| Method | Endpoint                  | Description                  |
+| ------ | ------------------------- | ---------------------------- |
+| GET    | `/pms/getAllAdmins`       | Fetch all admins (protected) |
+| POST   | `/pms/uploadOnCloudinary` | Upload profile images        |
+| POST   | `/pms/createDoctor`       | Create new doctor            |
+
+#### slots management Routes
+| Method | Endpoint                           | Description                      |
+| ------ | ---------------------------------- | -------------------------------- |
+| POST   | `/pms/generateNewDoctorSlots`      | Generate doctor slots            |
+| POST   | `/pms/bookSlot/:slotId`            | Book slot                        |
+| GET    | `/pms/getDoctorBookedSlots/:docId` | Get booked slots                 |
+| POST   | `/pms/handleAppointmentAction/:id` | Doctor/admin updates appointment |
+| POST   | `/pms/bookAppointment/:id`         | Patient books appointment        |
+
+#### doctor Routes
+| Method | Endpoint                           | Description                      |
+| ------ | ---------------------------------- | -------------------------------- | 
+| GET    | `/pms/fetchAllDoctors`             | fetching available doctors       |
+| GET    | `/pms/fetchDoctorProfile/:id`      | Fetch doctor profile             |
+| POST   | `/pms/bookAppointment/:id`         | book appointment                 |
+| POST   | `/pms/handleAppointmentAction/:id` | Doctor/admin updates appointment |
+| POST   | `/pms/onlinePaymentRequest/:slotId`| Online Payment request           |
 
 ## Installation & Local Setup
 
-git clone https://github.com/Raas-Farooq/RaasCare.git
-cd raas-care
-🛠 Backend Setup
+`git clone https://github.com/Raas-Farooq/RaasCare.git`
+
+cd RaasCare
+
+##### 🛠 Backend Setup
+
 cd backend
-npm install
-add .env file 
-npm run dev
+`npm install`
 
-🧩 Frontend Setup
+`add .env file`
 
-cd pms-frontend
-npm install
-npm start
+`npm run dev`
 
+
+##### 🧩 Frontend Setup
+
+`cd pms-frontend`
+
+`npm install`
+
+`npm start`
+
+##### .env
+MONGO_URI=
+
+JWT_SECRET=
+
+SAFEPAY_SECRET_KEY=
+
+SAFEPAY_MERCHANT_KEY=
+
+NODE_ENV=development
+
+FRONT_END=
+
+SALT_ROUNDS=
+
+PORT=
+
+CLOUDINARY_CLOUD_NAME=
+
+CLOUDINARY_API_KEY=
+
+CLOUDINARY_API_SECRET=
+
+BACKEND_URL=
+
+## 🛡 Security Features
+
+- JWT Authentication
+
+- Role-based Access Control (RBAC)
+
+- Password hashing using bcrypt
+
+- Protected API routes
+
+- Token expiry handling
+
+- Form-data validation with middleware
+
+- Cloudinary upload security presets
 
 ## 🔮 Future Improvements
 
@@ -159,8 +233,30 @@ SafePay payment gateway integration (in progress)
 - **AI-assisted treatment strategy recommendations**
 - **Symptom-based diagnosis prediction**  
   (initial medical insights before lab reports)
+### Web Sockets
+- **for real time update
 
+### Email/SMS reminders
+
+### Redis 
+- **for caching Analytics data
 ---
 
-## 📁 Project Structure
+## Challenges & Solutions
 
+#### Unique slot generation each day by preserving the old booked ones
+→ Solved using a unique compound index: { doctorId, startDate, endDate, timeSlot }
+
+#### Ensuring patient record linking with phone number
+→ Implemented conditional matching + optional DOB check.
+
+#### Automatic generation of next 14 days slots
+→ Specific functions used to take simple day (Sun) and timeSlot (4:30-5:00 PM) and generate get slots of this time efficiently  
+→ Aggregation pipelines optimized for using $match, $group, $project.
+
+#### Role-based routing in React
+→ Built a ProtectedRoute wrapper that checks JWT + role.
+
+#### Cron jobs
+
+→ Used cron jobs for auto slot generation instead of running logic on the frontend
