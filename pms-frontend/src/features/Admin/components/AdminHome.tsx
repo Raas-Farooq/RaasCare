@@ -4,13 +4,15 @@ import { useState } from "react";
 // import DashboardCharts from "./charts/dashboardCharts";
 // import AddNewDoctor from "./components/addNewDoctor";
 // import { useAuth } from "../../context/appContext";
-import {toast} from 'sonner';
+import { toast } from 'sonner';
 import axios from "axios";
 import { useAuth } from "../../../context/appContext";
 import DashboardCharts from "../charts/dashboardCharts";
 import AddNewDoctor from "./addNewDoctor";
 import AdminNavbar from "./AdminNavbar";
 import useConfirmAction from "../../../utils/customConfirmAction";
+import { errorToast, successToast } from "../../../utils/toastStyle";
+
 
 interface BookedSlot {
     isBooked: boolean,
@@ -48,12 +50,12 @@ const AdminHome = () => {
         return 'Dashboard'
     });
 
-    const {isAuthenticated} = useAuth();
+    const { isAuthenticated } = useAuth();
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const stylingOfMain = `w-full max-w-5xl bg-white rounded-xl shadow-sm border border-gray-200 p-6 my-4 mx-auto transition-opacity duration-300`;
     async function handleAppointment(action: string, slotId: string, docId: string) {
-        if(!isAuthenticated){
+        if (!isAuthenticated) {
             toast.error("You Have To Login Again To Proceed Further");
             return;
         }
@@ -63,7 +65,7 @@ const AdminHome = () => {
             const toastId = toast.loading(`${action} slot, please wait..`);
             try {
                 let response;
-                
+
                 response = await axios.post(`${backendUrl}/pms/updateSlotStatus/${slotId}`,
                     {
                         action,
@@ -75,7 +77,11 @@ const AdminHome = () => {
                     }
                 )
                 if (response.data.success) {
-                    toast.success(`Slot ${action} operation is Successful`, { id: toastId })
+                    successToast(`Slot ${action} operation is Successful`, {
+                        id: toastId,
+                    }
+                    )
+                    
                     if (response.data.updatedSlots.length) {
                         const updatedSlots = response.data.updatedSlots;
                         localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
@@ -90,13 +96,13 @@ const AdminHome = () => {
                         ))
                         setBookedSlots(parsedBookedSlots)
                     }
-                }else{
-                    toast.error(`error while performing ${action} operation  `, {id:toastId})
+                } else {
+                    errorToast(`error while performing ${action} operation  `, { id: toastId })
                 }
 
             }
             catch (err) {
-                toast.error(`error while making appointment ${action} request`, {id:toastId})
+                toast.error(`error while making appointment ${action} request`, { id: toastId })
                 console.error(`got error while making an appointment ${action} request`, err);
             }
         }

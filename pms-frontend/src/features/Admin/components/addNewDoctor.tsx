@@ -1,19 +1,21 @@
 
 import DoctorFormComponent from "./doctorForm"
 import axios from "axios";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import HandleAxiosError from "../../../utils/handleAxiosError";
 import type { UseFormReset } from "react-hook-form";
 // import { z } from "zod";
 import type { DoctorSchemaType } from "../admin.types";
 import { useState } from "react";
 import makeRequest from "../../../makeRequesthook";
+import { errorToast, successToast } from "../../../utils/toastStyle";
 
 
   const backend_url = import.meta.env.VITE_BACKEND_URL
 const AddNewDoctor = () => {
     const [choosenImage, setChoosenImage] = useState('');
     const [isAdded, setIsAdded] = useState(false);
+    const [allottedDays, setAllottedDays] = useState<string[]>([]);
       const [profileImageData, setProfileImageData] = useState({
             imageUrl: '',
             public_id: ''
@@ -21,17 +23,17 @@ const AddNewDoctor = () => {
         async function generateSlots(docId:string){
             const id = toast.loading('Generating 2 weeks slots.. ')
             try{
-                const response = await makeRequest({url:'pms/generateNewDoctorSlots', method:'get', data:{generateFor:"doctor", doctorId:docId}});
+                const response = await makeRequest({url:'pms/generateNewDoctorSlots', method:'post', data:{generateFor:"doctor", doctorId:docId}});
 
                 if(response.data.success){
-                    toast.success('Successfully Generated Slots', {id:id});
+                    successToast('Successfully Generated Slots', {id:id});
                 }
 
             }
             catch(err){
                 console.error('Error while Generating Doctor Slots', err);
                 const message = HandleAxiosError(err);
-                toast.error(message, {id:id});
+                errorToast(message, {id:id});
             }
         }
     async function handleDoctorSubmission(data: DoctorSchemaType, resetForm:UseFormReset<DoctorSchemaType>) {
@@ -54,7 +56,8 @@ const AddNewDoctor = () => {
                 })
                 setChoosenImage('');
                 setIsAdded(true);
-                toast.success('Success! Doctor Added', {id:toastId});
+                setAllottedDays([]);
+                successToast('Success! Doctor Added', {id:toastId});
                 generateSlots(response.data.doctor._id);
             }
         }
@@ -73,6 +76,8 @@ const AddNewDoctor = () => {
                 receiveUpdatedDetails={handleDoctorSubmission} 
                 imgSrc={choosenImage} setImgSrc ={setChoosenImage} 
                 profileImageData={profileImageData} 
+                allottedDays={allottedDays}
+                setAllottedDays={setAllottedDays}
                 setProfileImageData={setProfileImageData}
                 isAdded={isAdded} 
                 />

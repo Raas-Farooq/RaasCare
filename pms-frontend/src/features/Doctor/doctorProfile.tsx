@@ -2,13 +2,14 @@ import { useEffect, useRef, useState} from "react";
 import './cssTransition.css';
 // import { ArrowLeft } from "lucide-react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import axios from "axios";
 import { useAuth } from "../../context/appContext";
 import { FaSpinner } from "react-icons/fa";
 import useConfirmNavigation from "../../utils/customLogin";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import makeRequest from "../../makeRequesthook";
+import { errorToast, successToast, warningToast } from "../../utils/toastStyle";
 
 interface Slots {
     slotTime: string,
@@ -196,7 +197,7 @@ function DoctorPublicProfile() {
         if (!userRole) {
             const confirmResponse = await confirmLogin();
             if (confirmResponse) {
-                navigate('/login', {state:{redirectTo:`/doctorPublicProfile/${doctorParamsId}`}, replace:true });
+                navigate('/login', {state:{redirectTo:`/doctorPublicProfile/${doctorParamsId}`} });
                 return
             } else {
                 return
@@ -204,19 +205,19 @@ function DoctorPublicProfile() {
 
         }
         else if (userRole !== 'patient') {
-            toast.error(`${userRole}s can't book an appointment. You can contact with Management`);
+            errorToast(`${userRole}s can't book an appointment. You can contact with Management`);
             return;
         }
 
         else if (!selectedSlot_id) {
-             toast.error('Please select a time slot to confirm booking');
+             errorToast('Please select a time slot to confirm booking');
             return;
         }
         else if (bookedSlots?.length){
             const pendingBooked= bookedSlots?.filter(slot => slot.isBooked);
             const totalBookedLen = pendingBooked?.length;
             if(totalBookedLen && totalBookedLen >= 3){
-                toast.error("A patient can't book more than 3 slots");
+                warningToast("A patient can't book more than 3 slots");
                 return;
             }
         }
@@ -265,7 +266,7 @@ function DoctorPublicProfile() {
 
                     })
                 })
-                toast.success('Booked Successfully!', { id: toastId })
+                successToast('Booked Successfully!', { id: toastId })
                 
                 setTimeout(() => {
                     navigate('/patient-dashboard/myAppointments');
@@ -274,7 +275,7 @@ function DoctorPublicProfile() {
         }
         catch (err) {
            let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId });
+            errorToast(errorMessage, { id: toastId });
         }
         finally {
             setIsSubmitting(false);

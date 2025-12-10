@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import useConfirmAction from "../../utils/customConfirmAction";
+import { errorToast, successToast } from "../../utils/toastStyle";
 
 
 interface BookedSlot {
@@ -84,8 +85,7 @@ const DoctorHome = () => {
           { withCredentials: true }
         )
         if (response.data.success) {
-          console.log("response.data ", response.data)
-          toast.success(`Slot ${action} operation is Successful`, { id: toastId })
+          successToast(`Slot ${action} operation is Successful`, { id: toastId })
           const updatedSlots = response.data.updatedSlots;
           // storing locally
 
@@ -100,7 +100,7 @@ const DoctorHome = () => {
       }
       catch (err) {
         let errorMessage = HandleAxiosError(err);
-        toast.error(errorMessage, { id: toastId });
+        errorToast(errorMessage, { id: toastId });
       }
     }
 

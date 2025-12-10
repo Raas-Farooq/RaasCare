@@ -172,7 +172,7 @@ return (
                 ))}
             </ul>
         </nav>
-        <div className={`relative w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex '} gap-5 text-right`}>
+        <div className={`relative w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex '} gap-5`}>
             {userRole && userRole === 'patient' &&
                 <>
                     <button

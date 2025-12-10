@@ -2,7 +2,7 @@ import { ArrowLeft, ArrowRight} from "lucide-react"
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/appContext"
-import toast from "react-hot-toast"
+import {toast} from "sonner"
 
 
 interface TimeSlots {

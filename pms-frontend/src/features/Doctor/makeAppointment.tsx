@@ -4,7 +4,7 @@ import DoctorsBySpeciality from "./DoctorsBySpeciality";
 import { useAuth } from "../../context/appContext";
 import { FaSpinner } from "react-icons/fa";
 import { doctorsSpecialities } from "../../Home/homeData";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 const MakeAppointment = () => {
 

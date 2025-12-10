@@ -9,6 +9,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { z } from "zod"
 import { useAuth } from "../../../context/appContext"
 import HandleAxiosError from "../../../utils/handleAxiosError"
+import { errorToast, successToast } from "../../../utils/toastStyle";
 
 
 
@@ -83,10 +84,8 @@ function Register() {
                 // if (patientRecord) {
                 //     setPatientRecordId(patientRecord)
                 // }
-                toast.success('You have Successfully Registered ', { id: toastId, duration:3000})
-                  console.log("came in Patient case")
+                successToast('You have Successfully Registered ', { id: toastId, duration:3000})
                         if (redirectTo) {
-                            console.log("redirectTo exist")
                             navigate(redirectTo, {replace:true})
                         } else {
                             navigate('/patient-dashboard', {replace:true});
@@ -96,7 +95,7 @@ function Register() {
 
         } catch (err: string | any) {
             let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId, duration:8000 });
+            errorToast(errorMessage, { id: toastId, duration:8000 });
         }
     }
 

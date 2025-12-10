@@ -28,12 +28,8 @@ const registerPatient = async (req, res, next) => {
             })
             await patientAdded.save();
         } else {
-            console.log(
-                "no patient doessn't exist "
-            )
             const newPatient = await Patient.create({phone:phone});
-            // const {patientId, patientName, city, age, gender,medicalHistory} //if in case user is being sending all the detials then we have to made some changes but in simple case when generally user register for appointement booking then the intial details is enough;
-            console.log("username; ", username, "email , password ", email, password);
+
             const hashedPassword =await bcrypt.hash(password, 10);
             patientAdded = new User({
                 username,
@@ -45,7 +41,7 @@ const registerPatient = async (req, res, next) => {
 
             await patientAdded.save();
         }
-        console.log("patientADded after the exist process ", patientAdded);
+        
         let token;
         const expiryTime = 60 * 60;
         try{
@@ -59,7 +55,7 @@ const registerPatient = async (req, res, next) => {
                 error: err.message
             })
         }
-        console.log(" token Created ", token)
+
         try{
                 res.cookie( 'token', token, {
                 httpOnly:true,
@@ -143,7 +139,7 @@ const userLogin = async (req, res,next) => {
             .lean()
         }
         if(userExist.role === 'patient'){
-            console.log("userExist: ", userExist);
+   
             slotsBooked = await AvailableSlots.find(
                 {
                     patientId:userExist._id,
@@ -154,7 +150,7 @@ const userLogin = async (req, res,next) => {
             // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
         }
         const matchPassword = await bcrypt.compare(password, userExist.password);
-        console.log("is password matched: ", matchPassword);
+
         if (!matchPassword) {
             return res.status(400).json({
                 success: false,
@@ -162,11 +158,11 @@ const userLogin = async (req, res,next) => {
             })
         }
         let token;
-        let expiryTime = 50 * 60;
+        let expiryTime = 60 * 60;
         try {
 
-            token = jwt.sign({ id: userExist._id, email: userExist.email, role: userExist.role }, process.env.JWT_SECRET, { expiresIn: '50m' });
-            console.log("token after signing ", token);
+            token = jwt.sign({ id: userExist._id, email: userExist.email, role: userExist.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
         }
         catch (err) {
             return res.status(400).json({

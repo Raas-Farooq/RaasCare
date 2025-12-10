@@ -9,9 +9,10 @@ import patientRoutes from "./patientFrontendRoutes";
 import DoctorDashboard from "../dashboards/doctorDashboard";
 import PatientDashboard from "../dashboards/patientDashboards";
 import PublicDashboard from "../dashboards/publicDashboard";
-import PageWrapper from "../../pageWrapper";
+// import PageWrapper from "../../pageWrapper";
 import adminRoutes from "./adminRoutes/adminFrontentRoutes";
 import RoutesErrorBoundary from "../../utils/routesErrorBoundary";
+import PageWrapper from "../../pageWrapper";
 
 
 
@@ -27,9 +28,9 @@ export const myRouter = createBrowserRouter([
   element: <App />,
   errorElement:<RoutesErrorBoundary />,
   children: [
-    // {
-      // element: <PageWrapper />,   // only ONE place!
-      // children: [
+    {
+      element: <PageWrapper />,   // only ONE place!
+      children: [
         {
           element: <PublicDashboard />,
           children: userRoutes
@@ -64,8 +65,7 @@ export const myRouter = createBrowserRouter([
         //   children: adminRoutes
         // }
       ]
-    // }
     }
-
-
+  ]
+}
 ]);

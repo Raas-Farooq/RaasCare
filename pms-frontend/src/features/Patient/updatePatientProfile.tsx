@@ -4,10 +4,11 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
 import axios from "axios";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { FaSpinner } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import HandleAxiosError from "../../utils/handleAxiosError";
+import { errorToast, successToast } from "../../utils/toastStyle";
 
 
  interface PatientHistory
@@ -98,13 +99,13 @@ function UpdatePatientProfile(){
         )
             if(response.data.success){
                 
-                toast.success("Successfully Updated the Patient", {id:toastId});
+                successToast("Successfully Updated the Patient", {id:toastId});
                 navigate(-1);
             }
     }
     catch(err){
          let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId });
+            errorToast(errorMessage, { id: toastId });
           }
     finally{
         setUpdatingPatientLoading(false);

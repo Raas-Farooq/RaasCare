@@ -11,8 +11,8 @@ const useConfirmAction = (action:string) => {
             toast.custom((id) => 
                {
                 return (
-                     <div className="flex flex-col items-center">
-                    <span> Do you really want to {action} the Slot</span>
+                     <div className="flex flex-col text-sm items-center bg-white rounded-lg p-4 shadow-lg min-w-[300px]">
+                    <span className="flex-1"> Do you really want to {action} the Slot</span>
                    <div className="flex justify-between">
                      <button 
                       className="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:!bg-red-600 "
