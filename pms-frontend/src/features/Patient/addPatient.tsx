@@ -1,10 +1,11 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import FormComponent from "./patientFormComponent";
-import toast from 'react-hot-toast';
+import {toast} from "sonner";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import type { PatientFormType } from "./patient.types";
 import type { UseFormReset } from "react-hook-form";
+import { errorToast, successToast } from "../../utils/toastStyle";
 
 
 
@@ -27,13 +28,13 @@ const PatientAddForm = () => {
         try{
             const response = await axios.post(`${backendUrl}/pms/addPatientProfile`, patientPayload);
             if(response.data.success){
-                toast.success('Success Response received by Backend', {id:toastId});
+                successToast('Success Response received by Backend', {id:toastId});
                 resetForm()
             }
         }
         catch(err){
             let errorMessage = HandleAxiosError(err);
-            toast.error(errorMessage, { id: toastId });
+            errorToast(errorMessage, { id: toastId });
         }
     }
 

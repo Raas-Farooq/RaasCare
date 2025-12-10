@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from "react";
 import { useForm, useFieldArray, type UseFormReset } from 'react-hook-form';
 import parsePhoneNumberFromString from 'libphonenumber-js';
-import toast from 'react-hot-toast';
+import {toast} from "sonner";
 import { patientSchema, type PatientFormType } from './patient.types';
 
 
@@ -165,7 +165,7 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                                                 className="w-full px-3 py-2 border-b border-gray-400 appearance-none"
                                             />
                                             {!field.date && (
-                                                <span className="absolute right-10 top-2 text-gray-400 pointer-events-none">
+                                                <span className="text-xs top-3 sm:top-2 sm:text-base absolute right-10 text-gray-400 pointer-events-none">
                                                 When did treatment begin
                                                 </span>
                                             )}

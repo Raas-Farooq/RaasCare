@@ -8,7 +8,8 @@ import { useState } from "react"
 import { FaEye, FaEyeSlash } from "react-icons/fa"
 import HandleAxiosError from "../../../utils/handleAxiosError"
 import { ArrowRight, ShieldCheck, Stethoscope } from "lucide-react"
-import { useToast } from "../../../utils/useToast"
+import { errorToast, successToast } from "../../../utils/toastStyle"
+import { toast } from "sonner"
 
 
 const loginSchema = z.object({
@@ -28,15 +29,14 @@ const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const redirectTo = location.state?.redirectTo;
-    const {showLoading,showSuccess,showError } = useToast();
     // const [patientRecordId, setPatientRecordId] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
         resolver: zodResolver(loginSchema)
     })
-    let toastId:string | number | undefined;
+    let toastId: string | number | undefined;
     const submitResult = async (data: SubmitProps) => {
-        toastId = showLoading('Signing In..');
+        toastId = toast.loading('Signing In..');
         try {
             const response = await axios.post(`${backend_url}/pms/loginUser`,
                 { email: data.email, password: data.password },
@@ -44,19 +44,17 @@ const Login = () => {
                     withCredentials: true,
                 })
             if (response.data.success) {
-                showSuccess("Successfully LoggedIn", toastId);
+                successToast("Successfully LoggedIn", {id:toastId});
                 const loginResponse = response.data;
                 const role = loginResponse.user.role;
                 login(loginResponse.user, loginResponse.token, loginResponse.expiresIn, loginResponse.userProfile, loginResponse.slotsBooked);
                 switch (role) {
                     case 'patient': {
                         if (redirectTo) {
-                            console.log("redirectTo exist")
                             navigate(redirectTo, { replace: true })
                         } else {
                             navigate('/patient-dashboard', { replace: true });
                         }
-
                         break;
                     }
                     case 'doctor': {
@@ -72,12 +70,12 @@ const Login = () => {
                     }
                 }
             }
-            else{
-                 showError("Something went wrong while logging In", toastId);
-        }
+            else {
+                errorToast("Something went wrong while logging In", {id:toastId});
+            }
         } catch (err) {
             let errorMessage = HandleAxiosError(err);
-            showError(errorMessage, toastId);
+            errorToast(errorMessage, {id:toastId});
         }
     }
     return (
@@ -152,7 +150,7 @@ const Login = () => {
                     <div className="flex flex-right">
                         <button
                             type="button"
-                            onClick={() => navigate('/register', { state: { redirectTo: redirectTo }, replace: true })}
+                            onClick={() => navigate('/register', { state: { redirectTo: redirectTo } })}
                             className={`w-full text-sm transition-colors duration-200 bg-purple-200 hover:text-purple-700 rounded-lg px-2 py-2 cursor-pointer appearance-none
                                 ${isSubmitting && 'cursor-not-allowed bg-gray-400'}`}
                         >

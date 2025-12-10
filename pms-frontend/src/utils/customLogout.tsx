@@ -7,7 +7,7 @@ const useCustomLogout = () => {
     function confirmLogout() {
         return new Promise((resolve) => {
             toast.custom((id) => (
-                <div className="flex items-center gap-3 pointer-events-auto p-4 bg-white rounded-lg shadow-lg min-w-[300px]">
+                <div className="flex items-center gap-3 text-sm pointer-events-auto p-4 bg-white rounded-lg shadow-lg min-w-[300px]">
                     <span className="flex-1">Are you sure you want to logout?</span>
                     <button
                         onClick={() => {

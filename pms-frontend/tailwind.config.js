@@ -3,6 +3,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js, ts, jsx, tsx}",
+    "./node_modules/sonner/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {},

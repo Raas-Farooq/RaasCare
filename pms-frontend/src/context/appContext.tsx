@@ -2,7 +2,7 @@ import axios, { type AxiosInstance } from "axios";
 import React, { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
 
 import useFetchAllDoctors from "../features/Doctor/fetchAllDoctors";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 
 
 interface User {
@@ -187,6 +187,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } catch (err) {    
             console.error("Error while clearing Cookie", err)
         }
+
         toast.dismiss();
         setExpiryTime(null);
         setJwt_token(null);
@@ -205,8 +206,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }, []);
 
     const scheduledLogout = useCallback((exp: number) => {
-
+        
         const timeLeft = exp - Date.now();
+
         if (timeLeft > 0) {
             logoutTimer = setTimeout(logout, timeLeft)
         } else {
@@ -252,7 +254,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUserRole(user.role);
         setIsAuthenticated(true);
         const expiryInSeconds = Date.now() + expiresInSec * 1000;
-        console.log("expire IN seconds: ",expiresInSec);
         setExpiryTime(expiryInSeconds);
         localStorage.setItem('auth', JSON.stringify({
             user: user,

@@ -1,8 +1,9 @@
 
 import {useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import {toast} from "sonner"
 import HandleAxiosError from "../../utils/handleAxiosError";
 import makeRequest from "../../makeRequesthook";
+import { errorToast, successToast } from "../../utils/toastStyle";
 
 // interface IdInterface{
 //     type:string | null
@@ -50,13 +51,13 @@ function useFetchApi(url: string, id: string | null) {
                 const response = await makeRequest({url:`pms/fetchDoctorProfile/${id}`, method:'get'});
                 if (response.data.success) {
                     setFetchResult(response.data.doctorProfile);
-                    toast.remove(toastId);
-                    toast.success("loaded doctors successfully", { id: toastId })
+                    toast.dismiss(toastId);
+                    successToast("loaded doctors successfully", { id: toastId })
                 }
             }
             catch (err: any) {
                 let errorMessage = HandleAxiosError(err);
-                toast.error(errorMessage, { id: toastId });
+                errorToast(errorMessage, { id: toastId });
             }finally{
                 setFetchLoading(false)
             }

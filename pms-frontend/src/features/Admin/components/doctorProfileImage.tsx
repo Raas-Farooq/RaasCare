@@ -1,9 +1,10 @@
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { FaUserCircle } from "react-icons/fa";
 import axios from "axios";
 import {type ChangeEvent } from "react";
 import HandleAxiosError from "../../../utils/handleAxiosError";
 import { type ProfileImageProps } from "../admin.types";
+import { errorToast, successToast } from "../../../utils/toastStyle";
 // import HandleAxiosError from "../../utils/handleAxiosError";
 
 interface ImageUploadProps{
@@ -41,12 +42,12 @@ const UploadProfileImage :React.FC<ImageUploadProps> = ({ imgSrc, setImgSrc, set
                         public_id: response.public_id
                     }))
                     toast.dismiss(toastId);
-                    toast.success("Success!")
+                    successToast("Success!")
                 }
             }
             catch (err) {
                  let errorMessage = HandleAxiosError(err);
-                toast.error(errorMessage, { id: toastId });
+                errorToast(errorMessage, { id: toastId });
                 setProfileImageData({imageUrl:'', public_id:''})
             }
         }

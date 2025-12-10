@@ -1,5 +1,5 @@
 
-import toast from 'react-hot-toast';
+import {toast} from 'sonner';
 
 
 // Function to call when user confirms
@@ -9,13 +9,13 @@ const useCustomLogin = () => {
     const showConfirmDialogue = () => {
 
         return new Promise(resolve => {
-            toast((t) => (
-                <div className="flex flex-col items-center">
-                    <span>Please log in to confirm your appointment.</span>
+            toast.custom((id) => (
+                <div className="flex flex-col items-center text-sm shadow-lg rounded-lg bg-white p-3 min-w-[300px] ">
+                    <span className='flex-1'>Please log in to confirm your appointment.</span>
                     <div className="mt-4">
                         <button
                             onClick={() => {
-                                toast.dismiss(t.id);
+                                toast.dismiss(id);
                                 resolve(true)
                             }}
                             className="bg-red-500 text-white px-4 py-2 rounded mr-2 hover:!bg-red-600 "
@@ -24,7 +24,7 @@ const useCustomLogin = () => {
                         </button>
                         <button
                             onClick={() => {
-                                toast.dismiss(t.id);
+                                toast.dismiss(id);
                                 resolve(false);
                                 }
                             }
@@ -35,7 +35,6 @@ const useCustomLogin = () => {
                     </div>
                 </div>
             ), {
-                //  toast behavior
                 duration: Infinity, 
             });
         })

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useFieldArray, useForm, type UseFormReset } from "react-hook-form";
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { Calendar,  Trash2 } from 'lucide-react';
 import UploadProfileImage from "./doctorProfileImage";
 import { doctorFormSchema, type DoctorSchemaType, type ProfileImageProps } from "../admin.types";
@@ -27,14 +27,15 @@ interface DoctorFormProps {
     imgSrc:string,
     setImgSrc:React.Dispatch<React.SetStateAction<string>>,
     profileImageData:ProfileImageProps,
+    allottedDays:string[]
+    setAllottedDays:React.Dispatch<React.SetStateAction<string[]>>
     setProfileImageData:React.Dispatch<React.SetStateAction<ProfileImageProps>>,
     isAdded:boolean
 };
 
 
-function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setImgSrc, profileImageData, setProfileImageData }: DoctorFormProps) {
+function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setImgSrc, profileImageData, setProfileImageData, allottedDays, setAllottedDays}: DoctorFormProps) {
     const [commonTimeSlots, setCommonTimeSlots] = useState(COMMON_TIME_SLOTS);
-    const [allottedDays, setAllottedDays] = useState(['']);
     const [chosenDay, setChosenDay] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [specialSlots, setSpecialSlots] = useState<string[]>([]);
@@ -51,7 +52,6 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
         name: 'availableDays'
     })
 
-    console.log("allotted days: ", allottedDays);
 
     const handleFormSubmission = async (data: DoctorSchemaType) => {
         if (!profileImageData.imageUrl) {
@@ -297,7 +297,7 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                                     {commonTimeSlots.map(time => {
                                         const isSelected = specialSlots.includes(time);
                                         return (
-                                            <div>
+                                            <div key={time}>
                                                 <button
                                                     key={time}
                                                     type="button"
@@ -366,16 +366,3 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
 }
 
 export default DoctorFormComponent
-
-//  {daysOfWeek.map((day, ind) => (
-//                                     <button
-//                                         type="button"
-//                                         onClick={() => handleDayClicked(day)}
-//                                         disabled={allottedDays.includes(day)}
-//                                         className={`border border-gray-300 p-2 m-1 
-//                                         ${chosenDay === (day) && '!bg-blue-300'} 
-//                                         ${allottedDays.includes(day) ? 'disabled:bg-gray-400 disabled:cursor-not-allowed pointer-events-none' : 'hover:bg-blue-100'}`}> {day}</button>
-//                                 ))}
-
-// 
-// will the 'disabled' work if i dont set this inside button like this ' disabled={allottedDays.includes(day)} '

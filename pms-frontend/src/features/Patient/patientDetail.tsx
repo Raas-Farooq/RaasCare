@@ -1,10 +1,11 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
-import toast from "react-hot-toast";
+import {toast} from "sonner";
 import { User } from "lucide-react";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import makeRequest from "../../makeRequesthook";
+import { errorToast, successToast } from "../../utils/toastStyle";
 
 interface MedicalHistory{
     diagnosis?:string,
@@ -56,13 +57,13 @@ const PatientProfile = () => {
                     const response = await makeRequest({url:`pms/getPatient/${patientRecordId}`, method:"get"}); 
                     if(response.data.success){
                         setCurrentPatient(response.data.patient);
-                        toast.success('Successfully Loaded ', {id: toastId})
+                        successToast('Successfully Loaded ', {id: toastId})
                     }
                     
                 }
                 catch(err){
                     let errorMessage = HandleAxiosError(err);
-                    toast.error(errorMessage, { id: toastId });
+                    errorToast(errorMessage, { id: toastId });
                 }
             }
             fetchPatientRecord()

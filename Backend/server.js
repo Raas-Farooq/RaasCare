@@ -23,7 +23,7 @@ const app = express();
 const Port = process.env.PORT || 2500;
 ConnectingToDatabase();
 
-const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raas-care.vercel.app', 'http://172.17.117.48:5173'];
+const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raas-care.vercel.app', 'http://172.17.117.48:5173', 'http://172.17.117.48:5174'];
 const corsAuthen = {
     origin:function(requestOrigin , callback){
 
