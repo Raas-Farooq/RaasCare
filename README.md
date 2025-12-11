@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![React And Typescript](https://img.shields.io/badge/React&Typescript-green.svg)](React)
+[![Node And Mongo](https://img.shields.io/badge/Node&Mongo-blue.svg)](Node)
 # 🏥 Raas-Care — Full-Stack Healthcare & Appointment Management System
 
 Raas-Care is a modern healthcare management platform designed to simplify the appointment booking process for patients while providing powerful dashboards for doctors and admins.  
@@ -8,18 +11,24 @@ It supports **role-based access**, **automatic slot generation**, **patient mana
 **App Link**: https://raas-care.vercel.app
 
 **Note**: You can directly login as Visitor using demo credentials by just one click buttons. Available on login page otherwise credentials are given below as well.
+#### Demo Login as visitor Through App:
 
-**Demo Credentials**
+**steps:** Home Page > Demo Login Banner > Click login from banner > just click the admin / doctor visitor login button on login page -- Success
 
-### Admin Login  
-**email:** raas@gmail.com  
-**password:** raas$0022  
 
-### Doctor Login
 
-**email:** farhan@gmail.com
 
-**password:** farhanali
+#### Demo Credentials
+
+##### Admin Login  
+email:raas@gmail.com  
+password: raas$0022  
+
+##### Doctor Login
+
+email: farhan@gmail.com
+
+password: farhanali
 
 ## Screenshots
 
@@ -115,7 +124,11 @@ Charts are generated dynamically based on real-time data from the MongoDB databa
 
 Frontend (React/Tailwind)
 
-      ↓ REST API
+      ↓
+      
+   REST API
+
+      ↓
       
 Backend (Node/Express)
 
@@ -163,11 +176,11 @@ MongoDB (Mongoose)
 
 `git clone https://github.com/Raas-Farooq/RaasCare.git`
 
-cd RaasCare
+`cd RaasCare`
 
 ##### 🛠 Backend Setup
 
-cd backend
+`cd backend`
 `npm install`
 
 `add .env file`
@@ -234,12 +247,12 @@ SafePay payment gateway integration (in progress)
 - **Symptom-based diagnosis prediction**  
   (initial medical insights before lab reports)
 ### Web Sockets
-- **for real time update
+- for real time update
 
 ### Email/SMS reminders
 
 ### Redis 
-- **for caching Analytics data
+- for caching Analytics data
 ---
 
 ## Challenges & Solutions
