@@ -95,6 +95,8 @@ const AdminHome = () => {
                             }
                         ))
                         setBookedSlots(parsedBookedSlots)
+                    }else{
+                        setBookedSlots([]);
                     }
                 } else {
                     errorToast(`error while performing ${action} operation  `, { id: toastId })
@@ -102,7 +104,7 @@ const AdminHome = () => {
 
             }
             catch (err) {
-                toast.error(`error while making appointment ${action} request`, { id: toastId })
+                errorToast(`error while making appointment ${action} request`, { id: toastId })
                 console.error(`got error while making an appointment ${action} request`, err);
             }
         }
@@ -259,11 +261,11 @@ const AdminHome = () => {
                                                 <td className="px-3 py-2 border-b text-gray-700">Rs 4000</td>
                                                 <td
                                                     className={`px-6 py-4 border-b font-medium text-sm
-                                                        ${slot.isCompleted && "text-green-600"} ${slot.isCancelled && 'text-red-600'} ${slot.isBooked && 'text-blue-600'}`}
-                                                >{slot.isBooked && 'Pending' || slot.isCancelled && 'Cancelled' || slot.isCompleted && 'Completed'}</td>
+                                                        ${slot.status === 'completed' && "text-green-600"} ${slot.status === 'cancelled' && 'text-red-600'} ${slot.status === 'booked' && 'text-blue-600'}`}
+                                                >{slot.status === 'booked' && 'Pending' || slot.status === 'cancelled' && 'Cancelled' || slot.status === 'completed' && 'Completed'}</td>
                                                 <td className="px-3 py-2 md:px-6 md:py-4 border-b">
 
-                                                    {slot.isBooked &&
+                                                    {slot.status === 'booked' &&
                                                         <div className="flex">
                                                             <button title="delete" onClick={() => handleAppointment('cancel', slot._id, slot.doctorId)}
                                                                 className="relative group px-3 py-2 md:px-6 md:py-4 border-b shadow-lg text-gray-700"
@@ -290,7 +292,7 @@ const AdminHome = () => {
                                                         </div>
                                                     }
 
-                                                    {(slot.isCompleted || slot.isCancelled) &&
+                                                    {(slot.status === 'completed' || slot.status === 'cancelled') &&
                                                         <div className="text-center">
                                                             <button onClick={() => handleAppointment('remove', slot._id, slot.doctorId)}
                                                                 className="relative group px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"

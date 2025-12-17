@@ -9,6 +9,7 @@ import useImageCached from "./useImageCached.tsx";
 import HeroVideo from "./heroVideo.tsx";
 import Banner from "./banner.tsx";
 import DemoCredentials from "./demoCredentials.tsx";
+import axios from "axios";
 
 
 function Home() {
@@ -16,11 +17,50 @@ function Home() {
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
   const { imageLoaded } = useImageCached("/relief.webp");
-
-
+  const backend_url = import.meta.env.VITE_BACKEND_URL;
   useEffect(() => {
+    console.log("backend URL ",backend_url)
     localStorage.removeItem('doctorId');
-  },[])
+    async function detectSlotsDuplication() {
+      const fetchSlots = await axios.get(`${backend_url}/pms/getDoctorSlots/693ce46789386e011f48a7db`);
+      if (fetchSlots.data.success) {
+        console.log("doctor slots ", fetchSlots.data);
+        // let count = 0;
+        // const date = new Date(2025, 11, 19);
+        // const formatDate = date.toISOString().split('T')[0];
+        // console.log("formated Date ", formatDate);
+        // const mySlots = fetchSlots.data.updatedSlots;
+        // const specificDate = mySlots.filter(slot => {
+        //   const currentDate = new Date();
+        //   const slotDateObject = new Date(slot.slotDate.startDate);
+
+        //   // Return the boolean result of the comparison directly
+        //   return slotDateObject < currentDate;
+        // });
+        // console.log("old Slots ", specificDate);
+        // const today = new Date().toISOString().split('T')[0]
+        // for(let i = 0; i < 5; i++){
+        //     console.log("slotday ", specificDate[i].slotDay, " type: ", typeof(specificDate[i].slotDay));
+        //     console.log("today  ",today , " typeof ", typeof(today));
+        //     if(specificDate[i].slotDay < today){
+        //       console.log("YES less than")
+        //     }
+        // }
+        // const allTimes = mySlots.map((slot:any) => (
+        //   slot.slotTime
+        // ))
+        // for (const slot of mySlots){
+        //   if (slot.slotDay && slot.slotKey){
+        //     count++;
+        //   }
+        // }
+        // console.log("total num of slots which contains slotDay and slot.slotKey ", count, "one slot ", mySlots[22])
+      } else {
+        console.log("not able to fetch the slots: respone ", fetchSlots);
+      }
+    }
+    detectSlotsDuplication();
+  }, [])
 
   const handleSpecialityClick = (targetSpeciality: string) => {
 
@@ -94,15 +134,15 @@ function Home() {
             </div>
             <div className="w-full flex justify-center items-center mt-4">
 
-              {imageLoaded === 'loading' && 
-              <div className="w-full max-w-md sm:aspect-[3/2] px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
+              {imageLoaded === 'loading' &&
+                <div className="w-full max-w-md sm:aspect-[3/2] px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
 
-              </div>
+                </div>
               }
 
               <img
                 className={`${imageLoaded === "loaded"
-                   ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden" }`}
+                  ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden"}`}
                 loading="lazy"
                 src="/relief.webp"
                 alt={"Treatment & Relief"}

@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance } from "axios";
 import React, { useCallback, useContext, useEffect, useState, type SetStateAction } from "react";
-
+import { type AllDoctorInterface, type BookedSlotsType, type DoctorProfileType } from "../utils/globalTypes";
 import useFetchAllDoctors from "../features/Doctor/fetchAllDoctors";
 import {toast} from "sonner";
 
@@ -47,73 +47,8 @@ interface AdminProfile {
     about?: string,
     permissions: Permissions[]
 }
-interface BookedSlots {
-    doctorId: string,
-    slotTime: string,
-    isBooked: boolean,
-    doctorName:string,
-    isCancelled?: boolean,
-    source: string,
-    slotDate: {
-        startDate: Date,
-        endDate?: Date
-    },
-    isCompleted?: boolean,
-    patientId?: string,
-    patientName: string,
-    _id: string,
-}
-interface AvailableDays {
-    day: string,
-    slots: [string]
 
-}
-interface ProfileImage {
-    imageUrl: string,
-    public_id: string
-}
-interface DoctorProfile {
-    _id: string,
-    username: string,
-    email: string,
-    password: string,
-    education: string,
-    speciality: string,
-    experience: number,
-    about: string,
-    available: boolean,
-    licenseNumber: string,
-    address: string,
-    role: string,
-    consultationFee: number,
-    profileImage: ProfileImage,
-    availableDays?: AvailableDays[]
-}
-interface TimeSlots {
-    slotTime: string,
-    isBooked: boolean,
-    _id?: string,
-}
-interface ProfileImage {
-    imageUrl: string,
-    public_id: string
-}
-interface AllDoctorInterface {
-    _id: string,
-    username: string,
-    email: string,
-    password: string,
-    profileImage: ProfileImage,
-    available:boolean,
-    experience:number,
-    availableDays:AvailableDays[],
-    education: string,
-    speciality: string,
-    about: string,
-    address: string,
-    consultationFee: number,
-    slots: TimeSlots[]
-}
+
 declare global {
     interface Window {
         axios: AxiosInstance
@@ -121,15 +56,15 @@ declare global {
 }
 
 interface AuthContextProps {
-    bookedSlots: BookedSlots[] | null;
-    setBookedSlots: React.Dispatch<React.SetStateAction<BookedSlots[] | null>>;
+    bookedSlots: BookedSlotsType[] | null;
+    setBookedSlots: React.Dispatch<React.SetStateAction<BookedSlotsType[] | null>>;
     user: User | null;
     expiryTime: number | null;
     jwt_token: string | null;
     userRole: string | '';
     adminProfile: AdminProfile | null;
     patientProfile:PatientProfile | null,
-    doctorProfile: DoctorProfile | null;
+    doctorProfile: DoctorProfileType | null;
     isAuthenticated: boolean;
     loading: boolean,
     caughtError: string | any,
@@ -141,8 +76,8 @@ interface AuthContextProps {
     setUserRole: React.Dispatch<React.SetStateAction<string | ''>>;
     setPatientProfile: React.Dispatch<React.SetStateAction<PatientProfile | null>>;
     setAdminProfile: React.Dispatch<React.SetStateAction<AdminProfile | null>>;
-    setDoctorProfile: React.Dispatch<React.SetStateAction<DoctorProfile | null>>;
-    login: (user: User, token: string, expiresInSec: number, userProfile: DoctorProfile | AdminProfile, slotsBooked: BookedSlots[]) => void;
+    setDoctorProfile: React.Dispatch<React.SetStateAction<DoctorProfileType | null>>;
+    login: (user: User, token: string, expiresInSec: number, userProfile: DoctorProfileType | AdminProfile, slotsBooked: BookedSlotsType[]) => void;
     logout: () => void;
     setExpiryTime: React.Dispatch<React.SetStateAction<number | null>>;
     setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -157,9 +92,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [patientProfile, setPatientProfile] = useState<PatientProfile | null>(null);
     const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null);
     const [allDoctors, setAllDoctors] = useState<AllDoctorInterface[]> ([]);
-    const [doctorProfile, setDoctorProfile] = useState<DoctorProfile | null>(null);
+    const [doctorProfile, setDoctorProfile] = useState<DoctorProfileType | null>(null);
     const [user, setUser] = useState<User | null>(null);
-    const [bookedSlots, setBookedSlots] = useState<BookedSlots[] | null>(null);
+    const [bookedSlots, setBookedSlots] = useState<BookedSlotsType[] | null>(null);
     const [jwt_token, setJwt_token] = useState<string | null>(null);
     const [expiryTime, setExpiryTime] = useState<number | null>(null);
     const [userRole, setUserRole] = useState<string | ''>('');
@@ -216,7 +151,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
     }, [logout])
 
-    function validSlotsFormat(slotsBooked: BookedSlots[]) {
+    function validSlotsFormat(slotsBooked: BookedSlotsType[]) {
         const parsedBookedSlots = slotsBooked.map((slots) => (
             {
                 ...slots,
@@ -228,9 +163,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         ))
         return parsedBookedSlots
     }
-    const login = (user: User, token: string, expiresInSec: number, userProfile: DoctorProfile | AdminProfile, slotsBooked: BookedSlots[] | null) => {
+    const login = (user: User, token: string, expiresInSec: number, userProfile: DoctorProfileType | AdminProfile, slotsBooked: BookedSlotsType[] | null) => {
         if (user.role === 'doctor') {
-            setDoctorProfile(userProfile as DoctorProfile);
+            setDoctorProfile(userProfile as DoctorProfileType);
             localStorage.setItem('profile', JSON.stringify(userProfile));
         }
         if (user.role === 'admin') {

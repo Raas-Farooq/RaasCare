@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react"
 import makeRequest from "../../makeRequesthook"
-interface TimeSlots {
-    slotTime: string,
-    isBooked: boolean,
-    _id?: string,
-}
+import { type TimeSlots } from "../../utils/globalTypes"
 interface ProfileImage {
     imageUrl: string,
     public_id: string

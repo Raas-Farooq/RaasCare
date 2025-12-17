@@ -13,8 +13,9 @@ import morgan from 'morgan';
 import compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { schedule } from 'node-cron';
-import { generateAllSlotsStartUp, runDailySlotMaintenance } from './Controller/slotsController.js';
+import { generateAllSlotsStartUp, runDailySlotMaintenance, updateAllSlots } from './Controller/slotsController.js';
 import errorHandler from './middleware/errorHandler.js';
+import removeDuplicates from './Controller/slotsDeleteAndUpdate.js';
 
 
 config()
@@ -89,7 +90,7 @@ schedule('0 0 * * *', async() => {
 
 // setInterval(runDailySlotMaintenance, 24 * 60 * 60 * 1000);
 
-// // Run immediately on startup (with delay to let DB connect)
+// Run immediately on startup (with delay to let DB connect)
 // setTimeout(runDailySlotMaintenance, 10000);
 
 
@@ -104,7 +105,135 @@ app.use((err,req,res,next) => {
     })
 })
 
+// await removeDuplicatess();
 
 app.listen(Port,() => console.log("port ", Port));
 
 
+// 1114
+// : 
+// {slotDate: {…}, _id: '69376683779b626456b40fe8', doctorId: '68ea0a1da5830a9842e64462', patientId: null, slotTime: '10:00-10:30 AM', …}
+// 1115
+// : 
+// createdAt
+// : 
+// "2025-12-09T00:00:03.529Z"
+// doctorId
+// : 
+// "68ea0ab4a5830a9842e64469"
+// doctorName
+// : 
+// "Ijaz Hassan"
+// doctorSpeciality
+// : 
+// "Surgeon"
+// isBooked
+// : 
+// false
+// isCancelled
+// : 
+// false
+// isCompleted
+// : 
+// false
+// patientId
+// : 
+// null
+// patientName
+// : 
+// ""
+// slotDate
+// : 
+// {startDate: '2025-12-22T09:00:00.000Z', endDate: '2025-12-22T09:30:00.000Z'}
+// slotDay
+// : 
+// "2025-12-22"
+// slotKey
+// : 
+// "68ea0ab4a5830a9842e64469_2025-12-22_9:00-9:30 AM"
+// slotTime
+// : 
+// "9:00-9:30 AM"
+// source
+// : 
+// "template"
+// updatedAt
+// : 
+// "2025-12-15T12:00:08.561Z"
+// __v
+// : 
+// 0
+// _id
+// : 
+// "69376683779b626456b40feb"
+// [[Prototype]]
+// : 
+// Object
+// 1116
+// : 
+// {slotDate: {…}, _id: '69376683779b626456b40fec', doctorId: '68ea0ab4a5830a9842e64469', patientId: null, slotTime: '9:30-10:00 AM', …}
+// 1117
+// : 
+// {slotDate: {…}, _id: '69376683779b626456b40ff5', doctorId: '68ea0ab4a5830a9842e64469', patientId: null, slotTime: '06:00 PM', …}
+// 1118
+// : 
+// {slotDate: {…}, _id: '69376683779b626456b40fed', doctorId: '68ea0ab4a5830a9842e64469', patientId: null, slotTime: '10:00-10:30 AM', …}
+// 1119
+// : 
+// {slotDate: {…}, _id: '69376683779b626456b40fee', doctorId: '68ea0ab4a5830a9842e64469', patientId: null, slotTime: '10:30-11:00 AM', …}
+// 1120
+// : 
+// createdAt
+// : 
+// "2025-12-09T00:00:03.530Z"
+// doctorId
+// : 
+// "68ea0ab4a5830a9842e64469"
+// doctorName
+// : 
+// "Ijaz Hassan"
+// doctorSpeciality
+// : 
+// "Surgeon"
+// isBooked
+// : 
+// false
+// isCancelled
+// : 
+// false
+// isCompleted
+// : 
+// false
+// patientId
+// : 
+// null
+// patientName
+// : 
+// ""
+// slotDate
+// : 
+// {startDate: '2025-12-20T11:00:00.000Z', endDate: '2025-12-20T11:30:00.000Z'}
+// slotDay
+// : 
+// "2025-12-20"
+// slotKey
+// : 
+// "68ea0ab4a5830a9842e64469_2025-12-20_11:00-11:30 AM"
+// slotTime
+// : 
+// "11:00-11:30 AM"
+// source
+// : 
+// "template"
+// updatedAt
+// : 
+// "2025-12-15T12:00:09.075Z"
+// __v
+// : 
+// 0
+// _id
+// : 
+// "69376683779b626456b40fef"
+// [[Prototype]]
+// : 
+// Object
