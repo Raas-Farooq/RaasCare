@@ -50,16 +50,16 @@ const AddNewDoctor = () => {
             );
 
             if (response.data.success) {
-                // localStorage.removeItem('doctorProfileImage');
-                // localStorage.removeItem('doctorProfilePublic_id');
-                // resetForm();
-                // setProfileImageData({
-                //     imageUrl:'',
-                //     public_id:''
-                // })
-                // setChoosenImage('');
-                // setIsAdded(true);
-                // setAllottedDays([]);
+                localStorage.removeItem('doctorProfileImage');
+                localStorage.removeItem('doctorProfilePublic_id');
+                resetForm();
+                setProfileImageData({
+                    imageUrl:'',
+                    public_id:''
+                })
+                setChoosenImage('');
+                setIsAdded(true);
+                setAllottedDays([]);
                 successToast('Success! Doctor Added', { id: toastId });
                 generateSlots(response.data.doctor._id);
             }

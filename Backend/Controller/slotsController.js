@@ -71,9 +71,9 @@ const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
     let doctors;
     // const docSlots = await AvailableSlots.find({doctorId:'693ce46789386e011f48a7db'});
     
-    const cleanedSlots = await AvailableSlots.deleteMany({
-        "slotDate.endDate":{$lt:new Date()},
-    })
+    // const cleanedSlots = await AvailableSlots.deleteMany({
+    //     "slotDate.endDate":{$lt:new Date()},
+    // })
     // console.log(`Cleaned Up ${cleanedSlots.deletedCount} expired slots`)
     if(generateFor === 'all'){
         doctors = await Doctor.find({}).lean();
@@ -124,7 +124,7 @@ const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
 // }
 
 function exactDate(date){
-    date.toISOString().split('T')[0]
+   return date.toISOString().split('T')[0]
 }
 const generateSlotsForDoctor = async (doctor) => {
     const availableDays = doctor.availableDays;
@@ -191,6 +191,7 @@ const generateSlotsForDoctor = async (doctor) => {
 
     // Insert only new slots
     if (bulkOps.length > 0) {
+        console.log("one bulkOps ", bulkOps[0].insertOne.document)
         try {
             const result = await AvailableSlots.bulkWrite(bulkOps, { ordered: false });
             console.log("result: after creating slots", result)
@@ -505,12 +506,12 @@ const runDailySlotMaintenance = async () => {
         console.log(`Marked ${completedResult.modifiedCount} past appointments as completed`);
 
         // 2. Clean up expired available slots (not booked)
-        const cleanupResult = await AvailableSlots.deleteMany({
-            "slotDate.startDate": { $lt: new Date() },
-            status: "completed",
-            isArchived:true
-        });
-        console.log(`Cleaned up ${cleanupResult.deletedCount} expired available slots`);
+        // const cleanupResult = await AvailableSlots.deleteMany({
+        //     "slotDate.startDate": { $lt: new Date() },
+        //     status: "completed",
+        //     isArchived:true
+        // });
+        // console.log(`Cleaned up ${cleanupResult.deletedCount} expired available slots`);
 
         // 3. Generate new slots for next 14 days
         await generateAllSlotsStartUp('all');

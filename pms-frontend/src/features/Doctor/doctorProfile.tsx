@@ -73,14 +73,12 @@ function DoctorPublicProfile() {
 
         function updateDateFormat(slotsReceived: AllAvailableSlots[]) {
         const updatedSlots = slotsReceived.map(slots => {
-            console.log("slots ", slots)
             return {
                 ...slots,
                 date: new Date(slots.date)
             }
         })
         setDayId(updatedSlots[0]._id);
-        console.log("updated Sltos: ", updatedSlots);
         setDoctorSlotsAvailable(updatedSlots);
         setSlotsLoading(false);
     }
@@ -107,7 +105,6 @@ function DoctorPublicProfile() {
             try {
                 const fetchdoctorAvailableDays = await makeRequest({ url: `pms/getDoctorAvailableDays/${currentDoctorId}`, method: 'get' });
                 if (fetchdoctorAvailableDays.data.success) {
-                    console.log("fetched available days ", fetchdoctorAvailableDays.data);
                     const remainingSlots = fetchdoctorAvailableDays.data.remainingSlots;
                     updateDateFormat(remainingSlots);
                     // async function detectSlotsDuplication() {
@@ -135,7 +132,6 @@ function DoctorPublicProfile() {
         if(allDoctors.length > 0){
             const filteredDoctor = allDoctors.find(doctor => doctor._id === currentDoctorId);
             if(filteredDoctor){
-                console.log("filtered doctor have been visible ", filteredDoctor);
                 setDoctorProfile(filteredDoctor);
                 fetchDoctorProfile();
                 setIsProfileLoading(false);
@@ -205,7 +201,7 @@ function DoctorPublicProfile() {
 
     
     const handleMakeAppointment = async () => {
-        console.log("selectedSltoId Outside", selectedSlot_id)
+       
         if (!userRole) {
             const confirmResponse = await confirmLogin();
             if (confirmResponse) {
@@ -222,7 +218,7 @@ function DoctorPublicProfile() {
         }
 
         else if (!selectedSlot_id) {
-            console.log("selectedSltoId ", selectedSlot_id)
+
              errorToast('Please select a time slot to confirm booking');
             return;
         }
@@ -377,24 +373,28 @@ function DoctorPublicProfile() {
                                     <div>
                                         {(!slotsLoading && doctorSlotsAvailable?.length) ? doctorSlotsAvailable.map((day, index) => (
 
-                                            <div className="flex flex-wrap" key={index}>
+                                            <div className="relative flex flex-wrap" key={index}>
                                                 {dayId === day._id && day.slots?.map((slot, slotIndex) => (
+
                                                     <button key={slotIndex} onClick={() => handleSlotSelection(slot.slotId, slot.status)}
                                                     className={`            
-                                                        m-3 text-xs py-2 w-24 rounded-xl shadow-md
+                                                        m-3 text-xs py-4 w-24 rounded-xl shadow-md
+
                                                         bg-blue-100
+                                                        relative
                                                         hover:shadow-lg 
                                                         ease-out
                                                         opacity-0 animate-fade-in
                                                     
                                                     ${((slot.status === 'available') && selectedSlot_id === slot.slotId) ? 'bg-green-400' : 'hover:bg-blue-100'}
-                                                    ${(slot.status === "booked") && '!bg-gray-400 hover:bg-gray-400 disabled cursor-not-allowed'} 
-                                                    ${slot.isArchived && 'line-through bg-gray-400 hover:bg-gray-400 cursor-not-allowed'}
+                                                    ${(slot.status === "booked" || slot.isArchived) && '!bg-gray-400 hover:bg-gray-400 disabled cursor-not-allowed'} 
+                                                        }
                                                     `}
                                                     // or what about doing slot.status !== "available" then cross the slot means if it is booked or cancelled or completed but i think most efficient will be is to display booked differently as compare to cancelled or completed
                                                         style={{ animationDelay: `${slotIndex * 50}ms` }}
                                                     >
                                                         {slot.slotTime}
+                                                        {(slot.status === "booked" || slot.isArchived) && <span className="absolute top-0 right-1 text-[10px] text-gray-600">booked</span>}
                                                     </button>
                                                 ))}
                                             </div>

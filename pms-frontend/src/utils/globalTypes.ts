@@ -49,7 +49,7 @@ interface BookedSlotsType {
 
 
 export interface DoctorProfileType {
-    _id: string,
+    _id?: string,
     username: string,
     email: string,
     password: string,
@@ -57,12 +57,11 @@ export interface DoctorProfileType {
     speciality: string,
     experience: number,
     about: string,
-    available: boolean,
-    licenseNumber: string,
+    available?: boolean,
     address: string,
     role: string,
     consultationFee: number,
-    profileImage: ProfileImage,
+    profileImage?: ProfileImage,
     availableDays?: AvailableDays[]
 }
 

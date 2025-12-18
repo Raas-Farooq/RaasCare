@@ -1,4 +1,5 @@
 import mongoose from "mongoose"
+import updateDoctorSlots from "../Controller/slotsDeleteAndUpdate.js";
 
 
 function ConnectingToDatabase(){
@@ -7,7 +8,7 @@ function ConnectingToDatabase(){
     .then(async() =>
         {
             console.log("MONGO DB Connected Successfully");
-            // updateAllSlots();
+            // updateDoctorSlots();
         })
     .catch(err => console.log("got error while connnecting to MongoDb: ", err))
 

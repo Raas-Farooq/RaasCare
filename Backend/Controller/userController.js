@@ -15,7 +15,7 @@ config()
 const registerPatient = async (req, res, next) => {
     const { username, email,password, phone} = req.body;
     const patientExist= await Patient.findOne({phone:phone});
-    console.log("yes patient exist ", patientExist)
+
     let patientAdded;
     try {
         if (patientExist) {
@@ -103,8 +103,6 @@ const userLogin = async (req, res,next) => {
     }
     try {
         const userExist = await User.findOne({ email });
-        // const haroonSlots = await AvailableSlots.find({doctorId:"68fdf0040ee7aa6b160d357a", status:"booked"});
-        // console.log("slots of haroon: ", haroonSlots);
         if (!userExist) {
             return res.status(404).json({
                 success: false,
@@ -150,7 +148,6 @@ const userLogin = async (req, res,next) => {
             // console.log("slotsBooked: Patient case with explain", JSON.stringify(slotsBooked, null, 2));
         }
         const matchPassword = await bcrypt.compare(password, userExist.password);
-        console.log("slotsBooked: ", slotsBooked);
         if (!matchPassword) {
             return res.status(400).json({
                 success: false,

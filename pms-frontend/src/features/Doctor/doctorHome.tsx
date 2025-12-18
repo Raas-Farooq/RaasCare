@@ -399,7 +399,7 @@ const DoctorHome = () => {
             <section className="flex flex-col sm:flex-row gap-8">
               <div className="flex-shrink-0">
                 <img
-                  src={doctorProfile?.profileImage.imageUrl}
+                  src={doctorProfile?.profileImage?.imageUrl}
                   alt={`Dr. ${doctorProfile?.username}`}
                   className="object-cover rounded-lg w-full max-w-xs shadow-md h-auto" />
               </div>
