@@ -19,6 +19,7 @@ interface Slots {
     slotTime: string,
     slotId: string,
     status: Status,
+    isArchived:boolean
 }
 
 interface AllAvailableSlots {
@@ -109,18 +110,18 @@ function DoctorPublicProfile() {
                     console.log("fetched available days ", fetchdoctorAvailableDays.data);
                     const remainingSlots = fetchdoctorAvailableDays.data.remainingSlots;
                     updateDateFormat(remainingSlots);
-                    async function detectSlotsDuplication() {
-                          const fetchSlots = await axios.get(`${backendUrl}/pms/getDoctorSlots/693ce46789386e011f48a7db`);
-                          if (fetchSlots.data.success) {
-                            const mySlots= fetchSlots.data.updatedSlots;
-                            const allTimes = mySlots.map((slot:any) => (
-                              slot.slotTime
-                            ))
-                            console.log("time slots ", allTimes)
-                          } else {
-                            console.log("not able to fetch the slots: respone ", fetchSlots);
-                          }
-                        }
+                    // async function detectSlotsDuplication() {
+                    //       const fetchSlots = await axios.get(`${backendUrl}/pms/getDoctorSlots/693ce46789386e011f48a7db`);
+                    //       if (fetchSlots.data.success) {
+                    //         const mySlots= fetchSlots.data.updatedSlots;
+                    //         const allTimes = mySlots.map((slot:any) => (
+                    //           slot.slotTime
+                    //         ))
+                    //         console.log("time slots ", allTimes)
+                    //       } else {
+                    //         console.log("not able to fetch the slots: respone ", fetchSlots);
+                    //       }
+                    //     }
                         // detectSlotsDuplication();
                 }
 
@@ -147,8 +148,10 @@ function DoctorPublicProfile() {
     }, [doctorParamsId, allDoctors])
 
     const handleSlotSelection = (id: string, status:Status) => {
+        
         if(status !== 'available'){
-            toast.warning('This slot is not available, Please select another one')
+            toast.warning('This slot is not available, Please select another one');
+            setSelectedSlot_id('')
         }
         if(status === 'available'){
             setSelectedSlot_id(id);
@@ -266,7 +269,7 @@ function DoctorPublicProfile() {
                     return prev.map(availableDay => {
                         const modifiedSlots = availableDay.slots.map(mySlot => {
                             if (mySlot.slotId === newSlot._id) {
-                                return { ...mySlot, isBooked: true }
+                                return { ...mySlot, status:"booked" as const}
                             }
                             return mySlot;
                         }
@@ -385,7 +388,8 @@ function DoctorPublicProfile() {
                                                         opacity-0 animate-fade-in
                                                     
                                                     ${((slot.status === 'available') && selectedSlot_id === slot.slotId) ? 'bg-green-400' : 'hover:bg-blue-100'}
-                                                    ${slot.status === "booked" && '!bg-gray-400 hover:bg-gray-400 disabled cursor-not-allowed'} 
+                                                    ${(slot.status === "booked") && '!bg-gray-400 hover:bg-gray-400 disabled cursor-not-allowed'} 
+                                                    ${slot.isArchived && 'line-through bg-gray-400 hover:bg-gray-400 cursor-not-allowed'}
                                                     `}
                                                     // or what about doing slot.status !== "available" then cross the slot means if it is booked or cancelled or completed but i think most efficient will be is to display booked differently as compare to cancelled or completed
                                                         style={{ animationDelay: `${slotIndex * 50}ms` }}

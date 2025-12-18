@@ -73,8 +73,6 @@ const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
     
     const cleanedSlots = await AvailableSlots.deleteMany({
         "slotDate.endDate":{$lt:new Date()},
-        // "isBooked":false,
-        // "isCancelled":false
     })
     // console.log(`Cleaned Up ${cleanedSlots.deletedCount} expired slots`)
     if(generateFor === 'all'){
@@ -177,9 +175,8 @@ const generateSlotsForDoctor = async (doctor) => {
                                 slotDay,
                                 slotKey,
                                 slotTime: slotTime,
-                                isBooked: false,
-                                isCancelled: false,
-                                isCompleted: false,
+                                status:"available",
+                                isArchived:false,
                                 patientId: null,
                                 patientName: '',
                                 source: 'template'
@@ -209,46 +206,7 @@ const generateSlotsForDoctor = async (doctor) => {
     }
 }
 
-// function createSlots(doctor){
-//     const availableDays = doctor.availableDays;
-//     const forDays = 14;
-//     let ops = [];
-//     for (let dayObj of availableDays){
-//                 const getDates = getNextAvailableDates(dayObj.day, forDays);
-//                 for (let date of getDates) {
-//                     dayObj.slots.forEach((slotTime) => {
-//                         const dateSlots = makeSlotDate(date, slotTime);
-//                         const startAndEndDates = {
-//                             startDate: dateSlots.startDate,
-//                             endDate: dateSlots.endDate
-//                         }
-//                         ops.push({
-//                             updateOne: {
-//                                 filter: { doctorId: doctor._id, "slotDate.startDate": startAndEndDates.startDate, slotTime },
-//                                 update: {
-//                                     $setOnInsert: {
-//                                         doctorId: doctor._id,
-//                                         doctorName:doctor.username,
-//                                         doctorSpeciality:doctor.speciality,
-//                                         slotDate: {
-//                                             startDate: startAndEndDates.startDate,
-//                                             endDate: startAndEndDates.endDate
-//                                         },
-//                                         slotTime: slotTime,
-//                                         isBooked: false,
-//                                         isCancelled: false,
-//                                         sources: 'template'
-//                                     }
-//                                 },
-//                                 upsert: true
-//                             }
-//                         })
 
-//                     })
-//                 }
-//             }
-//         return ops
-// }
 
 
 async function generateNewDoctorSlots(req, res,next) {
@@ -329,73 +287,7 @@ const bookSlot = async (req, res, next) => {
     }
 }
 
-const updateAllSlots = async () => {
 
-     try {
-    const updateResult = await AvailableSlots.updateMany(
-      {}, // Filter: an empty object selects all documents in the collection
-      {
-        $unset: {
-          isBooked: "",      // The value assigned to the field in $unset does not matter
-          isCancelled: "",
-          isCompleted: "",
-        },
-      }
-    );
-
-    console.log(`Successfully removed old fields from ${updateResult.modifiedCount} documents.`);
-    return updateResult;
-
-  } catch (error) {
-    console.error("Error during schema migration cleanup:", error);
-    throw error;
-  }
-//   const cursor = AvailableSlots.find().cursor();
-//   let fixed = 0;
-//   let skipped = 0;
-//     console.log("updateAll SLtSSSS RULLLLLLLLLLLL")
-//   for (let slot = await cursor.next(); slot != null; slot = await cursor.next()) {
-//     let startDate;
-
-//     // Case 1: modern schema
-//     if (slot.slotDate?.startDate instanceof Date) {
-//       startDate = slot.slotDate.startDate;
-//     }
-//     // Case 2: very old schema (slotDate is Date or string)
-//     else if (slot.slotDate instanceof Date) {
-//       startDate = slot.slotDate;
-//     }
-//     else if (typeof slot.slotDate === 'string') {
-//       startDate = new Date(slot.slotDate);
-//     }
-
-//     if (!startDate || isNaN(startDate)) {
-//       skipped++;
-//       continue;
-//     }
-
-//     const slotDay = startDate.toISOString().split('T')[0];
-//     const slotKey = `${slot.doctorId}_${slotDay}_${slot.slotTime}`;
-
-//     await AvailableSlots.updateOne(
-//       { _id: slot._id },
-//       {
-//         $set: {
-//           slotDay,
-//           slotKey,
-//           slotDate: {
-//             startDate,
-//             endDate: slot.slotDate?.endDate ?? null
-//           }
-//         }
-//       }
-//     );
-
-//     fixed++;
-//   }
-
-//   console.log(`Migration done. Fixed=${fixed}, Skipped=${skipped}`);
-};
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -415,6 +307,7 @@ const getDoctorAvailableDays = async (req, res, next) => {
                     slotDate: 1,
                     slotTime: 1,
                     status:1,
+                    isArchived:1,
                     dayStr: { $dateToString: { format: "%Y-%m-%d", date: '$slotDate.startDate', timezone: "Asia/Karachi" } }
                 },
             },
@@ -422,8 +315,7 @@ const getDoctorAvailableDays = async (req, res, next) => {
                 $group: {
                     _id: "$dayStr",
                     date: { $first: "$slotDate.startDate" },
-                    slots:{$addToSet:{slotId: "$_id", slotTime:"$slotTime", status:"$status"}}
-                    // slots: { $push: { slotId: "$_id", slotTime: "$slotTime", isBooked:"$isBooked" } }
+                    slots:{$addToSet:{slotId: "$_id", slotTime:"$slotTime", status:"$status", isArchived:"$isArchived"}}
                 }
             },
             { $sort: { date: 1 } }
@@ -484,43 +376,11 @@ const getDoctorSlots = async (req, res, next) => {
     }
 }
 
-const getDoctorBookedSlots = async (req, res,next) => {
-    const { docId } = req.params;
-    try {
-        const bookedSlots = await AvailableSlots.find({ doctorId: docId,
-                $or:[
-                    {isBooked: true}, 
-                    {isCancelled:true}, 
-                    {isCompleted:true}
-                ]
-        });
-
-        if (!bookedSlots.length) {
-            return res.status(404).json({
-                success: false,
-                message: "No Booked Slots found for you yet "
-            })
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Successfully got your booked Slots",
-            bookedSlots
-        })
-    } catch (err) {
-         next(err)
-    }
-}
-
 const getPatientBookedSlots = async (req, res, next) => {
     const { patientId } = req.params;
     try {
         const bookedSlots = await AvailableSlots.find({ patientId, 
-                $or:[
-                    {isBooked: true}, 
-                    {isCancelled:true}, 
-                    {isCompleted:true}
-                ]
+                 status:{$in:["booked","cancelled","completed"]}
         });
 
         if (!bookedSlots.length) {
@@ -545,7 +405,6 @@ const updateSlotStatus = async (req, res, next) => {
 
     const { slotId } = req.params;
     const { action, docId, role } = req.body;
-    console.log("req.bodY updeSlt: ", req.body)
     const today = new Date();
     today.setHours(0,0,0,0);
     let filterUpdatedSlots;
@@ -555,11 +414,7 @@ const updateSlotStatus = async (req, res, next) => {
                 
                 "slotDate.startDate":{$gte: today}
                 ,
-                $or:[
-                    {isBooked:true},
-                    {isCancelled:true},
-                    {isCompleted:true}
-                ]
+                status:{$in:["booked","cancelled","completed"]}
             }
         
     }
@@ -567,38 +422,27 @@ const updateSlotStatus = async (req, res, next) => {
         filterUpdatedSlots = {
             doctorId:docId,
             "slotDate.startDate":{$gte:today},
-                $or:[
-                    {isBooked:true},
-                    {isCancelled:true},
-                    {isCompleted:true}
-                ]
+            status:{$in:["booked","cancelled","completed"]}
         }
     }
     let updateOperation;
     switch (action) {
         case 'remove': {
             updateOperation = {
-                isBooked: false,
-                isCancelled: false,
-                isCompleted: false,
-                patientName: '',
-                patientId: null
+                status:"completed",
+                isArchived:true,
             }
             break;
         }
         case 'cancel': {
             updateOperation = {
-                isBooked: false,
-                isCancelled: true,
-                isCompleted: false,
+                status:"cancelled",
             }
             break;
         }
         case 'complete': {
             updateOperation = {
-                isBooked: false,
-                isCancelled: false,
-                isCompleted: true,
+                 status:"completed",
             }
             break;
         }
@@ -650,13 +494,11 @@ const runDailySlotMaintenance = async () => {
         const completedResult = await AvailableSlots.updateMany(
             {
                 "slotDate.endDate": { $lt: new Date() },
-                "isBooked": true,
-                "isCompleted": false
             },
             {
                 $set: { 
-                    isBooked:false,
-                     isCompleted: true
+                    status:"completed",
+                     isArchived: true
                      }
             }
         );
@@ -665,7 +507,8 @@ const runDailySlotMaintenance = async () => {
         // 2. Clean up expired available slots (not booked)
         const cleanupResult = await AvailableSlots.deleteMany({
             "slotDate.startDate": { $lt: new Date() },
-            "isBooked": false
+            status: "completed",
+            isArchived:true
         });
         console.log(`Cleaned up ${cleanupResult.deletedCount} expired available slots`);
 
@@ -682,7 +525,7 @@ const runDailySlotMaintenance = async () => {
 
 
 
-export {updateAllSlots, runDailySlotMaintenance, generateNewDoctorSlots, generateAllSlotsStartUp, getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
+export { runDailySlotMaintenance, generateNewDoctorSlots, generateAllSlotsStartUp, getDoctorsAndAverageSalary, updateSlotStatus, bookSlot, getDoctorAvailableDays, getDoctorSlots }
 
 // 2️⃣ The REAL problem: your unique index
 // Your index:

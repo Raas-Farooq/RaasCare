@@ -3,30 +3,8 @@ import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../../context/appContext"
 import {toast} from "sonner"
+import type { AllDoctorInterface } from "../../utils/globalTypes"
 
-
-interface TimeSlots {
-    slotTime: string,
-    isBooked: boolean,
-    _id?: string,
-}
-interface ProfileImage {
-    imageUrl: string,
-    public_id: string
-}
-interface AllDoctorInterface {
-    _id: string,
-    username: string,
-    email: string,
-    password: string,
-    profileImage: ProfileImage,
-    education: string,
-    speciality: string,
-    about: string,
-    address: string,
-    consultationFee: number,
-    slots: TimeSlots[]
-}
 
 interface ComponentProps {
     targetField?: string

@@ -258,43 +258,6 @@ const modernBookAppointment = async (req, res) => {
 
 }
 
-const doctorAvailablity = async (req, res) => {
-
-    const id = req.params.id;
-    const doctor = await Doctor.findOne({ _id: id });
-
-    if (!doctor) {
-        return res.status(404).json("Doctor not Found");
-    }
-
-    const availableSlots = doctor.availableDays;
-    let upcomingDays = [];
-    let slots = [];
-    for (let dailyTiming of availableSlots) {
-        const apptDate = getNextAppointmentDay(dailyTiming.day);
-
-        for (let slot of dailyTiming.slots) {
-            const appt = await Appointment.findOne({
-                doctorId: id,
-                time: slot,
-                date: apptDate,
-                status: 'booked'
-            })
-
-            slots.push({
-                time: slot,
-                isBooked: !!appt
-            })
-        }
-
-        upcomingDays.push({ day: dailyTiming.day, slots })
-
-        res.json(upcomingDays);
-
-    }
-
-}
-
 const bookAppointment = async (req, res, next) => {
 
     const { id } = req.params;

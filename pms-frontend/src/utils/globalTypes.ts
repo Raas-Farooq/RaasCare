@@ -34,7 +34,9 @@ interface BookedSlotsType {
     doctorId: string,
     slotTime: string,
     status:Status,
+    isArchived:boolean,
     doctorName:string,
+    slotDay:string,
     source: string,
     slotDate: {
         startDate: Date,

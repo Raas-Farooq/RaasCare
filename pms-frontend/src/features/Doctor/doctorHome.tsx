@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import '../../App.css';
 import { LayoutDashboardIcon, BookAIcon, User, Users, UserIcon, Check, Delete, CircleX, CheckCircle, Trash } from "lucide-react";
 import DoctorNavbar from "./DoctorNavbar";
 import { useAuth } from "../../context/appContext";
@@ -9,24 +9,10 @@ import PatientAddForm from "../Patient/addPatient";
 import HandleAxiosError from "../../utils/handleAxiosError";
 import useConfirmAction from "../../utils/customConfirmAction";
 import { errorToast, successToast } from "../../utils/toastStyle";
+import type { BookedSlotsType } from "../../utils/globalTypes";
 
 
-interface BookedSlot {
-  isBooked: boolean,
-  isCancelled: boolean,
-  isCompleted: boolean,
-  doctorId: string,
-  patientId: string,
-  doctorName: string,
-  patientName: string,
-  source: string,
-  slotDate: {
-    startDate: string,
-    endDate?: string
-  },
-  slotTime: string,
-  _id: string
-}
+
 type ActiveTabType = 'Dashboard' | 'Appointments' | 'Profile' | 'AddPatient'
 // Add Patient Tab Have to Be Added
 const backend_url = import.meta.env.VITE_BACKEND_URL;
@@ -34,9 +20,9 @@ const DoctorHome = () => {
   const [activeTab, setActiveTab] = useState<ActiveTabType>('Dashboard');
   const { doctorProfile, bookedSlots, setBookedSlots, userRole, isAuthenticated } = useAuth();
 
-  function syncUpdatedSlots(updatedSlots: BookedSlot[]) {
+  function syncUpdatedSlots(updatedSlots: BookedSlotsType[]) {
 
-    const updated = updatedSlots.map((slots: BookedSlot) => (
+    const updated = updatedSlots.map((slots: BookedSlotsType) => (
       {
         ...slots,
         slotDate: {
@@ -220,25 +206,25 @@ const DoctorHome = () => {
                   <h2 className="text-lg font-semibold text-gray-800">Latest Bookings</h2>
                 </div>
                 <div className="px-4 py-2 md:px-6 md:py-4 hover:bg-gray-50 transition-colors duration-150">
-                  <div className="flex flex-col w-full justify-between">
+                  <div className="flex flex-col w-full justify-between gap-2">
                     {/* {bookedSlots && bookedSlots.map((slot,ind) => {
-                    return (
-                      <div>
-                        {slot.patientName}
-                      </div>
-                    )
-                  })} */}
+                        return (
+                          <div>
+                            {slot.patientName}
+                          </div>
+                        )
+                      })} */}
                     {bookedSlots && bookedSlots.map((slot, index) => (
                       <>
-                        <div className="flex items-center space-x-2" key={index} >
-                          {(slot.isBooked || slot.isCancelled || slot.isCompleted) && (
+                        <div className={`flex items-center space-x-2 ${slot.isArchived && 'text-gray-400 bg-gray-100 pointer-events-none'}`} key={index} >
+                          {(slot.status === "booked" || slot.status === "cancelled" || slot.status === 'completed') && (
                             <div>
                               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                                 <UserIcon className="w-5 h-5 text-gray-500" />
                               </div>
                               <div className="grid grid-cols-2 justify-between">
                                 <div className="font-medium md:w-60">
-                                  {(!(slot.isCompleted) && slot.isBooked) &&
+                                  {((slot.status !== 'completed') && slot.status === "booked") &&
                                     <>
                                       <h3 className="text-sm text-base">{slot.patientName}</h3>
                                       <div className="flex gap-4">
@@ -266,32 +252,37 @@ const DoctorHome = () => {
                                   }
 
 
-                                  {(slot.isCancelled || slot.isCompleted) &&
+                                  {((slot.status === 'completed') || slot.status === 'cancelled') &&
                                     <>
                                       <h3 className="text-sm md:text-base">{slot.patientName}</h3>
-                                      {slot.isCancelled && (
+                                      {slot.status === 'cancelled' && (
                                         <div>
                                           <p className="text-pink-500 text-xs">cancelled</p>
                                         </div>
                                       )}
-                                      {slot.isCompleted && (
+                                      {slot.status === 'completed' && (
                                         <div>
                                           <p className="text-green-500 text-xs">completed</p>
                                         </div>
                                       )}
-                                      <div className="mt-1 ml-2">
-                                        <button onClick={() => handleAppointment('remove', slot._id)}
-                                          className="group relative">
-                                          <Trash className="text-red-400" size={20} />
-                                          <span className="absolute invisible opacity-0 
+                                      {((slot.status === 'completed' && !(slot.isArchived)) || slot.status === 'cancelled') &&
+                                        <div className="mt-1 ml-2">
+                                          <button onClick={() => handleAppointment('remove', slot._id)}
+                                            className="group relative">
+                                            <Trash className="text-red-400" size={20} />
+                                            <span className="absolute invisible opacity-0 
                                         group-hover:visible group-hover:opacity-100 text-xs text-white bg-slate-800 
                                         px-1 left-1/2 -translate-x-1/2 top-6 rounded-full transition-all duration-300"
-                                          > remove </span>
-                                        </button>
-                                      </div>
+                                            > remove </span>
+                                          </button>
+                                        </div>}
                                     </>
 
                                   }
+                                  {(slot.status === 'completed' && slot.isArchived) &&
+                                    <div>
+                                      <h2 className=""> Archived</h2>
+                                    </div>}
                                 </div>
                                 <div className="mb-10 flex flex-col">
                                   <p className="text-sm text-gray-500">{doctorProfile?.speciality} - {slot.slotTime}</p>
@@ -315,7 +306,7 @@ const DoctorHome = () => {
                 <h1 className="border-b border-gray-200 px-2 py-5 text-blue-600 shadow-md text-xl hover:border-gray-300 hover:shadow-lg transition-all duration-200"> Recent Appointments</h1>
               </header>
               <div className="booking-item overflow-x-auto">
-                <table className="min-w-max w-full border border-gray-200 rounded-lg overflow-hidden" cellPadding="10" cellSpacing="0" >
+                <table className="min-w-max w-full border border-gray-200 rounded-lg overflow-hidden table-spacing" cellPadding="10" >
                   <thead className="border border-gray-100 text-sm md:text-base">
                     <tr>
                       <th className="text-left px-3 py-2 md:px-6 md:py-3 text-gray-600 font-medium border-b">Name</th>
@@ -328,18 +319,23 @@ const DoctorHome = () => {
                   </thead>
                   <tbody>
                     {bookedSlots && bookedSlots?.map((slot, index) => (
-                      <tr key={index}>
+                      <tr key={index} className={`${(slot.isArchived && slot.status === 'completed') && 'bg-gray-100 text-gray-400 cursor-pointer-none'}`}>
                         <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{slot.patientName}</td>
                         <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{index < 3 ? 'cash' : 'online'} </td>
-                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">{slot.slotDate.startDate.toLocaleString()}</td>
+                        <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700 whitespace-nowrap">
+                          <div className="flex flex-col text-sm">
+                            <span>{slot?.slotDate?.startDate.getDate()} - {slot?.slotDate?.startDate.toLocaleString('default', { month: 'short' })}</span>
+                            <span>{slot.slotTime}
+                            </span>
+                          </div>
+                        </td>
                         <td className="px-3 py-2 md:px-6 md:py-4 border-b text-gray-700">{doctorProfile?.consultationFee}</td>
                         <td
-                          className={` text-yellow-600  px-6 py-4 border-b font-medium ${slot.isCompleted
-                            && "text-green-600"} ${slot.isCancelled && 'text-red-600'}`}
-                        >{slot.isBooked && 'Pending' || slot.isCancelled && 'Cancelled' || slot.isCompleted && 'Completed'}</td>
+                          className={`px-6 py-4 border-b font-medium ${(slot.status === 'completed') && "text-green-600"} ${slot.status === 'cancelled' && 'text-red-600'} ${slot.status === 'booked' && 'text-yellow-600'}`}
+                        >{slot.status === 'booked' && 'Pending' || slot.status === 'cancelled' && 'cancelled' || slot.status === 'completed' && 'Completed'}</td>
                         <td className="px-3 py-2 md:px-6 md:py-4 border-b">
 
-                          {slot.isBooked &&
+                          {(slot.status === 'booked' && !(slot.isArchived)) &&
                             <div>
                               <button onClick={() => handleAppointment('cancel', slot._id)}
                                 className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
@@ -362,7 +358,7 @@ const DoctorHome = () => {
                             </div>
                           }
 
-                          {(slot.isCompleted || slot.isCancelled) &&
+                          {((slot.status === 'completed' && !(slot.isArchived)) || slot.status === "cancelled") &&
                             <div className="text-center">
                               <button onClick={() => handleAppointment('remove', slot._id)}
                                 className="group relative px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
@@ -375,6 +371,13 @@ const DoctorHome = () => {
                                   Remove</span>
                               </button>
 
+                            </div>
+                          }
+
+                          {
+                            (slot.status === 'completed' && slot.isArchived) &&
+                            <div>
+                              <h2 title="archived">Archived</h2>
                             </div>
                           }
 

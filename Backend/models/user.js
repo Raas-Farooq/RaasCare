@@ -106,7 +106,7 @@ const availableSlotsSchema = new mongoose.Schema({
 })
  
 availableSlotsSchema.index({doctorId:1, slotDay:1}, {isArchived:1});
-// availableSlotsSchema.index({patientId:1});// removed isBooked
+
 
 const appointmentSchema = new mongoose.Schema({
   doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
@@ -259,3 +259,9 @@ export { Doctor, Admin, User, AvailableSlots, Appointments}
 //     }
 //   }
 // );
+
+
+
+
+
+// isArchieved:false is not being found while logging in -> doctor or admin

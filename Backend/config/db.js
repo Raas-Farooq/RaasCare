@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { updateAllSlots } from "../Controller/slotsController.js";
+
 
 function ConnectingToDatabase(){
 
