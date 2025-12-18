@@ -1,17 +1,17 @@
 import express from 'express';
-import { bookSlot, generateNewDoctorSlots, getDoctorAvailableDays, getDoctorBookedSlots, updateSlotStatus } from '../Controller/slotsController.js';
-
+import { bookSlot, generateNewDoctorSlots, getDoctorAvailableDays, getDoctorSlots, updateSlotStatus } from '../Controller/slotsController.js';
+import Authenticate from '../authentication/Authenticate.js';
 const slotsRoutes = express.Router();
 
 
-// hey, your redirect url is missing attributes like environment, success and cancel url please see this document https://safepay-docs.netlify.app/
 slotsRoutes.post('/generateNewDoctorSlots', generateNewDoctorSlots);
-slotsRoutes.post('/bookSlot/:slotId', bookSlot);
-// slotsRoutes.get('/getBookedSlots/:docId', getBookedSlots);
+slotsRoutes.post('/bookSlot/:slotId', Authenticate, bookSlot);
 slotsRoutes.get("/getDoctorAvailableDays/:docId", getDoctorAvailableDays)
-slotsRoutes.get("/getDoctorBookedSlots/:docId", getDoctorBookedSlots);
 slotsRoutes.post('/updateSlotStatus/:slotId',updateSlotStatus )
+slotsRoutes.get('/getDoctorSlots/:id', getDoctorSlots)
 // slotsRoutes.get('/doctorUpdatedSlots/:docId', doctorUpdatedSlots)
+// slotsRoutes.get("/getDoctorBookedSlots/:docId", getDoctorBookedSlots);
+// slotsRoutes.get('/getBookedSlots/:docId', getBookedSlots);
 
 
 export default slotsRoutes 

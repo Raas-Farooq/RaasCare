@@ -69,13 +69,12 @@ const makeSlotDate = (onlyDate, timeString) => {
 
 const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
     let doctors;
-
-    const cleanedSlots = await AvailableSlots.deleteMany({
-        "slotDate.endDate":{$lt:new Date()},
-        "isBooked":false,
-        "isCancelled":false
-    })
-    console.log(`Cleaned Up ${cleanedSlots.deletedCount} expired slots`)
+    // const docSlots = await AvailableSlots.find({doctorId:'693ce46789386e011f48a7db'});
+    
+    // const cleanedSlots = await AvailableSlots.deleteMany({
+    //     "slotDate.endDate":{$lt:new Date()},
+    // })
+    // console.log(`Cleaned Up ${cleanedSlots.deletedCount} expired slots`)
     if(generateFor === 'all'){
         doctors = await Doctor.find({}).lean();
         if(!doctors.length){
@@ -123,6 +122,10 @@ const generateAllSlotsStartUp= async(generateFor="all", doctorId="null") => {
 //             }
 //         }
 // }
+
+function exactDate(date){
+   return date.toISOString().split('T')[0]
+}
 const generateSlotsForDoctor = async (doctor) => {
     const availableDays = doctor.availableDays;
     const forDays = 14; // Generate for next 14 days
@@ -131,22 +134,17 @@ const generateSlotsForDoctor = async (doctor) => {
     const startDate = new Date();
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + forDays);
-    
     const existingSlots = await AvailableSlots.find({
         doctorId: doctor._id,
-        "slotDate.startDate": { 
-            $gte: startDate,
-            $lte: endDate 
+        "slotDay":{
+            $gte:exactDate(startDate),
+            $lte:exactDate(endDate)
         }
-    }).select('slotDate.startDate slotTime isBooked').lean();
+    }).select('slotKey').lean();
 
     // Create lookup map for existing slots
-    const existingSlotsMap = new Map();
-    existingSlots.forEach(slot => {
-    
-        const key = `${slot.slotDate.startDate.getTime()}-${slot.slotTime}`;
-        existingSlotsMap.set(key, slot);
-    });
+ 
+    const existingKeys = new Set(existingSlots.map(slot => slot.slotKey))
     let newSlotsCount = 0;
     const bulkOps = [];
 
@@ -154,14 +152,15 @@ const generateSlotsForDoctor = async (doctor) => {
         const availableDates = getNextAvailableDates(dayObj.day, forDays);
         
         for (let date of availableDates) {
+            const slotDay = exactDate(date);
             for (let slotTime of dayObj.slots) {
                 const slotDates = makeSlotDate(date, slotTime);
-                const slotKey = `${slotDates.startDate.getTime()}-${slotTime}`;
-                
+                const slotKey =`${doctor._id}_${slotDay}_${slotTime}`
                 // Check if slot already exists
-                const existingSlot = existingSlotsMap.get(slotKey);
+                const existingSlot = existingKeys.has(slotKey);
                 
                 if (!existingSlot) {
+                    console.log("not existing slot Time", slotTime)
                     // Slot doesn't exist - create new one
                     bulkOps.push({
                         insertOne: {
@@ -173,10 +172,11 @@ const generateSlotsForDoctor = async (doctor) => {
                                     startDate: slotDates.startDate,
                                     endDate: slotDates.endDate
                                 },
+                                slotDay,
+                                slotKey,
                                 slotTime: slotTime,
-                                isBooked: false,
-                                isCancelled: false,
-                                isCompleted: false,
+                                status:"available",
+                                isArchived:false,
                                 patientId: null,
                                 patientName: '',
                                 source: 'template'
@@ -191,9 +191,10 @@ const generateSlotsForDoctor = async (doctor) => {
 
     // Insert only new slots
     if (bulkOps.length > 0) {
+        console.log("one bulkOps ", bulkOps[0].insertOne.document)
         try {
             const result = await AvailableSlots.bulkWrite(bulkOps, { ordered: false });
-            console.log(`Created ${newSlotsCount} new slots for Dr. ${doctor.username}`);
+            console.log("result: after creating slots", result)
         } catch (error) {
             if (error.code === 11000) {
                 console.log(`Some duplicates detected for Dr. ${doctor.username}, continuing...`);
@@ -206,51 +207,13 @@ const generateSlotsForDoctor = async (doctor) => {
     }
 }
 
-// function createSlots(doctor){
-//     const availableDays = doctor.availableDays;
-//     const forDays = 14;
-//     let ops = [];
-//     for (let dayObj of availableDays){
-//                 const getDates = getNextAvailableDates(dayObj.day, forDays);
-//                 for (let date of getDates) {
-//                     dayObj.slots.forEach((slotTime) => {
-//                         const dateSlots = makeSlotDate(date, slotTime);
-//                         const startAndEndDates = {
-//                             startDate: dateSlots.startDate,
-//                             endDate: dateSlots.endDate
-//                         }
-//                         ops.push({
-//                             updateOne: {
-//                                 filter: { doctorId: doctor._id, "slotDate.startDate": startAndEndDates.startDate, slotTime },
-//                                 update: {
-//                                     $setOnInsert: {
-//                                         doctorId: doctor._id,
-//                                         doctorName:doctor.username,
-//                                         doctorSpeciality:doctor.speciality,
-//                                         slotDate: {
-//                                             startDate: startAndEndDates.startDate,
-//                                             endDate: startAndEndDates.endDate
-//                                         },
-//                                         slotTime: slotTime,
-//                                         isBooked: false,
-//                                         isCancelled: false,
-//                                         sources: 'template'
-//                                     }
-//                                 },
-//                                 upsert: true
-//                             }
-//                         })
 
-//                     })
-//                 }
-//             }
-//         return ops
-// }
 
 
 async function generateNewDoctorSlots(req, res,next) {
           
             const {generateFor, doctorId} = req.body;
+            
             try{
                 if(generateFor !== "doctor"){
                     return res.status(400).send("GenerateFor ('one doctor or all Doctors') is not defined");
@@ -284,10 +247,10 @@ const bookSlot = async (req, res, next) => {
     const { patientName, docId, patientId } = req.body;
         try {
         const slot = await AvailableSlots.findOneAndUpdate(
-            { _id: slotId, isBooked: false, isCancelled: false },
+            { _id: slotId, status: "available" },
             {
                 $set: {
-                    isBooked: true,
+                    status: 'booked',
                     patientName,
                     patientId,
                 }
@@ -324,25 +287,28 @@ const bookSlot = async (req, res, next) => {
         next(err)
     }
 }
+
+
+
 const ObjectId = mongoose.Types.ObjectId;
 
 
 const getDoctorAvailableDays = async (req, res, next) => {
 
     const { docId } = req.params;
-    const doctorSlots = await AvailableSlots.findOne({doctorId:docId});
-
+    const doctorSlots = await AvailableSlots.find({doctorId:docId});
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
     try {
 
         const pipeline = [
-            { $match: { doctorId: new ObjectId(docId), "slotDate.startDate": { $gte: startDate }, isBooked: false, isCompleted: false } },
+            { $match: { doctorId: new ObjectId(docId), "slotDate.startDate": { $gte: startDate }, status:{$in:['available', 'cancelled', 'booked', 'completed']}} },
             {
                 $project: {
                     slotDate: 1,
                     slotTime: 1,
-                    isBooked:1,
+                    status:1,
+                    isArchived:1,
                     dayStr: { $dateToString: { format: "%Y-%m-%d", date: '$slotDate.startDate', timezone: "Asia/Karachi" } }
                 },
             },
@@ -350,14 +316,12 @@ const getDoctorAvailableDays = async (req, res, next) => {
                 $group: {
                     _id: "$dayStr",
                     date: { $first: "$slotDate.startDate" },
-                    slots: { $push: { slotId: "$_id", slotTime: "$slotTime", isBooked:"$isBooked" } }
+                    slots:{$addToSet:{slotId: "$_id", slotTime:"$slotTime", status:"$status", isArchived:"$isArchived"}}
                 }
             },
             { $sort: { date: 1 } }
-        ];
-
+        ];    
         const remainingSlots = await AvailableSlots.aggregate(pipeline);
-
 
         res.status(200).json({ success: true, remainingSlots })
     }
@@ -400,13 +364,12 @@ const getDoctorsAndAverageSalary = async(req,res) => {
 }
 const getDoctorSlots = async (req, res, next) => {
 
-    const { docId } = req.params;
+    const { id } = req.params;
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
+    const today = new Date().toISOString().split('T')[0];
     try {
-        const updatedSlots = await AvailableSlots.find({ doctorId: docId });
-
-
+        const updatedSlots = await AvailableSlots.find().lean();
         res.status(200).json({ success: true, updatedSlots })
     }
     catch (err) {
@@ -414,43 +377,11 @@ const getDoctorSlots = async (req, res, next) => {
     }
 }
 
-const getDoctorBookedSlots = async (req, res,next) => {
-    const { docId } = req.params;
-    try {
-        const bookedSlots = await AvailableSlots.find({ doctorId: docId,
-                $or:[
-                    {isBooked: true}, 
-                    {isCancelled:true}, 
-                    {isCompleted:true}
-                ]
-        });
-
-        if (!bookedSlots.length) {
-            return res.status(404).json({
-                success: false,
-                message: "No Booked Slots found for you yet "
-            })
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: "Successfully got your booked Slots",
-            bookedSlots
-        })
-    } catch (err) {
-         next(err)
-    }
-}
-
 const getPatientBookedSlots = async (req, res, next) => {
     const { patientId } = req.params;
     try {
         const bookedSlots = await AvailableSlots.find({ patientId, 
-                $or:[
-                    {isBooked: true}, 
-                    {isCancelled:true}, 
-                    {isCompleted:true}
-                ]
+                 status:{$in:["booked","cancelled","completed"]}
         });
 
         if (!bookedSlots.length) {
@@ -475,60 +406,44 @@ const updateSlotStatus = async (req, res, next) => {
 
     const { slotId } = req.params;
     const { action, docId, role } = req.body;
- 
+    const today = new Date();
+    today.setHours(0,0,0,0);
     let filterUpdatedSlots;
     if(role === 'admin'){
         
            filterUpdatedSlots = {
                 
-                "slotDate.startDate":{$gte: new Date()}
+                "slotDate.startDate":{$gte: today}
                 ,
-                $or:[
-                    {isBooked:true},
-                    {isCancelled:true},
-                    {isCompleted:true}
-                ]
+                status:{$in:["booked","cancelled","completed"]}
             }
         
     }
     else{
         filterUpdatedSlots = {
             doctorId:docId,
-            "slotDate.startDate":{$gte:new Date()},
-                $or:[
-                    {isBooked:true},
-                    {isCancelled:true},
-                    {isCompleted:true}
-                ]
+            "slotDate.startDate":{$gte:today},
+            status:{$in:["booked","cancelled","completed"]}
         }
     }
     let updateOperation;
     switch (action) {
         case 'remove': {
             updateOperation = {
-                isBooked: false,
-                isCancelled: false,
-                isCompleted: false,
-                patientName: '',
-                patientId: null
+                status:"completed",
+                isArchived:true,
             }
             break;
         }
         case 'cancel': {
             updateOperation = {
-                isBooked: false,
-                isCancelled: true,
-                isCompleted: false,
-                // patientName: '',
-                // patientId: null
+                status:"cancelled",
             }
             break;
         }
         case 'complete': {
             updateOperation = {
-                isBooked: false,
-                isCancelled: false,
-                isCompleted: true,
+                 status:"completed",
             }
             break;
         }
@@ -538,10 +453,7 @@ const updateSlotStatus = async (req, res, next) => {
         return res.status(400).json({ success: false, message: "invalid action" })
     }
     try {
-
-        const currentDate = new Date();
-        console.log("current Date: ", currentDate);
-        const resultOfUpdateOperation = await AvailableSlots.findOneAndUpdate(
+    await AvailableSlots.findOneAndUpdate(
             { _id: slotId, doctorId: docId },
             {
                 $set: updateOperation
@@ -549,16 +461,11 @@ const updateSlotStatus = async (req, res, next) => {
             },
             { new: true, lean: true, sort:{updatedAt:-1}}
         );
- console.log(" result of UpdateOperation : ", resultOfUpdateOperation)
         const latestUpdatedSlots= {
             ...filterUpdatedSlots,
-            // "slotDate.startDate": {
-            //     $gte:currentDate
-            // }
         }
         let latestRemainingSlots;
         if(role === 'doctor'){
-            console.log("latest filtered slots logic ", latestUpdatedSlots, " filter logic ", filterUpdatedSlots);
              latestRemainingSlots = (await AvailableSlots.find(latestUpdatedSlots)
             .lean()
             .sort({updatedAt:-1}))
@@ -569,8 +476,6 @@ const updateSlotStatus = async (req, res, next) => {
             .limit(10)
             .sort({updatedAt:-1}))
        }
-
-        console.log("latestSlots: remain", latestRemainingSlots)
         return res.status(200).json({
             success: true,
             message: "Successfully updated the Slot status",
@@ -586,27 +491,27 @@ const updateSlotStatus = async (req, res, next) => {
 const runDailySlotMaintenance = async () => {
     try {
         console.log('Running daily slot maintenance...');
-        
         // 1. Mark past booked slots as completed
         const completedResult = await AvailableSlots.updateMany(
             {
                 "slotDate.endDate": { $lt: new Date() },
-                "isBooked": true,
-                "isCompleted": false
             },
             {
-                $set: { isBooked:false,
-                     isCompleted: true }
+                $set: { 
+                    status:"completed",
+                     isArchived: true
+                     }
             }
         );
         console.log(`Marked ${completedResult.modifiedCount} past appointments as completed`);
 
         // 2. Clean up expired available slots (not booked)
-        const cleanupResult = await AvailableSlots.deleteMany({
-            "slotDate.endDate": { $lt: new Date() },
-            "isBooked": false
-        });
-        console.log(`Cleaned up ${cleanupResult.deletedCount} expired available slots`);
+        // const cleanupResult = await AvailableSlots.deleteMany({
+        //     "slotDate.startDate": { $lt: new Date() },
+        //     status: "completed",
+        //     isArchived:true
+        // });
+        // console.log(`Cleaned up ${cleanupResult.deletedCount} expired available slots`);
 
         // 3. Generate new slots for next 14 days
         await generateAllSlotsStartUp('all');
@@ -621,5 +526,39 @@ const runDailySlotMaintenance = async () => {
 
 
 
-export {runDailySlotMaintenance, generateNewDoctorSlots, generateAllSlotsStartUp, getDoctorsAndAverageSalary, getPatientBookedSlots, updateSlotStatus, getDoctorBookedSlots, bookSlot, getDoctorAvailableDays, getDoctorSlots }
+export { runDailySlotMaintenance, generateNewDoctorSlots, generateAllSlotsStartUp, getDoctorsAndAverageSalary, updateSlotStatus, bookSlot, getDoctorAvailableDays, getDoctorSlots }
 
+// 2️⃣ The REAL problem: your unique index
+// Your index:
+// availableSlotsSchema.index(
+//   { doctorId: 1, slotDate: 1, patientId: 1 },
+//   { unique: true }
+// );
+
+// Why this is dangerous ❌
+
+// patientId is null for all unbooked slots
+
+// MongoDB allows only ONE document with:
+
+// doctorId = X
+// slotDate = Y
+// patientId = null
+
+
+// That means:
+
+// 👉 If you try to insert two unbooked slots for the same doctor + same slotDate, MongoDB treats them as duplicates even if slotTime is different.
+
+// Example:
+// 9:00–9:30  (patientId: null)
+// 9:30–10:00 (patientId: null)
+
+
+// Both share:
+
+// doctorId: X
+// slotDate.startDate: same day
+// patientId: null
+
+// you know what i didn't get this concept fully of how unique index is preventing data to be added inside mongodb? can you explain it with any other easy examples as well

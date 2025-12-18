@@ -15,6 +15,7 @@ import rateLimit from 'express-rate-limit';
 import { schedule } from 'node-cron';
 import { generateAllSlotsStartUp, runDailySlotMaintenance } from './Controller/slotsController.js';
 import errorHandler from './middleware/errorHandler.js';
+import removeDuplicates from './Controller/slotsDeleteAndUpdate.js';
 
 
 config()
@@ -89,7 +90,7 @@ schedule('0 0 * * *', async() => {
 
 // setInterval(runDailySlotMaintenance, 24 * 60 * 60 * 1000);
 
-// // Run immediately on startup (with delay to let DB connect)
+// Run immediately on startup (with delay to let DB connect)
 // setTimeout(runDailySlotMaintenance, 10000);
 
 
@@ -104,7 +105,7 @@ app.use((err,req,res,next) => {
     })
 })
 
+// await removeDuplicatess();
 
 app.listen(Port,() => console.log("port ", Port));
-
 

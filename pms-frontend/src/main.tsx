@@ -13,14 +13,6 @@ createRoot(document.getElementById('root')!).render(
       <Toaster
         position="top-center"
         theme="light"
-        toastOptions={{
-          classNames: {
-            success: 'bg-green-500 text-white border-0',
-            error: 'bg-red-500 text-white border-0',
-            warning: 'bg-yellow-500 text-white border-0',
-            info: 'bg-blue-500 text-white border-0',
-          },
-        }}
       />
       <RouterProvider router={myRouter} />
     </AuthProvider>

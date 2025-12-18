@@ -1,5 +1,5 @@
-import { MongoServerClosedError } from 'mongodb';
 import mongoose from 'mongoose';
+
 
 
 const userSchema = new mongoose.Schema({
@@ -79,17 +79,34 @@ const availableSlotsSchema = new mongoose.Schema({
         startDate:{type:Date, index:true, required:true},
         endDate:{type:Date,required:false}
     },
-    isCancelled:{type:Boolean, default:false},
-    isCompleted:{type:Boolean, default:false},
-    isBooked:{type:Boolean, default:false, index:true},
+    slotDay:{
+        type:String,
+        index:true,
+        required:true
+    },
+    slotKey:{
+        type:String,
+        unique:true,
+        required:true,
+    },
+    status:{
+        type:String,
+        enum:['available', 'completed', 'booked', 'cancelled'],
+        default:'available'
+    },
     patientName:{type:String, default:''},
+    isArchived:{
+        type:Boolean,
+        default:false,
+        index:true
+    },
     source:{type:String, enum:['template', 'manual'], default:'template'}
 }, {
     timestamps:true
 })
  
-availableSlotsSchema.index({doctorId:1, slotDate:1, patientId:1}, {unique:true});
-availableSlotsSchema.index({patientId:1, isBooked:1});
+availableSlotsSchema.index({doctorId:1, slotDay:1,isArchived:1});
+
 
 const appointmentSchema = new mongoose.Schema({
   doctorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Doctor' },
@@ -121,3 +138,46 @@ const Appointments = mongoose.model('appointments', appointmentSchema);
 export { Doctor, Admin, User, AvailableSlots, Appointments}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 8️⃣ FINAL canonical queries (copy-paste safe)
+// Fetch slots for booking
+// AvailableSlots.find({
+//   doctorId,
+//   isArchived: false,
+//   status: "available",
+//   "slotDate.startDate": { $gte: new Date() }
+// })
+
+// Archive past slots (CRON / startup job)
+// const today = new Date().toISOString().split("T")[0];
+
+// await AvailableSlots.updateMany(
+//   {
+//     slotDay: { $lt: today },
+//     isArchived: false
+//   },
+//   {
+//     $set: {
+//       status: "completed",
+//       isArchived: true
+//     }
+//   }
+// );
+
+
+
+
+
+// isArchieved:false is not being found while logging in -> doctor or admin

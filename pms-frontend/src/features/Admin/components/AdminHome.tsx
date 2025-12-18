@@ -12,24 +12,9 @@ import AddNewDoctor from "./addNewDoctor";
 import AdminNavbar from "./AdminNavbar";
 import useConfirmAction from "../../../utils/customConfirmAction";
 import { errorToast, successToast } from "../../../utils/toastStyle";
+import type { BookedSlotsType } from "../../../utils/globalTypes";
 
 
-interface BookedSlot {
-    isBooked: boolean,
-    isCancelled: boolean,
-    isCompleted: boolean,
-    doctorId: string,
-    patientId: string,
-    patientName: string,
-    doctorName: string,
-    source: string,
-    slotDate: {
-        startDate: string,
-        endDate?: string
-    },
-    slotTime: string,
-    _id: string
-}
 
 const AdminHome = () => {
 
@@ -81,11 +66,12 @@ const AdminHome = () => {
                         id: toastId,
                     }
                     )
-                    
+
                     if (response.data.updatedSlots.length) {
+                        console.log("response data: ", response.data);
                         const updatedSlots = response.data.updatedSlots;
                         localStorage.setItem('bookedSlots', JSON.stringify(updatedSlots));
-                        const parsedBookedSlots = updatedSlots.map((slots: BookedSlot) => (
+                        const parsedBookedSlots = updatedSlots.map((slots: BookedSlotsType) => (
                             {
                                 ...slots,
                                 slotDate: {
@@ -95,6 +81,8 @@ const AdminHome = () => {
                             }
                         ))
                         setBookedSlots(parsedBookedSlots)
+                    } else {
+                        setBookedSlots([]);
                     }
                 } else {
                     errorToast(`error while performing ${action} operation  `, { id: toastId })
@@ -102,7 +90,7 @@ const AdminHome = () => {
 
             }
             catch (err) {
-                toast.error(`error while making appointment ${action} request`, { id: toastId })
+                errorToast(`error while making appointment ${action} request`, { id: toastId })
                 console.error(`got error while making an appointment ${action} request`, err);
             }
         }
@@ -239,7 +227,7 @@ const AdminHome = () => {
                                 <h1 className="border-b border-gray-200 px-2 py-5 text-blue-600 shadow-md text-xl hover:border-gray-300 hover:shadow-lg transition-all duration-200"> Recent Appointments</h1>
                             </header>
                             <div className="booking-item overflow-x-auto">
-                                <table className="min-w-max w-full border border-gray-200 rounded-lg overflow-hidden" cellPadding="10" cellSpacing="0" >
+                                <table className="min-w-max w-full border border-gray-200 rounded-lg overflow-hidden table-spacing" cellPadding="10">
                                     <thead className="border border-gray-100 text-sm md:text-base">
                                         <tr>
                                             <th className="text-left text-xl px-3 py-2 text-gray-600 font-medium border-b">Patient</th>
@@ -252,18 +240,24 @@ const AdminHome = () => {
                                     </thead>
                                     <tbody>
                                         {bookedSlots && bookedSlots?.map((slot, index) => (
-                                            <tr key={index}>
+                                            <tr key={index} className={`${(slot.isArchived && slot.status === 'completed') && 'bg-gray-100 text-gray-400 cursor-pointer-none'}`}>
                                                 <td className="px-3 py-2 border-b text-gray-700">{slot.patientName}</td>
                                                 <td className="px-3 py-2 border-b text-gray-700">{slot.doctorName} </td>
-                                                <td className="px-3 py-2 border-b text-gray-700 whitespace-nowrap">{slot.slotDate.startDate.toLocaleString()}</td>
+                                                <td className="px-3 py-2 border-b text-gray-700 whitespace-nowrap">
+                                                    <div className="flex flex-col text-sm">
+                                                        <span>{slot?.slotDate?.startDate.getDate()} - {slot?.slotDate?.startDate.toLocaleString('default', { month: 'short' })}</span>
+                                                        <span>{slot.slotTime}
+                                                        </span>
+                                                    </div>
+                                                </td>
                                                 <td className="px-3 py-2 border-b text-gray-700">Rs 4000</td>
                                                 <td
                                                     className={`px-6 py-4 border-b font-medium text-sm
-                                                        ${slot.isCompleted && "text-green-600"} ${slot.isCancelled && 'text-red-600'} ${slot.isBooked && 'text-blue-600'}`}
-                                                >{slot.isBooked && 'Pending' || slot.isCancelled && 'Cancelled' || slot.isCompleted && 'Completed'}</td>
+                                                        ${(slot.status === 'completed') && "text-green-600"} ${slot.status === 'cancelled' && 'text-red-600'} ${slot.status === 'booked' && 'text-blue-600'}`}
+                                                >{slot.status === 'booked' && 'Pending' || slot.status === 'cancelled' && 'Cancelled' || (slot.status === 'completed') && 'Completed'}</td>
                                                 <td className="px-3 py-2 md:px-6 md:py-4 border-b">
 
-                                                    {slot.isBooked &&
+                                                    {slot.status === 'booked' &&
                                                         <div className="flex">
                                                             <button title="delete" onClick={() => handleAppointment('cancel', slot._id, slot.doctorId)}
                                                                 className="relative group px-3 py-2 md:px-6 md:py-4 border-b shadow-lg text-gray-700"
@@ -290,7 +284,7 @@ const AdminHome = () => {
                                                         </div>
                                                     }
 
-                                                    {(slot.isCompleted || slot.isCancelled) &&
+                                                    {((slot.status === 'completed' && !slot.isArchived) || (slot.status === 'cancelled')) &&
                                                         <div className="text-center">
                                                             <button onClick={() => handleAppointment('remove', slot._id, slot.doctorId)}
                                                                 className="relative group px-3 py-2 md:px-6 md:py-4 border-b text-gray-700"
@@ -303,7 +297,12 @@ const AdminHome = () => {
                                                             </button>
 
                                                         </div>
+
                                                     }
+                                                    {(slot.status === 'completed' && slot.isArchived) &&
+                                                        <div>
+                                                            <h2 className="p-2 text-center"> Archived</h2>
+                                                        </div>}
 
                                                 </td>
                                             </tr>

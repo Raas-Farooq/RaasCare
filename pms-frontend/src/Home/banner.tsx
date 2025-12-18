@@ -29,7 +29,7 @@ const Banner = () => {
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <p className="text-sm/6 flex flex-col sm:flex-row items-center text-gray-900">
-                    <strong className="font-semibold">Demo Login</strong><svg viewBox="0 0 2 2" aria-hidden="true" className="mx-2 inline size-0.5 fill-current hidden sm:block"><circle r="1" cx="1" cy="1" /></svg>Login as Admin or Doctor
+                    <strong className="font-semibold mr-4">Demo Login</strong><svg viewBox="0 0 2 2" aria-hidden="true" className="mx-2 inline size-0.5 fill-current hidden sm:block"><circle r="1" cx="1" cy="1" /></svg>Login as Admin or Doctor
                 </p>
                 <button
                     onClick={() => navigate('/login')}

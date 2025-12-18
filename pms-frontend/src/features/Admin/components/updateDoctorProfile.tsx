@@ -1,5 +1,7 @@
-// import { useState } from "react"
+// import { useEffect, useState } from "react"
 // import DoctorFormComponent from "./doctorForm"
+// import { useAuth } from "../../../context/appContext"
+// import {type DoctorProfileType } from "../../../utils/globalTypes"
 
 // interface TimeSlots{
 //     slotTime:string,
@@ -20,17 +22,15 @@
 
 // const UpdateDoctorPrfoile = () =>{
 
-//     const [initialData, setInitialData] = useState({
-//         education:'MBBS',
-//         speciality:'Physician',
-//         slots:[{
-//             slotTime:'12:00',
-//             isBooked:true,
-//             _id:'394579483'
-//         }]
-//     })
+//     const {doctorProfile} = useAuth();
+//     const [initialData, setInitialData] = useState<DoctorProfileType | null>(null);
 
-//     async function updateDoctorInfo(updatedDetail:doctorProfileInfoType){
+//     useEffect(() => {
+//         setInitialData(doctorProfile)
+//     }, [doctorProfile])
+
+
+//     async function updateDoctorInfo(updatedDetail:DoctorProfileType){
 
 
 //     }

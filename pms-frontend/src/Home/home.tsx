@@ -11,16 +11,16 @@ import Banner from "./banner.tsx";
 import DemoCredentials from "./demoCredentials.tsx";
 
 
+
 function Home() {
   const navigate = useNavigate();
   const contactRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLElement>(null);
   const { imageLoaded } = useImageCached("/relief.webp");
 
-
   useEffect(() => {
     localStorage.removeItem('doctorId');
-  },[])
+  }, [])
 
   const handleSpecialityClick = (targetSpeciality: string) => {
 
@@ -94,15 +94,15 @@ function Home() {
             </div>
             <div className="w-full flex justify-center items-center mt-4">
 
-              {imageLoaded === 'loading' && 
-              <div className="w-full max-w-md sm:aspect-[3/2] px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
+              {imageLoaded === 'loading' &&
+                <div className="w-full max-w-md sm:aspect-[3/2] px-4 py-6 bg-gray-200 animate-impulse rounded-lg">
 
-              </div>
+                </div>
               }
 
               <img
                 className={`${imageLoaded === "loaded"
-                   ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden" }`}
+                  ? "w-full max-w-md sm:aspect-[3/2] rounded-2xl shadow-lg shadow-transition object-cover hover:scale-105 duration-300" : "hidden"}`}
                 loading="lazy"
                 src="/relief.webp"
                 alt={"Treatment & Relief"}

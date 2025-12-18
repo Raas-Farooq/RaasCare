@@ -144,7 +144,7 @@ return (
                 {isShowMenu ? <FaTimes /> : <FaBars />}
             </button>
         </div>
-        <nav className={`w-full lg:w-auto ${isShowMenu ? 'block absolute top-full left-0 bg-white shadow-lg z-50 p-4' : 'hidden lg:block'}`}
+        <nav className={`w-full lg:w-auto ${isShowMenu ? 'block absolute top-full left-0 bg-white shadow-lg z-50 p-4' : 'hidden'} lg:!flex`}
             aria-labelledby="Main-Navigation" >
             <ul className={`flex flex-col lg:flex-row gap-6 ${isShowMenu ? 'py-4' : ''}`}>
                 {navbarLinks.map((tab, ind) => (
@@ -172,7 +172,7 @@ return (
                 ))}
             </ul>
         </nav>
-        <div className={`relative w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden lg:flex '} gap-5`}>
+        <div className={`relative w-full lg:w-auto ${isShowMenu ? 'block bg-white p-4' : 'hidden'} lg:!flex gap-5 `}>
             {userRole && userRole === 'patient' &&
                 <>
                     <button

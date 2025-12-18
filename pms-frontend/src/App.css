@@ -4,6 +4,10 @@
   width: 100%;
   height: 100%;
 }
+.table-spacing {
+  border-collapse: separate;
+  border-spacing: 0 10px; /* 0 for horizontal spacing, 10px for vertical spacing */
+}
 
 :root {
   --gradient-from: #ff80b5;
