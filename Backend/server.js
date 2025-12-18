@@ -34,7 +34,8 @@ const corsAuthen = {
         return callback (new Error("Not allowed by CORS"))
         
     },
-    credentials:true
+    credentials:true,
+    exposedHeaders:['Set-Cookie']
 }
 
 app.use(cors(corsAuthen));
