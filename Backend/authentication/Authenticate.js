@@ -5,6 +5,8 @@ dotenv.config()
 
 const Authenticate = (req,res,next) => {
     const tokenAccessed = req.cookies.token;
+    console.log("cookie ", req.cookies.token);
+    console.log(" header authorization token ", req.headers.authorization);
     if(!tokenAccessed){
         return res.status(401).json({message:'No token is provided'})
     }

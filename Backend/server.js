@@ -27,10 +27,11 @@ ConnectingToDatabase();
 const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raas-care.vercel.app', 'http://172.17.117.48:5173', 'http://172.17.117.48:5174'];
 const corsAuthen = {
     origin:function(requestOrigin , callback){
-
-        if(!requestOrigin || allowedOrigins.includes(requestOrigin)){
-            return callback(null, true)
+        if(!requestOrigin) return callback(null, true)
+        if(allowedOrigins.includes(requestOrigin)){
+            return callback(null, requestOrigin)
         }
+        console.log("blocked CORS origin ",requestOrigin)
         return callback (new Error("Not allowed by CORS"))
         
     },
@@ -41,7 +42,7 @@ const corsAuthen = {
 app.use(cors(corsAuthen));
 app.options(/.*/, cors(corsAuthen));
 
-
+app.set('trust proxy', 1)
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(compression());
