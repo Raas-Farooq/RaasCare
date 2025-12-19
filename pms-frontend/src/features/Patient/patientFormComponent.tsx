@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from "react";
-import { useForm, useFieldArray, type UseFormReset } from 'react-hook-form';
+import { useForm, useFieldArray, type UseFormReset} from 'react-hook-form';
 import parsePhoneNumberFromString from 'libphonenumber-js';
 import {toast} from "sonner";
 import { patientSchema, type PatientFormType } from './patient.types';
@@ -19,7 +19,7 @@ type FormComponentProps = {
 // Patient Form Component
 const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
     // useForm with Resolver definition
-    const {register, control,handleSubmit, formState:{errors, isSubmitting}, reset} = useForm<PatientFormType>({
+    const {register, control,handleSubmit, formState:{errors, isSubmitting}, watch, reset} = useForm<PatientFormType>({
         resolver: zodResolver(patientSchema),
         defaultValues: initialData || 
         {
@@ -32,6 +32,8 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
             name:'medicalHistory'
         }
     )
+
+
 
        useEffect(() => {
         if (initialData) {
@@ -135,8 +137,10 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                     <div>
                         <h2 className='text-xl font-bold m-2'> Medical History </h2>
                         {fields.map((field, index) => {
+                            const dateValue = watch(`medicalHistory.${index}.date`);
                             return(
                                 <div key={field.id} className='space-y-2 p-2 mb-4 border'>
+                                
                                     <input
                                     placeholder="Diagnosis"
                                     {...register(`medicalHistory.${index}.diagnosis`)}
@@ -164,8 +168,8 @@ const FormComponent = ({initialData, receiveSubmitData}:FormComponentProps) => {
                                                 {...register(`medicalHistory.${index}.date`)}
                                                 className="w-full px-3 py-2 border-b border-gray-400 appearance-none"
                                             />
-                                            {!field.date && (
-                                                <span className="text-xs top-3 sm:top-2 sm:text-base absolute right-10 text-gray-400 pointer-events-none">
+                                            {!dateValue && (
+                                                <span className={`text-xs top-3 sm:top-2 sm:text-base absolute right-10 text-gray-400 pointer-events-none ${field.date && 'hidden'}`}>
                                                 When did treatment begin
                                                 </span>
                                             )}
