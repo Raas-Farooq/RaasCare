@@ -106,6 +106,7 @@ function DoctorPublicProfile() {
                 const fetchdoctorAvailableDays = await makeRequest({ url: `pms/getDoctorAvailableDays/${currentDoctorId}`, method: 'get' });
                 if (fetchdoctorAvailableDays.data.success) {
                     const remainingSlots = fetchdoctorAvailableDays.data.remainingSlots;
+                    console.log("remaining Slots: ", remainingSlots);
                     updateDateFormat(remainingSlots);
                     // async function detectSlotsDuplication() {
                     //       const fetchSlots = await axios.get(`${backendUrl}/pms/getDoctorSlots/693ce46789386e011f48a7db`);

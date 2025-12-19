@@ -5,7 +5,7 @@ dotenv.config()
 
 const Authenticate = (req,res,next) => {
     const cookieToken = req.cookies?.token;
-    const headersToken = eq.headers.authorization?.split(' ')[1]
+    const headersToken = req.headers.authorization?.split(' ')[1]
     const token = cookieToken || headersToken;
     
     if(!token){
