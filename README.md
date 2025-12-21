@@ -258,14 +258,14 @@ SafePay payment gateway integration (in progress)
 ## Challenges & Solutions
 
 #### Unique slot generation each day by preserving the old booked ones
-→ Solved using a unique compound index: { doctorId, startDate, endDate, timeSlot }
+→ Solved using a unique key: { doctorId, slotDay, timeSlot }
 
 #### Ensuring patient record linking with phone number
 → Implemented conditional matching + optional DOB check.
 
 #### Automatic generation of next 14 days slots
-→ Specific functions used to take simple day (Sun) and timeSlot (4:30-5:00 PM) and generate get slots of this time efficiently  
-→ Aggregation pipelines optimized for using $match, $group, $project.
+→ Specific functions used to take simple day (Sun) and timeSlot (4:30-5:00 PM) and generate slots of this time efficiently for next 14 days 
+→ Aggregation pipelines optimized for using $match, $group, $project to get the available slots of the doctor.
 
 #### Role-based routing in React
 → Built a ProtectedRoute wrapper that checks JWT + role.
@@ -273,3 +273,6 @@ SafePay payment gateway integration (in progress)
 #### Cron jobs
 
 → Used cron jobs for auto slot generation instead of running logic on the frontend
+
+## LICENSE
+The project is licensed under MIT License. See the details [LICENSE](LICENSE)
