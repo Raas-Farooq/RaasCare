@@ -61,7 +61,7 @@ const registerPatient = async (req, res, next) => {
                 res.cookie( 'token', token, {
                 httpOnly:true,
                 secure:process.env.NODE_ENV === 'production',
-                sameSite:'lax',
+                sameSite:process.env.NODE_ENV === 'production' ? 'none' : 'lax',
                 maxAge:3600000
             })
         }catch(cookieErr){
@@ -173,7 +173,7 @@ const userLogin = async (req, res,next) => {
             res.cookie('token', token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
+                sameSite: process.env.NODE_ENV === 'production'? 'none' : 'lax',
                 maxAge: 3600000,
                 path: '/'
             })

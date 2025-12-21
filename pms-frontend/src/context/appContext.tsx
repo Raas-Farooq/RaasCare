@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const logout = useCallback(async () => {
         try {
             await axios.get(`${backend_url}/pms/logout`,
-                { withCredentials: true }
+                // { withCredentials: true }
             );
 
         } catch (err) {    

@@ -6,7 +6,12 @@ const HeroVideo = () => {
     return (
         <div className="w-full flex justify-center mx-auto items-center max-w-6xl mx-auto px-4 py-6">
            <div className="w-full max-w-2xl md:max-w-4xl aspect-video">
-             <video controls
+             <video 
+             controls
+             autoPlay
+                muted
+                playsInline
+                loop
              poster="./heroImage.webp"
               className="w-full h-full object-cover rounded-lg shadow-md">
                 <source
