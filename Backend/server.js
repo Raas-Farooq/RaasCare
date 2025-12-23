@@ -40,7 +40,7 @@ const corsAuthen = {
 
 
 app.use(cors(corsAuthen));
-app.options("*", cors(corsAuthen));
+// app.options("*", cors(corsAuthen));
 // app.options(/.*/, cors(corsAuthen));
 
 app.set('trust proxy', 1)
