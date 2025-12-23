@@ -21,18 +21,7 @@ import removeDuplicates from './Controller/slotsDeleteAndUpdate.js';
 config()
 
 const app = express();
-const Port = process.env.PORT || 2500;
- console.log("mongo Uri exists ", !!process.env.MONGO_URI);
-async function startServer(){
-    
-        await ConnectingToDatabase();
-        app.listen(Port,() => console.log("port ", Port));
-    
-    
-}
 
-
-startServer();
 
 const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raas-care.vercel.app', 'http://172.17.117.48:5173', 'http://172.17.117.48:5174'];
 const corsAuthen = {
@@ -49,8 +38,9 @@ const corsAuthen = {
     exposedHeaders:['Set-Cookie']
 }
 
+app.options(cors(corsAuthen));
 app.use(cors(corsAuthen));
-app.options(/.*/, cors(corsAuthen));
+// app.options(/.*/, cors(corsAuthen));
 
 app.set('trust proxy', 1)
 app.use(helmet());
@@ -78,6 +68,18 @@ app.use('/pms', userRoutes)
 app.use('/pms', doctorRoutes);
 app.use('/pms', slotsRoutes);
 
+
+const Port = process.env.PORT || 2500;
+ console.log("mongo Uri exists ", !!process.env.MONGO_URI);
+async function startServer(){
+    
+        await ConnectingToDatabase();
+        app.listen(Port,() => console.log("port ", Port));
+    
+    
+}
+
+startServer();
 // (async () => {
 //     console.log('⚙️ Running slot generator at startup...');
 //     try{
