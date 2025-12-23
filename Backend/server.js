@@ -22,6 +22,7 @@ config()
 
 const app = express();
 const Port = process.env.PORT || 2500;
+ console.log("mongo Uri exists ", !!process.env.MONGO_URI);
 async function startServer(){
     
         await ConnectingToDatabase();
