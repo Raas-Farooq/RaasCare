@@ -38,8 +38,9 @@ const corsAuthen = {
     exposedHeaders:['Set-Cookie']
 }
 
-app.options(cors(corsAuthen));
+
 app.use(cors(corsAuthen));
+app.options("*", cors(corsAuthen));
 // app.options(/.*/, cors(corsAuthen));
 
 app.set('trust proxy', 1)
