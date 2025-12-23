@@ -6,7 +6,7 @@ async function ConnectingToDatabase(){
 
   try{
     await mongoose.connect(process.env.MONGO_URI, {
-        serverSelectionTimeoutMS:3000
+        serverSelectionTimeoutMS:30000
      })
     .then(async() =>
         {
