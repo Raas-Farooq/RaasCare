@@ -22,7 +22,16 @@ config()
 
 const app = express();
 const Port = process.env.PORT || 2500;
-ConnectingToDatabase();
+async function startServer(){
+    
+        await ConnectingToDatabase();
+        app.listen(Port,() => console.log("port ", Port));
+    
+    
+}
+
+
+startServer();
 
 const allowedOrigins = ['http://localhost:5172', 'http://localhost:5173', 'http://localhost:5174', 'https://raas-care.vercel.app', 'http://172.17.117.48:5173', 'http://172.17.117.48:5174'];
 const corsAuthen = {
@@ -109,5 +118,5 @@ app.use((err,req,res,next) => {
 
 // await removeDuplicatess();
 
-app.listen(Port,() => console.log("port ", Port));
+
 
