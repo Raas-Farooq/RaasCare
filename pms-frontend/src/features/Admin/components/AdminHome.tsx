@@ -311,10 +311,10 @@ const AdminHome = () => {
                                 </table>
 
                             </div>
-                            <button
+                            {/* <button
                                 className="text-gray-800 border border-gray-400 p-2 rounded-md mt-6 text-sm hover:border-purple-700 hover:text-purple-700">
                                 Load More
-                            </button>
+                            </button> */}
                         </section>
                     </main>
                     {/* Profile */}

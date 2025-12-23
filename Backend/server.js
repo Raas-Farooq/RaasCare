@@ -28,7 +28,7 @@ const corsAuthen = {
     origin:function(requestOrigin , callback){
         if(!requestOrigin) return callback(null, true)
         if(allowedOrigins.includes(requestOrigin)){
-            return callback(null, requestOrigin)
+            return callback(null, true)
         }
         console.log("blocked CORS origin ",requestOrigin)
         return callback (new Error("Not allowed by CORS"))
@@ -63,6 +63,16 @@ app.get('/', (req, res) => {
         res.send("Welcome the The Arena of Last BALL. Alhamdulila")
     })
 
+
+const Port = process.env.PORT || 2500;
+
+app.get('/health', (res) => {
+    res.status(200).json({
+        status:'ok',
+        timestamp:new Date().toISOString(),
+        port:Port
+    })
+})
 app.use('/pms', patientRoutes);
 app.use('/pms', adminRouter);
 app.use('/pms', userRoutes)
@@ -70,18 +80,22 @@ app.use('/pms', doctorRoutes);
 app.use('/pms', slotsRoutes);
 
 
-const Port = process.env.PORT || 2500;
+
  console.log("mongo Uri exists ", !!process.env.MONGO_URI);
 async function startServer(){
     
         await ConnectingToDatabase();
-        app.listen(Port,() => console.log("port ", Port));
+        const server = app.listen(Port, '0.0.0.0', () => {
+            console.log("App is running on ", Port);
+            console.log("environment", process.env.NODE_ENV );
+        });
     
-    
-}
 
-startServer();
-// (async () => {
+        server.on('error', (err) =>{
+            console.error("Error while connecting to Port ", err);
+            process.exit(1)
+        })
+    // (async () => {
 //     console.log('⚙️ Running slot generator at startup...');
 //     try{
 //         await generateAllSlotsStartUp();
@@ -91,6 +105,10 @@ startServer();
 //         console.error('Initial slot generation failed:', err)
 //     }
 // })();
+
+}
+
+startServer();
 
 
 schedule('0 0 * * *', async() => {

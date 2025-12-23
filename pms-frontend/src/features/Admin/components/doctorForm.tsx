@@ -2,9 +2,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useFieldArray, useForm, type UseFormReset } from "react-hook-form";
 import {toast} from "sonner";
-import { Calendar,  Trash2 } from 'lucide-react';
+import { Calendar, Trash2 } from 'lucide-react';
 import UploadProfileImage from "./doctorProfileImage";
 import { doctorFormSchema, type DoctorSchemaType, type ProfileImageProps } from "../admin.types";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const daysOfWeek = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
 
@@ -36,6 +37,7 @@ interface DoctorFormProps {
 
 function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setImgSrc, profileImageData, setProfileImageData, allottedDays, setAllottedDays}: DoctorFormProps) {
     const [commonTimeSlots, setCommonTimeSlots] = useState(COMMON_TIME_SLOTS);
+    const [showPassword, setShowPassword] = useState(false);
     const [chosenDay, setChosenDay] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [specialSlots, setSpecialSlots] = useState<string[]>([]);
@@ -174,12 +176,15 @@ function DoctorFormComponent({ receiveUpdatedDetails, initialData, imgSrc, setIm
                             <label
                                 className="text-gray-400 block"
                                 htmlFor="password">Password of Doctor *</label>
-                            <input
-                                type="password"
+                            <div className="relative">
+                                  <input
+                                type= {showPassword ? 'text' : 'password' }
                                 {...register('password')}
                                 className="border-b border-gray-700 w-full focus:outline-none px-2 py-2"
                                 id="password"
                             />
+                            <button onClick={() => setShowPassword(!showPassword)} type="button" className="button right-5 bottom-3 absolute"> {showPassword ? <FaEye  size={20} /> : <FaEyeSlash size={20} />} </button>
+                            </div>
                             {errors.password && <span className="text-red-700">{errors.password?.message?.toString()}</span>}
                         </div>
                         <div>
